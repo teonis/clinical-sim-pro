@@ -4,6 +4,8 @@ import { SimulationState, StartParams, ChatMessageAI } from "@/types/simulation"
 // Conversation history for multi-turn simulation
 let conversationHistory: ChatMessageAI[] = [];
 
+export const getConversationHistory = (): ChatMessageAI[] => [...conversationHistory];
+
 export const startSimulation = async (params: StartParams): Promise<SimulationState> => {
   conversationHistory = [];
 
