@@ -8,7 +8,7 @@ import Dashboard from "@/components/Dashboard";
 import GameDashboard from "@/components/GameDashboard";
 import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
-import { Stethoscope, Loader2 } from "lucide-react";
+import { Activity, Loader2 } from "lucide-react";
 
 const App: React.FC = () => {
   const [gameState, setGameState] = useState<SimulationState | null>(null);
@@ -117,8 +117,10 @@ const App: React.FC = () => {
     return (
       <div className="w-full h-screen bg-background flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <Stethoscope className="h-12 w-12 text-primary animate-pulse" />
-          <p className="text-primary font-mono-vital text-sm tracking-widest uppercase">Carregando...</p>
+          <div className="w-14 h-14 rounded-2xl gradient-brand flex items-center justify-center animate-pulse shadow-xl shadow-primary/20">
+            <Activity className="h-7 w-7 text-white" />
+          </div>
+          <p className="font-display font-bold text-sm gradient-brand-text tracking-widest uppercase">SIMULAMED</p>
         </div>
       </div>
     );

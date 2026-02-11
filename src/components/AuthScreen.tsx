@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Stethoscope, Mail, Lock, Loader2, HeartPulse, GraduationCap, Trophy } from "lucide-react";
+import { Activity, Mail, Lock, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 interface AuthScreenProps {
@@ -43,13 +43,13 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
     <div className="min-h-screen flex items-center justify-center p-4 bg-background">
       <div className="w-full max-w-md bg-card rounded-2xl shadow-xl border border-border overflow-hidden">
         {/* Header */}
-        <div className="bg-primary p-8 text-center relative overflow-hidden">
+        <div className="gradient-brand p-8 text-center relative overflow-hidden">
           <div className="relative z-10">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-primary-foreground/20 backdrop-blur-md mb-4 shadow-lg">
-              <Stethoscope className="h-8 w-8 text-primary-foreground" />
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-white/15 backdrop-blur-md mb-4 shadow-lg">
+              <Activity className="h-8 w-8 text-white" />
             </div>
-            <h1 className="text-2xl font-bold text-primary-foreground tracking-tight">Rocha Med Academy</h1>
-            <p className="text-primary-foreground/80 text-sm mt-1">Plataforma de Simulação Clínica</p>
+            <h1 className="text-2xl font-display font-bold text-white tracking-tight">SIMULAMED</h1>
+            <p className="text-white/70 text-xs font-medium tracking-widest uppercase mt-1">By Time Rocha</p>
           </div>
         </div>
 
