@@ -1,38 +1,166 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { SimulationProvider } from "@/context/SimulationContext";
-import BottomNav from "@/components/BottomNav";
-import Index from "./pages/Index";
-import CaseLobby from "./pages/CaseLobby";
-import SimulationScreen from "./pages/SimulationScreen";
-import Profile from "./pages/Profile";
-import NotFound from "./pages/NotFound";
+import React, { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { SimulationState, StartParams } from "@/types/simulation";
+import { startSimulation, resetConversation } from "@/services/simulationService";
+import WelcomeScreen from "@/components/WelcomeScreen";
+import AuthScreen from "@/components/AuthScreen";
+import Dashboard from "@/components/Dashboard";
+import GameDashboard from "@/components/GameDashboard";
+import { Toaster } from "@/components/ui/sonner";
+import { toast } from "sonner";
+import { Stethoscope, Loader2 } from "lucide-react";
 
-const queryClient = new QueryClient();
+const App: React.FC = () => {
+  const [gameState, setGameState] = useState<SimulationState | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [lastParams, setLastParams] = useState<StartParams | null>(null);
+  const [currentUser, setCurrentUser] = useState<string | null>(null);
+  const [isAuthChecking, setIsAuthChecking] = useState(true);
+  const [showWelcome, setShowWelcome] = useState(() => {
+    return !localStorage.getItem("rma_welcome_seen");
+  });
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user?.email) {
+          setCurrentUser(session.user.email);
+        }
+      } catch (error) {
+        console.error("Auth check error:", error);
+      } finally {
+        setIsAuthChecking(false);
+      }
+    };
+
+    checkAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_IN" && session?.user?.email) {
+        setCurrentUser(session.user.email);
+        setIsAuthChecking(false);
+      } else if (event === "SIGNED_OUT") {
+        setCurrentUser(null);
+        setGameState(null);
+        setIsAuthChecking(false);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleStartGame = async (params: StartParams) => {
+    setIsLoading(true);
+    setLastParams(params);
+    resetConversation();
+    try {
+      const initialState = await startSimulation(params);
+      setGameState(initialState);
+    } catch (error: any) {
+      console.error("Failed to start game:", error);
+      toast.error(error.message || "Falha ao iniciar simulação. Tente novamente.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleRestartGame = async () => {
+    if (!lastParams) return;
+    setIsLoading(true);
+    resetConversation();
+    try {
+      const initialState = await startSimulation(lastParams);
+      setGameState(initialState);
+    } catch (error: any) {
+      console.error("Failed to restart game:", error);
+      toast.error(error.message || "Erro ao reiniciar o caso.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleExitGame = () => {
+    setGameState(null);
+    setLastParams(null);
+    resetConversation();
+  };
+
+  const handleLogout = async () => {
+    setCurrentUser(null);
+    setGameState(null);
+    setShowWelcome(false);
+    try {
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
+
+  // Welcome screen
+  if (showWelcome) {
+    return (
+      <>
+        <WelcomeScreen
+          onContinue={() => {
+            localStorage.setItem("rma_welcome_seen", "true");
+            setShowWelcome(false);
+          }}
+        />
+        <Toaster />
+      </>
+    );
+  }
+
+  // Loading
+  if (isAuthChecking) {
+    return (
+      <div className="w-full h-screen bg-background flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <Stethoscope className="h-12 w-12 text-primary animate-pulse" />
+          <p className="text-primary font-mono-vital text-sm tracking-widest uppercase">Carregando...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Auth
+  if (!currentUser) {
+    return (
+      <>
+        <AuthScreen onAuthSuccess={() => {}} />
+        <Toaster />
+      </>
+    );
+  }
+
+  // Game
+  if (gameState) {
+    return (
+      <>
+        <GameDashboard
+          initialState={gameState}
+          onRestart={handleRestartGame}
+          onExit={handleExitGame}
+          gameParams={lastParams!}
+        />
+        <Toaster />
+      </>
+    );
+  }
+
+  // Dashboard
+  return (
+    <>
+      <Dashboard
+        onStartGame={handleStartGame}
+        isLoading={isLoading}
+        userEmail={currentUser}
+        onLogout={handleLogout}
+      />
       <Toaster />
-      <Sonner />
-      <SimulationProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/cases" element={<CaseLobby />} />
-            <Route path="/simulation/:id" element={<SimulationScreen />} />
-            <Route path="/simulation" element={<CaseLobby />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-          <BottomNav />
-        </BrowserRouter>
-      </SimulationProvider>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+    </>
+  );
+};
 
 export default App;
