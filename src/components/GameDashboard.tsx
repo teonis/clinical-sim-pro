@@ -188,10 +188,12 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
       <header className={cn("shrink-0 bg-card border-b border-border px-4 py-3 shadow-sm z-30", timeLeft !== null && "mt-[50px]")}>
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 text-primary">
-              <Stethoscope className="h-5 w-5" />
-              <span className="font-bold text-lg hidden sm:inline tracking-tight">
-                Rocha Med <span className="text-foreground font-normal">Viewer</span>
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-lg gradient-brand flex items-center justify-center">
+                <Stethoscope className="h-3.5 w-3.5 text-white" />
+              </div>
+              <span className="font-display font-bold text-sm hidden sm:inline gradient-brand-text">
+                SIMULAMED
               </span>
             </div>
             <div className={cn("px-3 py-1 rounded-full border text-xs font-bold uppercase tracking-wide flex items-center gap-2", getStatusColor(gameState.status_simulacao.estado_paciente))}>

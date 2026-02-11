@@ -128,10 +128,13 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartGame, isLoading, userEmail
       {/* Sidebar */}
       <aside className="w-16 lg:w-64 bg-card border-r border-border flex flex-col shrink-0 z-20">
         <div className="p-4 flex items-center justify-center lg:justify-start gap-3 border-b border-border h-16">
-          <div className="w-8 h-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
-            <Stethoscope className="h-4 w-4" />
+          <div className="w-8 h-8 rounded-lg gradient-brand flex items-center justify-center shadow-sm">
+            <Stethoscope className="h-4 w-4 text-white" />
           </div>
-          <span className="font-bold text-lg hidden lg:block tracking-tight text-foreground">Rocha Med</span>
+          <div className="hidden lg:block">
+            <span className="font-display font-bold text-sm gradient-brand-text block leading-tight">SIMULAMED</span>
+            <span className="text-[9px] text-muted-foreground tracking-widest uppercase">By Time Rocha</span>
+          </div>
         </div>
 
         <nav className="flex-1 p-2 space-y-1 overflow-y-auto">
