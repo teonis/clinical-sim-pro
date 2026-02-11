@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { SimulationState, ActionType, StartParams } from "@/types/simulation";
-import { sendAction } from "@/services/simulationService";
+import { sendAction, getConversationHistory } from "@/services/simulationService";
 import { saveGameResult } from "@/services/gameService";
+import { createGameSession, updateGameSession } from "@/services/sessionService";
 import { renderWithTooltips } from "@/components/MedicalTooltip";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -51,6 +52,23 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
   const [scoreDiff, setScoreDiff] = useState<number | null>(null);
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [maxTime, setMaxTime] = useState<number | null>(null);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+
+  // Create session on mount
+  useEffect(() => {
+    const initSession = async () => {
+      const caseTitle = initialState.interface_usuario.manchete || `Caso de ${gameParams.especialidade}`;
+      const id = await createGameSession(
+        gameParams.especialidade,
+        gameParams.dificuldade,
+        caseTitle,
+        initialState,
+        getConversationHistory()
+      );
+      if (id) setSessionId(id);
+    };
+    initSession();
+  }, []);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -143,6 +161,10 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
       const newState = await sendAction(id, type === ActionType.LIVRE ? customActionText : undefined);
       setGameState(newState);
       setCustomActionText("");
+      // Persist session update
+      if (sessionId) {
+        updateGameSession(sessionId, newState, getConversationHistory());
+      }
     } catch (error) {
       console.error("Error processing action:", error);
     } finally {

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { UserStats, SPECIALTIES } from "@/types/simulation";
 import { getUserStats, getLeaderboard, getUserHistory, sendFeedback, toggleGameFavorite } from "@/services/gameService";
+import { getUserSessions, GameSession } from "@/services/sessionService";
 import { supabase } from "@/integrations/supabase/client";
 import { GAME_LEVELS, GameHistoryEntry } from "@/types/simulation";
 import { Button } from "@/components/ui/button";
@@ -8,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
 import StartGame from "@/components/StartGame";
+import SessionReview from "@/components/SessionReview";
 import { cn } from "@/lib/utils";
 import {
   Home, BarChart3, Clock, MessageSquare, LogOut, Stethoscope,
@@ -42,6 +44,8 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartGame, isLoading, userEmail
   const [userStats, setUserStats] = useState<UserStats | null>(null);
   const [leaderboard, setLeaderboard] = useState<GameHistoryEntry[]>([]);
   const [history, setHistory] = useState<GameHistoryEntry[]>([]);
+  const [sessions, setSessions] = useState<GameSession[]>([]);
+  const [reviewSession, setReviewSession] = useState<GameSession | null>(null);
   const [rankingSpecialty, setRankingSpecialty] = useState("TODAS");
   const [isRankingLoading, setIsRankingLoading] = useState(false);
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
@@ -55,7 +59,10 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartGame, isLoading, userEmail
   }, []);
 
   useEffect(() => {
-    if (activeTab === "history") getUserHistory().then(setHistory);
+    if (activeTab === "history") {
+      getUserHistory().then(setHistory);
+      getUserSessions().then(setSessions);
+    }
   }, [activeTab]);
 
   useEffect(() => {
@@ -339,57 +346,58 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartGame, isLoading, userEmail
 
           {activeTab === "history" && (
             <div className="space-y-6 animate-in fade-in">
-              <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-                <div>
-                  <h1 className="text-3xl font-bold text-foreground">Histórico de Casos</h1>
-                  <p className="text-muted-foreground mt-1">Seus últimos atendimentos simulados.</p>
-                </div>
-                <div className="flex bg-secondary p-1 rounded-lg self-start">
-                  <button onClick={() => setShowFavoritesOnly(false)} className={cn("px-4 py-2 rounded-md text-xs font-bold uppercase", !showFavoritesOnly ? "bg-card text-foreground shadow-sm" : "text-muted-foreground")}>
-                    Todos
-                  </button>
-                  <button onClick={() => setShowFavoritesOnly(true)} className={cn("px-4 py-2 rounded-md text-xs font-bold uppercase flex items-center gap-2", showFavoritesOnly ? "bg-card text-yellow-600 shadow-sm" : "text-muted-foreground")}>
-                    <Star className="h-3 w-3" /> Favoritos
-                  </button>
-                </div>
-              </div>
-
-              <div className="grid gap-4">
-                {history.filter((g) => !showFavoritesOnly || g.is_favorite).length > 0 ? (
-                  history
-                    .filter((g) => !showFavoritesOnly || g.is_favorite)
-                    .map((game, i) => (
-                      <div key={game.id || i} className="bg-card rounded-xl border border-border p-5 shadow-sm flex flex-col md:flex-row gap-4 md:items-center justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-1">
-                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                              {new Date(game.created_at).toLocaleDateString("pt-BR")}
-                            </span>
-                            <span className={cn("text-[10px] font-bold uppercase px-2 py-0.5 rounded-full", game.outcome === "CURADO" ? "bg-primary/10 text-primary" : "bg-destructive/10 text-destructive")}>
-                              {game.outcome}
-                            </span>
-                          </div>
-                          <h3 className="font-bold text-foreground text-sm">{game.case_title}</h3>
-                          <p className="text-xs text-muted-foreground mt-0.5">{game.specialty} · {game.difficulty}</p>
-                        </div>
-                        <div className="flex items-center gap-4">
-                          <div className="text-center">
-                            <div className="text-xs text-muted-foreground font-bold uppercase">Nota</div>
-                            <div className="text-xl font-bold font-mono-vital text-primary">{Number(game.score).toFixed(1)}</div>
-                          </div>
-                          <button onClick={() => handleToggleFavorite(game.id)} className="text-muted-foreground hover:text-yellow-500 transition-colors">
-                            {game.is_favorite ? <Star className="h-5 w-5 fill-yellow-500 text-yellow-500" /> : <StarOff className="h-5 w-5" />}
-                          </button>
-                        </div>
-                      </div>
-                    ))
-                ) : (
-                  <div className="py-12 text-center">
-                    <Clock className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
-                    <p className="text-muted-foreground">Nenhum caso encontrado.</p>
+              {reviewSession ? (
+                <SessionReview session={reviewSession} onBack={() => setReviewSession(null)} />
+              ) : (
+                <>
+                  <div>
+                    <h1 className="text-3xl font-bold text-foreground">Histórico de Casos</h1>
+                    <p className="text-muted-foreground mt-1">Seus últimos atendimentos simulados.</p>
                   </div>
-                )}
-              </div>
+
+                  <div className="grid gap-4">
+                    {sessions.length > 0 ? (
+                      sessions.map((session) => (
+                        <button
+                          key={session.id}
+                          onClick={() => setReviewSession(session)}
+                          className="bg-card rounded-xl border border-border p-5 shadow-sm flex flex-col md:flex-row gap-4 md:items-center justify-between text-left hover:border-primary/30 hover:shadow-md transition-all group w-full"
+                        >
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-1">
+                              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                                {new Date(session.started_at).toLocaleDateString("pt-BR")}
+                              </span>
+                              <span className={cn(
+                                "text-[10px] font-bold uppercase px-2 py-0.5 rounded-full",
+                                session.status === "CURADO" ? "bg-primary/10 text-primary" :
+                                session.status === "OBITO" ? "bg-destructive/10 text-destructive" :
+                                "bg-warning/10 text-warning"
+                              )}>
+                                {session.status === "EM_ANDAMENTO" ? "Em Andamento" : session.status}
+                              </span>
+                            </div>
+                            <h3 className="font-bold text-foreground text-sm">{session.case_title}</h3>
+                            <p className="text-xs text-muted-foreground mt-0.5">{session.specialty} · {session.difficulty}</p>
+                          </div>
+                          <div className="flex items-center gap-4">
+                            <div className="text-center">
+                              <div className="text-xs text-muted-foreground font-bold uppercase">Nota</div>
+                              <div className="text-xl font-bold font-mono-vital text-primary">{Number(session.current_score).toFixed(1)}</div>
+                            </div>
+                            <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                          </div>
+                        </button>
+                      ))
+                    ) : (
+                      <div className="py-12 text-center">
+                        <Clock className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
+                        <p className="text-muted-foreground">Nenhum caso encontrado.</p>
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
             </div>
           )}
 

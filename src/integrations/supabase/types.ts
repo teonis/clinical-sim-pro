@@ -77,6 +77,54 @@ export type Database = {
         }
         Relationships: []
       }
+      game_sessions: {
+        Row: {
+          case_title: string
+          conversation_history: Json
+          created_at: string
+          current_score: number
+          difficulty: string
+          finished_at: string | null
+          id: string
+          last_state: Json | null
+          specialty: string
+          started_at: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          case_title?: string
+          conversation_history?: Json
+          created_at?: string
+          current_score?: number
+          difficulty?: string
+          finished_at?: string | null
+          id?: string
+          last_state?: Json | null
+          specialty?: string
+          started_at?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          case_title?: string
+          conversation_history?: Json
+          created_at?: string
+          current_score?: number
+          difficulty?: string
+          finished_at?: string | null
+          id?: string
+          last_state?: Json | null
+          specialty?: string
+          started_at?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
