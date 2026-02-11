@@ -1,1 +1,4 @@
 project_id = "utbkbvdyjhhewmmmymwu"
+
+[functions.simulate]
+verify_jwt = false
