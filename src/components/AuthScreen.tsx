@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Activity, Mail, Lock, Loader2 } from "lucide-react";
+import { Activity, Mail, Lock, Loader2, User, Building2, Calendar } from "lucide-react";
 import { toast } from "sonner";
 
 interface AuthScreenProps {
@@ -14,6 +14,10 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
   const [mode, setMode] = useState<"login" | "signup" | "forgot">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [university, setUniversity] = useState("");
+  const [graduationYear, setGraduationYear] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -37,8 +41,39 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
         onAuthSuccess();
       } else {
         if (!password.trim()) return;
-        const { error } = await supabase.auth.signUp({ email, password });
+        if (password !== confirmPassword) {
+          toast.error("As senhas não coincidem.");
+          setIsLoading(false);
+          return;
+        }
+        if (!fullName.trim()) {
+          toast.error("Preencha seu nome completo.");
+          setIsLoading(false);
+          return;
+        }
+
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              full_name: fullName.trim(),
+              university: university.trim(),
+              graduation_year: graduationYear.trim(),
+            },
+          },
+        });
         if (error) throw error;
+
+        // Update profile with extra fields
+        if (data.user) {
+          await supabase.from("profiles").update({
+            display_name: fullName.trim(),
+            university: university.trim() || null,
+            graduation_year: graduationYear.trim() || null,
+          }).eq("user_id", data.user.id);
+        }
+
         toast.success("Conta criada! Verifique seu e-mail para confirmar.");
         onAuthSuccess();
       }
@@ -51,7 +86,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-background">
-      <div className="w-full max-w-md bg-card rounded-2xl shadow-xl border border-border overflow-hidden">
+      <div className="w-full max-w-md bg-card rounded-2xl shadow-xl border border-border overflow-hidden max-h-[95vh] overflow-y-auto">
         {/* Header */}
         <div className="gradient-brand p-8 text-center relative overflow-hidden">
           <div className="relative z-10">
@@ -69,6 +104,24 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
           </h2>
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            {mode === "signup" && (
+              <div>
+                <Label className="text-xs font-bold text-muted-foreground uppercase">Nome Completo</Label>
+                <div className="relative mt-1">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    type="text"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    className="pl-10"
+                    placeholder="Seu nome completo"
+                    required
+                    maxLength={100}
+                  />
+                </div>
+              </div>
+            )}
+
             <div>
               <Label className="text-xs font-bold text-muted-foreground uppercase">Email</Label>
               <div className="relative mt-1">
@@ -83,6 +136,40 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
                 />
               </div>
             </div>
+
+            {mode === "signup" && (
+              <>
+                <div>
+                  <Label className="text-xs font-bold text-muted-foreground uppercase">Universidade / Instituição</Label>
+                  <div className="relative mt-1">
+                    <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      type="text"
+                      value={university}
+                      onChange={(e) => setUniversity(e.target.value)}
+                      className="pl-10"
+                      placeholder="Ex: USP, UNIFESP..."
+                      maxLength={100}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <Label className="text-xs font-bold text-muted-foreground uppercase">Ano de Formação / Período</Label>
+                  <div className="relative mt-1">
+                    <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      type="text"
+                      value={graduationYear}
+                      onChange={(e) => setGraduationYear(e.target.value)}
+                      className="pl-10"
+                      placeholder="Ex: 6º período, 2025..."
+                      maxLength={50}
+                    />
+                  </div>
+                </div>
+              </>
+            )}
 
             {mode !== "forgot" && (
               <div>
@@ -102,6 +189,24 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
               </div>
             )}
 
+            {mode === "signup" && (
+              <div>
+                <Label className="text-xs font-bold text-muted-foreground uppercase">Confirmar Senha</Label>
+                <div className="relative mt-1">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="pl-10"
+                    placeholder="••••••••"
+                    required
+                    minLength={6}
+                  />
+                </div>
+              </div>
+            )}
+
             {mode === "login" && (
               <div className="text-right">
                 <button
@@ -112,6 +217,20 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
                   Esqueci minha senha
                 </button>
               </div>
+            )}
+
+            {mode === "signup" && (
+              <p className="text-xs text-muted-foreground text-center leading-relaxed">
+                Ao criar sua conta, você concorda com os{" "}
+                <a href="/termos" target="_blank" className="text-primary hover:text-primary/80 underline underline-offset-2 font-medium">
+                  Termos de Uso
+                </a>{" "}
+                e a{" "}
+                <a href="/privacidade" target="_blank" className="text-primary hover:text-primary/80 underline underline-offset-2 font-medium">
+                  Política de Privacidade
+                </a>
+                .
+              </p>
             )}
 
             <Button type="submit" disabled={isLoading} className="w-full py-6 font-bold">
