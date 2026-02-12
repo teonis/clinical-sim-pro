@@ -5,6 +5,7 @@ import { startSimulation, resetConversation } from "@/services/simulationService
 import WelcomeScreen from "@/components/WelcomeScreen";
 import AuthScreen from "@/components/AuthScreen";
 import ResetPasswordScreen from "@/components/ResetPasswordScreen";
+import OnboardingTutorial from "@/components/OnboardingTutorial";
 import Dashboard from "@/components/Dashboard";
 import GameDashboard from "@/components/GameDashboard";
 import { Toaster } from "@/components/ui/sonner";
@@ -18,6 +19,7 @@ const App: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<string | null>(null);
   const [isAuthChecking, setIsAuthChecking] = useState(true);
   const [isResettingPassword, setIsResettingPassword] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const [showWelcome, setShowWelcome] = useState(() => {
     return !localStorage.getItem("rma_welcome_seen");
   });
@@ -44,6 +46,9 @@ const App: React.FC = () => {
         setIsAuthChecking(false);
       } else if (event === "SIGNED_IN" && session?.user?.email) {
         setCurrentUser(session.user.email);
+        if (!localStorage.getItem("simulamed_onboarding_done")) {
+          setShowOnboarding(true);
+        }
         setIsAuthChecking(false);
       } else if (event === "SIGNED_OUT") {
         setCurrentUser(null);
@@ -148,6 +153,16 @@ const App: React.FC = () => {
     return (
       <>
         <AuthScreen onAuthSuccess={() => {}} />
+        <Toaster />
+      </>
+    );
+  }
+
+  // Onboarding
+  if (showOnboarding) {
+    return (
+      <>
+        <OnboardingTutorial onComplete={() => setShowOnboarding(false)} />
         <Toaster />
       </>
     );

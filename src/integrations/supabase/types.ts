@@ -130,8 +130,10 @@ export type Database = {
           avatar_url: string | null
           created_at: string
           display_name: string | null
+          graduation_year: string | null
           id: string
           is_public_profile: boolean
+          university: string | null
           updated_at: string
           user_id: string
           username: string
@@ -140,8 +142,10 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           display_name?: string | null
+          graduation_year?: string | null
           id?: string
           is_public_profile?: boolean
+          university?: string | null
           updated_at?: string
           user_id: string
           username: string
@@ -150,8 +154,10 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           display_name?: string | null
+          graduation_year?: string | null
           id?: string
           is_public_profile?: boolean
+          university?: string | null
           updated_at?: string
           user_id?: string
           username?: string
