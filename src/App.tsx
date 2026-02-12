@@ -4,6 +4,7 @@ import { SimulationState, StartParams } from "@/types/simulation";
 import { startSimulation, resetConversation } from "@/services/simulationService";
 import WelcomeScreen from "@/components/WelcomeScreen";
 import AuthScreen from "@/components/AuthScreen";
+import ResetPasswordScreen from "@/components/ResetPasswordScreen";
 import Dashboard from "@/components/Dashboard";
 import GameDashboard from "@/components/GameDashboard";
 import { Toaster } from "@/components/ui/sonner";
@@ -16,6 +17,7 @@ const App: React.FC = () => {
   const [lastParams, setLastParams] = useState<StartParams | null>(null);
   const [currentUser, setCurrentUser] = useState<string | null>(null);
   const [isAuthChecking, setIsAuthChecking] = useState(true);
+  const [isResettingPassword, setIsResettingPassword] = useState(false);
   const [showWelcome, setShowWelcome] = useState(() => {
     return !localStorage.getItem("rma_welcome_seen");
   });
@@ -37,7 +39,10 @@ const App: React.FC = () => {
     checkAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_IN" && session?.user?.email) {
+      if (event === "PASSWORD_RECOVERY") {
+        setIsResettingPassword(true);
+        setIsAuthChecking(false);
+      } else if (event === "SIGNED_IN" && session?.user?.email) {
         setCurrentUser(session.user.email);
         setIsAuthChecking(false);
       } else if (event === "SIGNED_OUT") {
@@ -123,6 +128,18 @@ const App: React.FC = () => {
           <p className="font-display font-bold text-sm gradient-brand-text tracking-widest uppercase">SIMULAMED</p>
         </div>
       </div>
+    );
+  }
+
+  // Reset password
+  if (isResettingPassword) {
+    return (
+      <>
+        <ResetPasswordScreen onComplete={() => {
+          setIsResettingPassword(false);
+        }} />
+        <Toaster />
+      </>
     );
   }
 

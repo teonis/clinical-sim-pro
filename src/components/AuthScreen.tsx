@@ -11,27 +11,37 @@ interface AuthScreenProps {
 }
 
 const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
-  const [isLogin, setIsLogin] = useState(true);
+  const [mode, setMode] = useState<"login" | "signup" | "forgot">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.trim() || !password.trim()) return;
+    if (!email.trim()) return;
     setIsLoading(true);
 
     try {
-      if (isLogin) {
+      if (mode === "forgot") {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: window.location.origin,
+        });
+        if (error) throw error;
+        toast.success("Link de redefinição enviado! Verifique seu e-mail.");
+        setMode("login");
+      } else if (mode === "login") {
+        if (!password.trim()) return;
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         toast.success("Bem-vindo de volta!");
+        onAuthSuccess();
       } else {
+        if (!password.trim()) return;
         const { error } = await supabase.auth.signUp({ email, password });
         if (error) throw error;
         toast.success("Conta criada! Verifique seu e-mail para confirmar.");
+        onAuthSuccess();
       }
-      onAuthSuccess();
     } catch (error: any) {
       toast.error(error.message || "Erro na autenticação");
     } finally {
@@ -55,7 +65,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
 
         <div className="p-8">
           <h2 className="text-xl font-bold text-foreground mb-6 text-center">
-            {isLogin ? "Acesse sua conta" : "Criar conta"}
+            {mode === "login" ? "Acesse sua conta" : mode === "signup" ? "Criar conta" : "Redefinir senha"}
           </h2>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -74,34 +84,65 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
               </div>
             </div>
 
-            <div>
-              <Label className="text-xs font-bold text-muted-foreground uppercase">Senha</Label>
-              <div className="relative mt-1">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10"
-                  placeholder="••••••••"
-                  required
-                  minLength={6}
-                />
+            {mode !== "forgot" && (
+              <div>
+                <Label className="text-xs font-bold text-muted-foreground uppercase">Senha</Label>
+                <div className="relative mt-1">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="pl-10"
+                    placeholder="••••••••"
+                    required
+                    minLength={6}
+                  />
+                </div>
               </div>
-            </div>
+            )}
+
+            {mode === "login" && (
+              <div className="text-right">
+                <button
+                  type="button"
+                  onClick={() => setMode("forgot")}
+                  className="text-xs text-primary hover:text-primary/80 font-medium transition-colors"
+                >
+                  Esqueci minha senha
+                </button>
+              </div>
+            )}
 
             <Button type="submit" disabled={isLoading} className="w-full py-6 font-bold">
-              {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : isLogin ? "Entrar" : "Criar Conta"}
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : mode === "login" ? (
+                "Entrar"
+              ) : mode === "signup" ? (
+                "Criar Conta"
+              ) : (
+                "Enviar link de redefinição"
+              )}
             </Button>
           </form>
 
-          <div className="mt-6 text-center">
-            <button
-              onClick={() => setIsLogin(!isLogin)}
-              className="text-sm text-primary hover:text-primary/80 font-medium transition-colors"
-            >
-              {isLogin ? "Não tem conta? Cadastre-se" : "Já tem conta? Faça login"}
-            </button>
+          <div className="mt-6 text-center space-y-2">
+            {mode === "forgot" ? (
+              <button
+                onClick={() => setMode("login")}
+                className="text-sm text-primary hover:text-primary/80 font-medium transition-colors"
+              >
+                Voltar ao login
+              </button>
+            ) : (
+              <button
+                onClick={() => setMode(mode === "login" ? "signup" : "login")}
+                className="text-sm text-primary hover:text-primary/80 font-medium transition-colors"
+              >
+                {mode === "login" ? "Não tem conta? Cadastre-se" : "Já tem conta? Faça login"}
+              </button>
+            )}
           </div>
         </div>
       </div>
