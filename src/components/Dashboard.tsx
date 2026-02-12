@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
 import StartGame from "@/components/StartGame";
 import SessionReview from "@/components/SessionReview";
+import ProfilePerformance from "@/components/ProfilePerformance";
 import { cn } from "@/lib/utils";
 import {
   Home, BarChart3, Clock, MessageSquare, LogOut, Stethoscope,
@@ -53,6 +54,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartGame, isLoading, userEmail
   const [feedbackSent, setFeedbackSent] = useState(false);
   const [displayName, setDisplayName] = useState("");
   const [isProfileLoading, setIsProfileLoading] = useState(false);
+  const [sidebarAvatar, setSidebarAvatar] = useState<string | null>(null);
 
   useEffect(() => {
     loadData();
@@ -78,11 +80,12 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartGame, isLoading, userEmail
     if (user) {
       const { data: profile } = await supabase
         .from("profiles")
-        .select("display_name")
+        .select("display_name, avatar_url")
         .eq("user_id", user.id)
         .single();
       if (profile?.display_name) setDisplayName(profile.display_name);
       else setDisplayName(userEmail.split("@")[0]);
+      if (profile?.avatar_url) setSidebarAvatar(profile.avatar_url);
     }
   };
 
@@ -162,8 +165,12 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartGame, isLoading, userEmail
 
         <div className="p-4 border-t border-border">
           <div className="flex items-center gap-3 mb-3 p-2">
-            <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-xs font-bold text-foreground border border-border">
-              {(displayName || userEmail).substring(0, 2).toUpperCase()}
+            <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-xs font-bold text-foreground border border-border overflow-hidden">
+              {sidebarAvatar ? (
+                <img src={sidebarAvatar} alt="" className="w-full h-full object-cover" />
+              ) : (
+                (displayName || userEmail).substring(0, 2).toUpperCase()
+              )}
             </div>
             <div className="hidden lg:block overflow-hidden flex-1">
               <p className="text-xs font-bold text-foreground truncate">{displayName || userEmail}</p>
@@ -230,118 +237,16 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartGame, isLoading, userEmail
           )}
 
           {activeTab === "performance" && userStats && (
-            <div className="space-y-6 animate-in fade-in">
-              <div>
-                <h1 className="text-3xl font-bold text-foreground">Meu Desempenho</h1>
-                <p className="text-muted-foreground mt-1">Análise detalhada da sua evolução médica.</p>
-              </div>
-
-              {/* Profile edit */}
-              <div className="bg-card rounded-xl border border-border p-6 shadow-sm">
-                <h3 className="font-bold text-foreground text-sm mb-4">Editar Perfil</h3>
-                <div className="flex gap-3 items-end">
-                  <div className="flex-1">
-                    <label className="block text-xs font-bold text-muted-foreground uppercase mb-1">Nome de Exibição</label>
-                    <Input value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="Dr(a). Exemplo" />
-                  </div>
-                  <Button onClick={handleSaveDisplayName} disabled={isProfileLoading}>
-                    {isProfileLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-                  </Button>
-                </div>
-              </div>
-
-              {userStats.totalGames === 0 ? (
-                <div className="bg-card rounded-2xl border border-dashed border-border p-12 text-center">
-                  <GraduationCap className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <h2 className="text-xl font-bold text-foreground mb-2">Comece sua Carreira!</h2>
-                  <p className="text-muted-foreground mb-6">Inicie seu primeiro plantão para ganhar XP.</p>
-                  <Button onClick={() => setActiveTab("home")}>Ir para o Plantão</Button>
-                </div>
-              ) : (
-                <>
-                  {/* Level Card */}
-                  <div className="bg-foreground rounded-2xl p-6 text-background shadow-lg relative overflow-hidden">
-                    <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-6">
-                      <div className="text-center md:text-left">
-                        <div className="text-xs font-bold text-primary uppercase tracking-widest mb-1">Nível Atual</div>
-                        <div className="text-3xl font-bold text-background mb-2">{userStats.currentLevel}</div>
-                      </div>
-                      <div className="w-full md:w-1/2">
-                        <div className="flex justify-between text-xs font-bold opacity-60 mb-2">
-                          <span>XP: {userStats.totalScore.toFixed(2)}</span>
-                          <span>Próximo: {userStats.nextLevelScore}</span>
-                        </div>
-                        <Progress value={Math.min(100, (userStats.totalScore / (userStats.nextLevelScore || 1)) * 100)} className="h-3" />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Stats */}
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="bg-card p-4 rounded-xl border border-border shadow-sm text-center">
-                      <div className="text-muted-foreground text-xs font-bold uppercase mb-1">Total de Casos</div>
-                      <div className="text-2xl font-bold text-foreground">{userStats.totalGames}</div>
-                    </div>
-                    <div className="bg-card p-4 rounded-xl border border-border shadow-sm text-center">
-                      <div className="text-muted-foreground text-xs font-bold uppercase mb-1">Média Score</div>
-                      <div className="text-2xl font-bold text-primary">{userStats.averageScore}</div>
-                    </div>
-                  </div>
-
-                  {/* Specialty performance */}
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div className="bg-card rounded-xl border border-border p-6 shadow-sm">
-                      <h3 className="font-bold text-foreground mb-4 flex items-center gap-2">
-                        <Medal className="h-4 w-4 text-primary" /> Pontos Fortes
-                      </h3>
-                      <div className="space-y-4">
-                        {userStats.specialtyPerformance.filter((s) => s.avgScore >= 7.0).length > 0 ? (
-                          userStats.specialtyPerformance.filter((s) => s.avgScore >= 7.0).map((spec, i) => (
-                            <div key={i}>
-                              <div className="flex justify-between items-center mb-1">
-                                <span className="text-sm font-medium text-foreground flex items-center gap-2">
-                                  {getSpecialtyIcon(spec.name)} {spec.name}
-                                </span>
-                                <span className="text-xs font-bold text-primary">{spec.avgScore} pts</span>
-                              </div>
-                              <Progress value={spec.avgScore * 10} className="h-2" />
-                            </div>
-                          ))
-                        ) : (
-                          <p className="text-sm text-muted-foreground italic">Jogue mais para identificar pontos fortes.</p>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="bg-card rounded-xl border border-border p-6 shadow-sm">
-                      <h3 className="font-bold text-foreground mb-4 flex items-center gap-2">
-                        <BookOpen className="h-4 w-4 text-warning" /> A Melhorar
-                      </h3>
-                      <div className="space-y-4">
-                        {userStats.specialtyPerformance.filter((s) => s.avgScore < 7.0 || s.deaths > 0).length > 0 ? (
-                          userStats.specialtyPerformance.filter((s) => s.avgScore < 7.0 || s.deaths > 0).map((spec, i) => (
-                            <div key={i}>
-                              <div className="flex justify-between items-center mb-1">
-                                <span className="text-sm font-medium text-foreground flex items-center gap-2">
-                                  {getSpecialtyIcon(spec.name)} {spec.name}
-                                </span>
-                                <span className="text-xs font-bold text-warning">{spec.avgScore} pts</span>
-                              </div>
-                              <Progress value={spec.avgScore * 10} className="h-2 [&>div]:bg-warning" />
-                              {spec.deaths > 0 && (
-                                <span className="text-[10px] text-destructive font-bold block mt-1">{spec.deaths} Óbito(s)</span>
-                              )}
-                            </div>
-                          ))
-                        ) : (
-                          <p className="text-sm text-muted-foreground italic">Nenhum ponto crítico identificado.</p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </>
-              )}
-            </div>
+            <ProfilePerformance
+              userStats={userStats}
+              userEmail={userEmail}
+              displayName={displayName}
+              onDisplayNameChange={setDisplayName}
+              onSaveDisplayName={handleSaveDisplayName}
+              isProfileLoading={isProfileLoading}
+              onGoToHome={() => setActiveTab("home")}
+              history={history}
+            />
           )}
 
           {activeTab === "history" && (
