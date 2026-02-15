@@ -211,15 +211,15 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg gradient-brand flex items-center justify-center">
-                <Stethoscope className="h-3.5 w-3.5 text-white" />
+              <div className="w-7 h-7 rounded-sm bg-primary/10 hud-border flex items-center justify-center">
+                <Stethoscope className="h-3.5 w-3.5 text-primary" />
               </div>
-              <span className="font-display font-bold text-sm hidden sm:inline gradient-brand-text">
-                SIMULAMED
+              <span className="font-display font-black text-sm hidden sm:inline text-primary lcd-glow tracking-tighter">
+                BOLUS
               </span>
             </div>
-            <div className={cn("px-3 py-1 rounded-full border text-xs font-bold uppercase tracking-wide flex items-center gap-2", getStatusColor(gameState.status_simulacao.estado_paciente))}>
-              <div className={cn("w-2 h-2 rounded-full", gameState.status_simulacao.estado_paciente === "CRITICO" ? "bg-destructive animate-ping" : "bg-current")} />
+            <div className={cn("px-3 py-1 rounded-sm border text-xs font-mono-vital font-bold uppercase tracking-wide flex items-center gap-2", getStatusColor(gameState.status_simulacao.estado_paciente))}>
+              <div className={cn("w-2 h-2 rounded-sm", gameState.status_simulacao.estado_paciente === "CRITICO" ? "bg-destructive animate-ping" : "bg-current")} />
               {gameState.status_simulacao.estado_paciente}
             </div>
           </div>
@@ -229,7 +229,7 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
               <span className="text-xs font-bold text-muted-foreground uppercase hidden sm:inline text-right leading-tight">
                 Nota<br />Atual
               </span>
-              <div className="relative bg-secondary rounded-lg px-4 py-1.5 min-w-[100px] text-center border border-border">
+              <div className="relative lcd-screen rounded-sm px-4 py-1.5 min-w-[100px] text-center hud-border">
                 <span className={cn("font-mono-vital text-xl font-bold", getScoreColor(gameState.status_simulacao.current_score))}>
                   {gameState.status_simulacao.current_score.toFixed(1)}
                 </span>

@@ -51,7 +51,7 @@ const StartGame: React.FC<StartGameProps> = ({ onStart, isLoading }) => {
         </div>
       </div>
 
-      <div className="bg-card rounded-2xl shadow-sm border border-border p-8">
+      <div className="bg-card rounded-sm shadow-sm border border-border p-8">
         <div className="grid md:grid-cols-2 gap-8">
           <div className="space-y-6">
             <div>
@@ -79,7 +79,7 @@ const StartGame: React.FC<StartGameProps> = ({ onStart, isLoading }) => {
                   <button
                     key={d}
                     onClick={() => setDifficulty(d)}
-                    className={`h-16 rounded-xl border transition-all flex flex-col items-center justify-center ${
+                    className={`h-16 rounded-sm border transition-all flex flex-col items-center justify-center ${
                       difficulty === d
                         ? d === "ESPECIALISTA"
                           ? "bg-destructive/10 text-destructive border-destructive/20 shadow-sm"

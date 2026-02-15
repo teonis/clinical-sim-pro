@@ -68,11 +68,11 @@ const OnboardingTutorial: React.FC<OnboardingTutorialProps> = ({ onComplete }) =
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
-            className="bg-card rounded-2xl shadow-xl border border-border overflow-hidden"
+            className="bg-card rounded-sm shadow-xl border border-border overflow-hidden"
           >
-            <div className={`bg-gradient-to-br ${step.color} p-12 flex items-center justify-center`}>
-              <div className="w-20 h-20 rounded-2xl bg-white/15 backdrop-blur-md flex items-center justify-center shadow-lg">
-                <Icon className="h-10 w-10 text-white" />
+            <div className="lcd-screen p-12 flex items-center justify-center border-b border-primary/20">
+              <div className="w-20 h-20 rounded-sm bg-primary/10 hud-border flex items-center justify-center">
+                <Icon className="h-10 w-10 text-primary lcd-glow" />
               </div>
             </div>
 

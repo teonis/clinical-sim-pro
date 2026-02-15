@@ -86,15 +86,15 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-background">
-      <div className="w-full max-w-md bg-card rounded-2xl shadow-xl border border-border overflow-hidden max-h-[95vh] overflow-y-auto">
+      <div className="w-full max-w-md bg-card rounded-sm shadow-xl border border-border overflow-hidden max-h-[95vh] overflow-y-auto">
         {/* Header */}
-        <div className="gradient-brand p-8 text-center relative overflow-hidden">
+        <div className="lcd-screen p-8 text-center relative overflow-hidden border-b border-primary/20">
           <div className="relative z-10">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-white/15 backdrop-blur-md mb-4 shadow-lg">
-              <Activity className="h-8 w-8 text-white" />
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-sm bg-primary/10 hud-border mb-4">
+              <Activity className="h-8 w-8 text-primary lcd-glow" />
             </div>
-            <h1 className="text-2xl font-display font-bold text-white tracking-tight">SIMULAMED</h1>
-            <p className="text-white/70 text-xs font-medium tracking-widest uppercase mt-1">By Time Rocha</p>
+            <h1 className="text-2xl font-display font-black text-primary lcd-glow tracking-tighter">BOLUS</h1>
+            <p className="text-muted-foreground text-xs font-mono-vital tracking-widest uppercase mt-1">NIGHT PROTOCOL</p>
           </div>
         </div>
 
