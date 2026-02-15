@@ -138,12 +138,12 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartGame, isLoading, userEmail
       {/* Sidebar */}
       <aside className="w-16 lg:w-64 bg-card border-r border-border flex flex-col shrink-0 z-20">
         <div className="p-4 flex items-center justify-center lg:justify-start gap-3 border-b border-border h-16">
-          <div className="w-8 h-8 rounded-lg gradient-brand flex items-center justify-center shadow-sm">
-            <Stethoscope className="h-4 w-4 text-white" />
+          <div className="w-8 h-8 rounded-sm bg-primary/10 hud-border flex items-center justify-center">
+            <Stethoscope className="h-4 w-4 text-primary" />
           </div>
           <div className="hidden lg:block">
-            <span className="font-display font-bold text-sm gradient-brand-text block leading-tight">SIMULAMED</span>
-            <span className="text-[9px] text-muted-foreground tracking-widest uppercase">By Time Rocha</span>
+            <span className="font-display font-black text-sm text-primary lcd-glow block leading-tight tracking-tighter">BOLUS</span>
+            <span className="text-[9px] font-mono-vital text-muted-foreground tracking-widest uppercase">NIGHT PROTOCOL</span>
           </div>
         </div>
 
@@ -153,7 +153,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartGame, isLoading, userEmail
               key={id}
               onClick={() => setActiveTab(id)}
               className={cn(
-                "w-full flex items-center gap-3 p-3 rounded-xl text-sm font-medium transition-colors",
+                "w-full flex items-center gap-3 p-3 rounded-sm text-sm font-medium transition-colors",
                 activeTab === id ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-secondary"
               )}
             >
@@ -165,7 +165,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartGame, isLoading, userEmail
 
         <div className="p-4 border-t border-border">
           <div className="flex items-center gap-3 mb-3 p-2">
-            <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-xs font-bold text-foreground border border-border overflow-hidden">
+            <div className="w-8 h-8 rounded-sm bg-secondary flex items-center justify-center text-xs font-bold text-foreground border border-border overflow-hidden">
               {sidebarAvatar ? (
                 <img src={sidebarAvatar} alt="" className="w-full h-full object-cover" />
               ) : (
@@ -207,11 +207,11 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartGame, isLoading, userEmail
                     </div>
                   ) : leaderboard.length > 0 ? (
                     leaderboard.map((entry, idx) => (
-                      <div key={idx} className="bg-card p-4 rounded-xl border border-border shadow-sm flex items-center gap-3">
-                        <div className={cn("w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shrink-0",
-                          idx === 0 ? "bg-yellow-100 text-yellow-700" :
+                      <div key={idx} className="bg-card p-4 rounded-sm border border-border shadow-sm flex items-center gap-3">
+                        <div className={cn("w-8 h-8 rounded-sm flex items-center justify-center font-mono-vital font-bold text-sm shrink-0",
+                          idx === 0 ? "bg-primary/10 text-primary hud-border" :
                           idx === 1 ? "bg-secondary text-foreground" :
-                          idx === 2 ? "bg-orange-100 text-orange-700" : "bg-muted text-muted-foreground"
+                          idx === 2 ? "bg-warning/10 text-warning" : "bg-muted text-muted-foreground"
                         )}>
                           {idx + 1}
                         </div>
