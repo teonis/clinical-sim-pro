@@ -2,10 +2,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { SimulationState, StartParams, ChatMessageAI } from "@/types/simulation";
 import { getEngine, resetEngine, EngineVitals } from "./physiologyEngine";
 import { detectProtocol, evaluateProtocol, evaluationToPromptBlock, ProtocolEvaluation } from "./protocolChecklists";
+import { generateCase, GeneratedCase } from "./caseGenerator";
 
 let lastProtocolEvaluation: ProtocolEvaluation | null = null;
+let lastGeneratedCase: GeneratedCase | null = null;
 
 export const getLastProtocolEvaluation = (): ProtocolEvaluation | null => lastProtocolEvaluation;
+export const getLastGeneratedCase = (): GeneratedCase | null => lastGeneratedCase;
 
 // Conversation history for multi-turn simulation
 let conversationHistory: ChatMessageAI[] = [];
@@ -31,9 +34,27 @@ function parseVitalsFromResponse(state: SimulationState): Partial<EngineVitals> 
 
 export const startSimulation = async (params: StartParams): Promise<SimulationState> => {
   conversationHistory = [];
-  resetEngine(); // fresh engine
+  lastProtocolEvaluation = null;
 
-  const startCommand = `START_GAME { "especialidade": "${params.especialidade}", "dificuldade": "${params.dificuldade}", "caso_especifico": "${params.caso_especifico || ""}" }`;
+  // Try to generate a dynamic case if no custom case was provided
+  let generatedScenario = params.caso_especifico || "";
+  let engineSeedVitals: Partial<EngineVitals> | undefined;
+
+  if (!params.caso_especifico) {
+    const generated = generateCase(params.especialidade);
+    if (generated) {
+      lastGeneratedCase = generated;
+      generatedScenario = generated.scenarioPrompt;
+      engineSeedVitals = generated.initialVitals;
+    }
+  } else {
+    lastGeneratedCase = null;
+  }
+
+  // Seed engine with generated vitals (will be overwritten by LLM response if available)
+  resetEngine(engineSeedVitals);
+
+  const startCommand = `START_GAME { "especialidade": "${params.especialidade}", "dificuldade": "${params.dificuldade}", "caso_especifico": "${generatedScenario}" }`;
 
   conversationHistory.push({ role: "user", content: startCommand });
 
@@ -44,9 +65,12 @@ export const startSimulation = async (params: StartParams): Promise<SimulationSt
   if (error) throw new Error(error.message || "Falha ao iniciar simulação");
   if (data?.error) throw new Error(data.error);
 
-  // Seed engine with the initial vitals the LLM described
-  const initialVitals = parseVitalsFromResponse(data as SimulationState);
-  const engine = resetEngine(initialVitals);
+  // Merge LLM-described vitals with engine-seeded vitals (engine takes priority if seeded)
+  const llmVitals = parseVitalsFromResponse(data as SimulationState);
+  const finalVitals = engineSeedVitals
+    ? { ...llmVitals, ...engineSeedVitals } // generated vitals override LLM
+    : llmVitals;
+  const engine = resetEngine(finalVitals);
 
   // Detect conditions from initial narrative
   const state = data as SimulationState;
@@ -133,5 +157,6 @@ export const sendAction = async (
 export const resetConversation = () => {
   conversationHistory = [];
   lastProtocolEvaluation = null;
+  lastGeneratedCase = null;
   resetEngine();
 };
