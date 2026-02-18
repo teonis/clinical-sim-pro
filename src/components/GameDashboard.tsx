@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { SimulationState, ActionType, StartParams } from "@/types/simulation";
-import { sendAction, getConversationHistory, getLastProtocolEvaluation } from "@/services/simulationService";
+import { sendAction, getConversationHistory, getLastProtocolEvaluation, getLastGeneratedCase } from "@/services/simulationService";
 import { saveGameResult } from "@/services/gameService";
 import { createGameSession, updateGameSession } from "@/services/sessionService";
 import { getEngine } from "@/services/physiologyEngine";
 import type { ProtocolEvaluation } from "@/services/protocolChecklists";
+import type { GeneratedCase } from "@/services/caseGenerator";
 import { renderWithTooltips } from "@/components/MedicalTooltip";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -194,6 +195,8 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
   const debriefing = isGameOver ? parseDebriefing(gameState.interface_usuario.feedback_mentor) : null;
   const protocolEval = isGameOver ? getLastProtocolEvaluation() : null;
 
+  const generatedCase = getLastGeneratedCase();
+
   return (
     <div className="flex flex-col h-[100dvh] bg-background overflow-hidden relative">
       {/* Critical Timer */}
@@ -225,6 +228,13 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
               <div className={cn("w-2 h-2 rounded-sm", gameState.status_simulacao.estado_paciente === "CRITICO" ? "bg-destructive animate-ping" : "bg-current")} />
               {gameState.status_simulacao.estado_paciente}
             </div>
+            {generatedCase && (
+              <div className="hidden lg:flex items-center gap-2 text-[10px] text-muted-foreground font-mono-vital">
+                <span>{generatedCase.patient.sex === "M" ? "♂" : "♀"} {generatedCase.patient.age}a</span>
+                <span className="text-border">|</span>
+                <span>{generatedCase.patient.comorbidities.join(", ")}</span>
+              </div>
+            )}
           </div>
 
           <div className="flex items-center gap-6">
