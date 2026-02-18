@@ -24,13 +24,6 @@ function parseVitalsFromResponse(state: SimulationState): Partial<EngineVitals> 
   };
 }
 
-/** How many game-minutes each action type advances. */
-function tickMinutesForAction(actionId: string): number {
-  if (actionId === "SYSTEM_TIMEOUT") return 3;
-  if (actionId === "LIVRE") return 5;
-  return 5; // default per action
-}
-
 export const startSimulation = async (params: StartParams): Promise<SimulationState> => {
   conversationHistory = [];
   resetEngine(); // fresh engine
@@ -48,10 +41,15 @@ export const startSimulation = async (params: StartParams): Promise<SimulationSt
 
   // Seed engine with the initial vitals the LLM described
   const initialVitals = parseVitalsFromResponse(data as SimulationState);
-  resetEngine(initialVitals);
+  const engine = resetEngine(initialVitals);
+
+  // Detect conditions from initial narrative
+  const state = data as SimulationState;
+  const narrative = `${state.interface_usuario.manchete} ${state.interface_usuario.narrativa_principal}`;
+  engine.setConditionsFromNarrative(narrative);
 
   conversationHistory.push({ role: "assistant", content: JSON.stringify(data) });
-  return data as SimulationState;
+  return state;
 };
 
 export const sendAction = async (
@@ -73,20 +71,30 @@ export const sendAction = async (
   const actionText = customText || actionId;
   engine.applyIntervention(actionText);
 
-  // 2. Tick game time forward → degrade vitals based on last known patient state
+  // 2. Calculate time cost for this action
+  const timeCost = actionId === "SYSTEM_TIMEOUT" ? 3 : engine.getTimeCostForAction(actionText);
+
+  // 3. Tick game time forward → degrade vitals based on last known patient state
   const lastAssistant = [...conversationHistory].reverse().find(m => m.role === "assistant");
   let currentPatientState = "ESTAVEL";
   if (lastAssistant) {
     try {
       const parsed = JSON.parse(lastAssistant.content);
       currentPatientState = parsed.status_simulacao?.estado_paciente ?? "ESTAVEL";
+
+      // Update conditions from latest narrative
+      const narr = `${parsed.interface_usuario?.manchete ?? ""} ${parsed.interface_usuario?.narrativa_principal ?? ""}`;
+      engine.setConditionsFromNarrative(narr);
     } catch { /* keep default */ }
   }
-  engine.tick(tickMinutesForAction(actionId), currentPatientState);
+  engine.tick(timeCost, currentPatientState);
 
-  // 3. Inject calculated vitals into the user message so LLM uses real numbers
+  // 4. Log action to timeline
+  engine.logAction(actionText);
+
+  // 5. Inject calculated vitals + time into the user message
   const vitalsBlock = engine.toPromptBlock();
-  const enrichedMessage = `${message}\n\n${vitalsBlock}`;
+  const enrichedMessage = `${message}\n\n${vitalsBlock}\n\nTempo gasto nesta ação: ${timeCost} min`;
 
   conversationHistory.push({ role: "user", content: enrichedMessage });
 
