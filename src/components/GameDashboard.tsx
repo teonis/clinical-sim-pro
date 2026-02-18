@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import { SimulationState, ActionType, StartParams } from "@/types/simulation";
-import { sendAction, getConversationHistory } from "@/services/simulationService";
+import { sendAction, getConversationHistory, getLastProtocolEvaluation } from "@/services/simulationService";
 import { saveGameResult } from "@/services/gameService";
 import { createGameSession, updateGameSession } from "@/services/sessionService";
 import { getEngine } from "@/services/physiologyEngine";
+import type { ProtocolEvaluation } from "@/services/protocolChecklists";
 import { renderWithTooltips } from "@/components/MedicalTooltip";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -191,6 +192,7 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
     gameState.status_simulacao.estado_paciente === "OBITO" ||
     gameState.status_simulacao.estado_paciente === "CURADO";
   const debriefing = isGameOver ? parseDebriefing(gameState.interface_usuario.feedback_mentor) : null;
+  const protocolEval = isGameOver ? getLastProtocolEvaluation() : null;
 
   return (
     <div className="flex flex-col h-[100dvh] bg-background overflow-hidden relative">
@@ -398,6 +400,65 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
                           </div>
                         );
                       })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Protocol Checklist */}
+                {protocolEval && (
+                  <div className="bg-card p-4 rounded-xl border border-border mb-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="text-xs font-bold text-muted-foreground uppercase flex items-center gap-2">
+                        <ClipboardList className="h-3 w-3 text-primary" /> Protocolo: {protocolEval.protocolName}
+                      </h4>
+                      <div className={cn(
+                        "text-xs font-mono-vital font-bold px-2 py-0.5 rounded-sm",
+                        protocolEval.adherenceScore >= 8 ? "bg-primary/10 text-primary" :
+                        protocolEval.adherenceScore >= 5 ? "bg-warning/10 text-warning" :
+                        "bg-destructive/10 text-destructive"
+                      )}>
+                        {protocolEval.adherenceScore.toFixed(1)}/10
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      {protocolEval.results.map((r) => (
+                        <div key={r.itemId} className="text-xs">
+                          <div className="flex items-start gap-2">
+                            <span className="shrink-0 mt-0.5">
+                              {r.status === "done" ? "✅" : r.status === "late" ? "⏱️" : "❌"}
+                            </span>
+                            <div className="flex-1 min-w-0">
+                              <span className={cn(
+                                "font-semibold",
+                                r.status === "done" ? "text-primary" :
+                                r.status === "late" ? "text-warning" :
+                                "text-destructive"
+                              )}>
+                                {r.label}
+                              </span>
+                              {r.performedAt !== null && (
+                                <span className="text-muted-foreground ml-1">
+                                  — {r.performedAt}min
+                                  {r.targetMinutes !== null && (
+                                    <span className={r.performedAt > r.targetMinutes ? "text-destructive" : "text-primary"}>
+                                      {" "}(meta: &lt;{r.targetMinutes}min)
+                                    </span>
+                                  )}
+                                </span>
+                              )}
+                              {r.status === "missed" && r.targetMinutes !== null && (
+                                <span className="text-destructive ml-1">— meta: &lt;{r.targetMinutes}min</span>
+                              )}
+                            </div>
+                          </div>
+                          {r.status !== "done" && (
+                            <div className="ml-6 mt-0.5 text-muted-foreground italic flex items-start gap-1">
+                              <BookOpen className="h-3 w-3 shrink-0 mt-0.5" />
+                              <span>{r.reference}</span>
+                            </div>
+                          )}
+                        </div>
+                      ))}
                     </div>
                   </div>
                 )}
