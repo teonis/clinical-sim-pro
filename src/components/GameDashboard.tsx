@@ -3,6 +3,7 @@ import { SimulationState, ActionType, StartParams } from "@/types/simulation";
 import { sendAction, getConversationHistory } from "@/services/simulationService";
 import { saveGameResult } from "@/services/gameService";
 import { createGameSession, updateGameSession } from "@/services/sessionService";
+import { getEngine } from "@/services/physiologyEngine";
 import { renderWithTooltips } from "@/components/MedicalTooltip";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -225,6 +226,13 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
           </div>
 
           <div className="flex items-center gap-6">
+            {/* Game Time Display */}
+            <div className="flex items-center gap-2 lcd-screen rounded-sm px-3 py-1.5 hud-border">
+              <Clock className="h-3.5 w-3.5 text-primary" />
+              <span className="font-mono-vital text-sm font-bold text-primary lcd-glow">
+                {getEngine().getFormattedTime()}
+              </span>
+            </div>
             <div className="flex items-center gap-3">
               <span className="text-xs font-bold text-muted-foreground uppercase hidden sm:inline text-right leading-tight">
                 Nota<br />Atual
@@ -359,11 +367,41 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
                   <h2 className="text-xl font-bold text-foreground mb-1">
                     {gameState.status_simulacao.estado_paciente === "CURADO" ? "Alta Médica" : "Óbito Confirmado"}
                   </h2>
+                  <p className="text-xs text-muted-foreground font-mono-vital mt-1">
+                    Tempo total: {getEngine().getFormattedTime()} ({getEngine().getGameTimeMinutes()} min)
+                  </p>
                   <div className="inline-flex items-center gap-3 px-6 py-2 bg-foreground text-background rounded-full mt-2 shadow-lg">
                     <span className="text-xs font-bold uppercase tracking-wider opacity-70">Nota Final</span>
                     <span className="font-mono-vital text-2xl font-bold text-primary">{gameState.status_simulacao.current_score.toFixed(1)}</span>
                   </div>
                 </div>
+
+                {/* Action Timeline */}
+                {getEngine().getActionTimeline().length > 0 && (
+                  <div className="bg-secondary p-4 rounded-xl border border-border mb-4">
+                    <h4 className="text-xs font-bold text-muted-foreground uppercase mb-3 flex items-center gap-2">
+                      <Clock className="h-3 w-3" /> Timeline de Ações
+                    </h4>
+                    <div className="space-y-1.5 max-h-40 overflow-y-auto">
+                      {getEngine().getActionTimeline().map((entry, i) => {
+                        const h = Math.floor(entry.gameTimeMinutes / 60);
+                        const m = entry.gameTimeMinutes % 60;
+                        const ts = `${String(h).padStart(2, "0")}:${String(Math.round(m)).padStart(2, "0")}`;
+                        return (
+                          <div key={i} className={cn(
+                            "flex items-center gap-2 text-xs font-mono-vital",
+                            entry.isCritical ? "text-destructive" : "text-muted-foreground"
+                          )}>
+                            <span className={cn("w-2 h-2 rounded-full shrink-0", entry.isCritical ? "bg-destructive" : "bg-muted-foreground/40")} />
+                            <span className="font-bold w-12 shrink-0">{ts}</span>
+                            <span className="truncate">{entry.actionText}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
                 {debriefing && (
                   <div className="space-y-4 mb-8">
                     <div className="bg-secondary p-4 rounded-xl border border-border">

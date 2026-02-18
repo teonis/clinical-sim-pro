@@ -42,6 +42,9 @@ Quando \`estado_paciente\` mudar para "CURADO" ou "OBITO" (Game Over), o campo \
 ### REGRA DOS SINAIS VITAIS (OBRIGATÓRIO):
 - Se a mensagem do usuário contiver um bloco "[VITAIS CALCULADOS PELO MOTOR FISIOLÓGICO]", você DEVE usar EXATAMENTE os números fornecidos no campo "sinais_vitais" da sua resposta. NÃO invente valores diferentes. Os números são calculados por um motor determinístico e são a fonte da verdade.
 - Você pode descrever narrativamente os sintomas correspondentes a esses valores, mas os números em si NÃO podem ser alterados.
+- O campo "tempo_de_jogo" na sua resposta DEVE refletir o tempo informado pelo motor fisiológico. Use o valor exato fornecido.
+- Ao gerar o DEBRIEFING final, inclua uma seção [TIMELINE] mencionando o tempo até as ações críticas e se ficaram dentro da meta clínica.
+  Exemplos de metas: Antibiótico na sepse <60 min, Reperfusão no IAM <90 min, Intubação na IRpA <10 min.
 
 ### FORMATO DE SAÍDA:
 Responda APENAS um objeto JSON válido com esta estrutura exata:
