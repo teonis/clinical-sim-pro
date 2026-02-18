@@ -1,6 +1,11 @@
 import { supabase } from "@/integrations/supabase/client";
 import { SimulationState, StartParams, ChatMessageAI } from "@/types/simulation";
 import { getEngine, resetEngine, EngineVitals } from "./physiologyEngine";
+import { detectProtocol, evaluateProtocol, evaluationToPromptBlock, ProtocolEvaluation } from "./protocolChecklists";
+
+let lastProtocolEvaluation: ProtocolEvaluation | null = null;
+
+export const getLastProtocolEvaluation = (): ProtocolEvaluation | null => lastProtocolEvaluation;
 
 // Conversation history for multi-turn simulation
 let conversationHistory: ChatMessageAI[] = [];
@@ -94,7 +99,23 @@ export const sendAction = async (
 
   // 5. Inject calculated vitals + time into the user message
   const vitalsBlock = engine.toPromptBlock();
-  const enrichedMessage = `${message}\n\n${vitalsBlock}\n\nTempo gasto nesta ação: ${timeCost} min`;
+
+  // 6. If game is ending, evaluate protocol checklist and inject into prompt
+  let checklistBlock = "";
+  const fullNarrative = conversationHistory
+    .filter(m => m.role === "assistant")
+    .map(m => {
+      try { const p = JSON.parse(m.content); return `${p.interface_usuario?.manchete ?? ""} ${p.interface_usuario?.narrativa_principal ?? ""}`; }
+      catch { return ""; }
+    }).join(" ");
+  const protocol = detectProtocol(fullNarrative);
+  if (protocol) {
+    const evaluation = evaluateProtocol(protocol, engine.getActionTimeline(), engine.getAppliedInterventions());
+    lastProtocolEvaluation = evaluation;
+    checklistBlock = `\n\n${evaluationToPromptBlock(evaluation)}`;
+  }
+
+  const enrichedMessage = `${message}\n\n${vitalsBlock}\n\nTempo gasto nesta ação: ${timeCost} min${checklistBlock}`;
 
   conversationHistory.push({ role: "user", content: enrichedMessage });
 
@@ -111,5 +132,6 @@ export const sendAction = async (
 
 export const resetConversation = () => {
   conversationHistory = [];
+  lastProtocolEvaluation = null;
   resetEngine();
 };
