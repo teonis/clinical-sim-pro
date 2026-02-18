@@ -129,7 +129,14 @@ const SimulationScreen = () => {
             </button>
           )}
         </div>
-        <VitalMonitor vitals={simulation.vitalSigns} status={simulation.patientStatus} />
+        <VitalMonitor
+          fc={simulation.vitalSigns.fc}
+          pas={simulation.vitalSigns.pas}
+          pad={simulation.vitalSigns.pad}
+          satO2={simulation.vitalSigns.satO2}
+          fr={simulation.vitalSigns.fr}
+          status={simulation.patientStatus}
+        />
       </header>
 
       {/* Chat Messages */}

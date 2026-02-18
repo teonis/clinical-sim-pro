@@ -1,9 +1,14 @@
-import { VitalSigns, PatientStatus } from '@/types/medical';
 import { Heart, Activity, Wind, Thermometer } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+type PatientStatus = 'stable' | 'warning' | 'critical';
+
 interface VitalMonitorProps {
-  vitals: VitalSigns;
+  fc: number;
+  pas: number;
+  pad: number;
+  satO2: number;
+  fr: number;
   status: PatientStatus;
 }
 
@@ -19,13 +24,25 @@ const statusDot: Record<PatientStatus, string> = {
   critical: 'bg-critical animate-pulse-vital',
 };
 
-const VitalMonitor = ({ vitals, status }: VitalMonitorProps) => {
+const statusLabel: Record<PatientStatus, string> = {
+  stable: 'ESTÁVEL',
+  warning: 'ATENÇÃO',
+  critical: 'CRÍTICO',
+};
+
+const statusBadge: Record<PatientStatus, string> = {
+  stable: 'bg-primary/10 text-primary',
+  warning: 'bg-warning/10 text-warning',
+  critical: 'bg-critical/10 text-critical',
+};
+
+const VitalMonitor = ({ fc, pas, pad, satO2, fr, status }: VitalMonitorProps) => {
   const getVitalColor = (type: string) => {
     switch (type) {
-      case 'fc': return vitals.fc > 100 || vitals.fc < 60 ? 'text-critical' : 'text-primary';
-      case 'pa': return vitals.pas > 140 || vitals.pad > 90 || vitals.pas < 90 ? 'text-critical' : 'text-primary';
-      case 'satO2': return vitals.satO2 < 92 ? 'text-critical' : vitals.satO2 < 95 ? 'text-warning' : 'text-primary';
-      case 'fr': return vitals.fr > 20 || vitals.fr < 12 ? 'text-warning' : 'text-primary';
+      case 'fc': return fc > 100 || fc < 60 ? 'text-critical' : 'text-primary';
+      case 'pa': return pas > 140 || pad > 90 || pas < 90 ? 'text-critical' : 'text-primary';
+      case 'satO2': return satO2 < 92 ? 'text-critical' : satO2 < 95 ? 'text-warning' : 'text-primary';
+      case 'fr': return fr > 20 || fr < 12 ? 'text-warning' : 'text-primary';
       default: return 'text-primary';
     }
   };
@@ -41,11 +58,9 @@ const VitalMonitor = ({ vitals, status }: VitalMonitorProps) => {
         </div>
         <span className={cn(
           'text-[10px] font-mono-vital font-bold uppercase px-2 py-0.5 rounded-sm',
-          status === 'stable' && 'bg-primary/10 text-primary',
-          status === 'warning' && 'bg-warning/10 text-warning',
-          status === 'critical' && 'bg-critical/10 text-critical',
+          statusBadge[status],
         )}>
-          {status === 'stable' ? 'ESTÁVEL' : status === 'warning' ? 'ATENÇÃO' : 'CRÍTICO'}
+          {statusLabel[status]}
         </span>
       </div>
       
@@ -53,28 +68,28 @@ const VitalMonitor = ({ vitals, status }: VitalMonitorProps) => {
         <VitalItem
           icon={<Heart className="h-3.5 w-3.5" />}
           label="FC"
-          value={`${vitals.fc}`}
+          value={`${fc}`}
           unit="bpm"
           color={getVitalColor('fc')}
         />
         <VitalItem
           icon={<Activity className="h-3.5 w-3.5" />}
           label="PA"
-          value={`${vitals.pas}/${vitals.pad}`}
+          value={`${pas}/${pad}`}
           unit="mmHg"
           color={getVitalColor('pa')}
         />
         <VitalItem
           icon={<Wind className="h-3.5 w-3.5" />}
           label="SpO₂"
-          value={`${vitals.satO2}`}
+          value={`${satO2}`}
           unit="%"
           color={getVitalColor('satO2')}
         />
         <VitalItem
           icon={<Thermometer className="h-3.5 w-3.5" />}
           label="FR"
-          value={`${vitals.fr}`}
+          value={`${fr}`}
           unit="irpm"
           color={getVitalColor('fr')}
         />
