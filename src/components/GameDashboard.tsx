@@ -5,14 +5,14 @@ import { saveGameResult } from "@/services/gameService";
 import { createGameSession, updateGameSession } from "@/services/sessionService";
 import { getEngine } from "@/services/physiologyEngine";
 import type { ProtocolEvaluation } from "@/services/protocolChecklists";
-import type { GeneratedCase } from "@/services/caseGenerator";
 import { renderWithTooltips } from "@/components/MedicalTooltip";
+import VitalMonitor from "@/components/VitalMonitor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import {
-  ArrowLeft,
   Send,
   RotateCcw,
   LogOut,
@@ -20,7 +20,6 @@ import {
   Microscope,
   Pill,
   Syringe,
-  FileText,
   Stethoscope,
   GraduationCap,
   ThumbsUp,
@@ -29,7 +28,13 @@ import {
   ClipboardList,
   Skull,
   CheckCircle,
+  Pause,
+  User,
+  MessageSquare,
+  ChevronRight,
 } from "lucide-react";
+
+// ── Types ────────────────────────────────────────────────────────────────
 
 interface GameDashboardProps {
   initialState: SimulationState;
@@ -37,6 +42,16 @@ interface GameDashboardProps {
   onExit: () => void;
   gameParams: StartParams;
 }
+
+interface EventLogEntry {
+  id: number;
+  type: "narrative" | "action" | "system" | "mentor";
+  text: string;
+  timestamp: string;
+  gameMinutes: number;
+}
+
+// ── Component ────────────────────────────────────────────────────────────
 
 const GameDashboard: React.FC<GameDashboardProps> = ({
   initialState,
@@ -47,17 +62,18 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
   const [gameState, setGameState] = useState<SimulationState>(initialState);
   const [isLoading, setIsLoading] = useState(false);
   const [customActionText, setCustomActionText] = useState("");
-  const [activeTab, setActiveTab] = useState<"prontuario" | "conduta">("prontuario");
-  const [showMentor, setShowMentor] = useState(false);
-  const narrativeEndRef = useRef<HTMLDivElement>(null);
+  const [showActions, setShowActions] = useState(false);
   const [hasSaved, setHasSaved] = useState(false);
   const [prevScore, setPrevScore] = useState(10.0);
   const [scoreDiff, setScoreDiff] = useState<number | null>(null);
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [maxTime, setMaxTime] = useState<number | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
+  const [eventLog, setEventLog] = useState<EventLogEntry[]>([]);
+  const eventLogEndRef = useRef<HTMLDivElement>(null);
+  const eventIdRef = useRef(0);
 
-  // Create session on mount
+  // ── Session init ───────────────────────────────────────────────────────
   useEffect(() => {
     const initSession = async () => {
       const caseTitle = initialState.interface_usuario.manchete || `Caso de ${gameParams.especialidade}`;
@@ -71,39 +87,30 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
       if (id) setSessionId(id);
     };
     initSession();
+    // Seed initial event
+    pushEvent("narrative", initialState.interface_usuario.narrativa_principal);
   }, []);
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "ESTAVEL": return "bg-primary/10 text-primary border-primary/20";
-      case "INSTAVEL": return "bg-warning/10 text-warning border-warning/20";
-      case "CRITICO": return "bg-destructive/10 text-destructive border-destructive/20 animate-pulse";
-      case "OBITO": return "bg-muted text-muted-foreground border-border";
-      case "CURADO": return "bg-primary/10 text-primary border-primary/20";
-      default: return "bg-muted text-muted-foreground";
-    }
+  // ── Event log helpers ──────────────────────────────────────────────────
+  const pushEvent = (type: EventLogEntry["type"], text: string) => {
+    const engine = getEngine();
+    const entry: EventLogEntry = {
+      id: ++eventIdRef.current,
+      type,
+      text,
+      timestamp: engine.getFormattedTime(),
+      gameMinutes: engine.getGameTimeMinutes(),
+    };
+    setEventLog((prev) => [...prev, entry]);
   };
 
-  const getScoreColor = (score: number) => {
-    if (score >= 9.0) return "text-primary";
-    if (score >= 7.0) return "text-blue-600";
-    if (score >= 5.0) return "text-warning";
-    return "text-destructive";
-  };
-
-  const getActionIcon = (tipo: string) => {
-    switch (tipo) {
-      case "EXAME": return <Microscope className="h-4 w-4" />;
-      case "MEDICAMENTO": return <Pill className="h-4 w-4" />;
-      default: return <Syringe className="h-4 w-4" />;
-    }
-  };
-
+  // ── Scroll to bottom on new events ─────────────────────────────────────
   useEffect(() => {
-    setTimeout(() => narrativeEndRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
-    setShowMentor(false);
-    if (window.innerWidth < 768) setActiveTab("prontuario");
+    setTimeout(() => eventLogEndRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
+  }, [eventLog.length]);
 
+  // ── State change effects ───────────────────────────────────────────────
+  useEffect(() => {
     const currentScore = gameState.status_simulacao.current_score;
     if (currentScore !== prevScore) {
       setScoreDiff(currentScore - prevScore);
@@ -127,6 +134,7 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
     }
   }, [gameState.interface_usuario.narrativa_principal]);
 
+  // ── Countdown timer ────────────────────────────────────────────────────
   useEffect(() => {
     if (timeLeft === null || timeLeft <= 0 || isLoading) return;
     const interval = setInterval(() => {
@@ -142,6 +150,7 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
     return () => clearInterval(interval);
   }, [timeLeft, isLoading]);
 
+  // ── Helpers ────────────────────────────────────────────────────────────
   const saveResult = async (finalScore: number) => {
     setHasSaved(true);
     const caseTitle = gameState.interface_usuario.manchete || `Caso de ${gameParams.especialidade}`;
@@ -158,18 +167,29 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
     if (isLoading) return;
     if (type === ActionType.LIVRE && !customActionText.trim()) return;
     setIsLoading(true);
-    if (window.innerWidth < 768) setActiveTab("prontuario");
+    setShowActions(false);
     setTimeLeft(null);
+
+    const actionLabel = type === ActionType.LIVRE ? customActionText : id;
+    pushEvent("action", actionLabel);
+
     try {
       const newState = await sendAction(id, type === ActionType.LIVRE ? customActionText : undefined);
       setGameState(newState);
       setCustomActionText("");
-      // Persist session update
+
+      // Push new narrative
+      pushEvent("narrative", newState.interface_usuario.narrativa_principal);
+      if (newState.interface_usuario.score_feedback) {
+        pushEvent("mentor", newState.interface_usuario.score_feedback);
+      }
+
       if (sessionId) {
         updateGameSession(sessionId, newState, getConversationHistory());
       }
     } catch (error) {
       console.error("Error processing action:", error);
+      pushEvent("system", "Erro ao processar ação. Tente novamente.");
     } finally {
       setIsLoading(false);
     }
@@ -189,388 +209,470 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
     return sections;
   };
 
+  const getActionIcon = (tipo: string) => {
+    switch (tipo) {
+      case "EXAME": return <Microscope className="h-4 w-4" />;
+      case "MEDICAMENTO": return <Pill className="h-4 w-4" />;
+      default: return <Syringe className="h-4 w-4" />;
+    }
+  };
+
+  const getEventIcon = (type: EventLogEntry["type"]) => {
+    switch (type) {
+      case "narrative": return <Stethoscope className="h-3 w-3" />;
+      case "action": return <ChevronRight className="h-3 w-3" />;
+      case "mentor": return <GraduationCap className="h-3 w-3" />;
+      case "system": return <AlertTriangle className="h-3 w-3" />;
+    }
+  };
+
+  const getEventColor = (type: EventLogEntry["type"]) => {
+    switch (type) {
+      case "narrative": return "text-foreground";
+      case "action": return "text-primary";
+      case "mentor": return "text-warning";
+      case "system": return "text-destructive";
+    }
+  };
+
+  // ── Derived state ──────────────────────────────────────────────────────
   const isGameOver =
     gameState.status_simulacao.estado_paciente === "OBITO" ||
     gameState.status_simulacao.estado_paciente === "CURADO";
   const debriefing = isGameOver ? parseDebriefing(gameState.interface_usuario.feedback_mentor) : null;
   const protocolEval = isGameOver ? getLastProtocolEvaluation() : null;
-
   const generatedCase = getLastGeneratedCase();
+  const engine = getEngine();
+  const vitals = engine.getVitals();
 
+  const patientState = gameState.status_simulacao.estado_paciente;
+  const vitalStatus: "stable" | "warning" | "critical" =
+    patientState === "CRITICO" || patientState === "OBITO" ? "critical" :
+    patientState === "INSTAVEL" ? "warning" : "stable";
+
+  const statusColor =
+    patientState === "ESTAVEL" || patientState === "CURADO" ? "text-primary" :
+    patientState === "INSTAVEL" ? "text-warning" : "text-destructive";
+
+  const predefinedActions = gameState.opcoes_interacao.filter((opt) => opt.tipo !== "LIVRE");
+
+  // ── Render ─────────────────────────────────────────────────────────────
   return (
-    <div className="flex flex-col h-[100dvh] bg-background overflow-hidden relative">
-      {/* Critical Timer */}
+    <div className="flex flex-col h-[100dvh] bg-background overflow-hidden">
+      {/* Critical Timer Bar */}
       {timeLeft !== null && maxTime !== null && !isGameOver && (
-        <div className="absolute top-0 left-0 w-full z-50">
-          <div className="bg-destructive text-destructive-foreground px-4 py-2 flex justify-between items-center shadow-md animate-pulse">
+        <div className="shrink-0 z-50">
+          <div className="bg-destructive text-destructive-foreground px-4 py-2 flex justify-between items-center animate-pulse">
             <span className="text-xs font-bold uppercase tracking-widest flex items-center gap-2">
-              <Clock className="h-4 w-4 animate-spin" /> Decisão Crítica Necessária
+              <Clock className="h-4 w-4 animate-spin" /> Decisão Crítica
             </span>
             <span className="font-mono-vital text-xl font-bold">{timeLeft}s</span>
           </div>
-          <Progress value={(timeLeft / maxTime) * 100} className="h-1.5 rounded-none [&>div]:bg-destructive" />
+          <Progress value={(timeLeft / maxTime) * 100} className="h-1 rounded-none [&>div]:bg-destructive" />
         </div>
       )}
 
-      {/* Header */}
-      <header className={cn("shrink-0 bg-card border-b border-border px-4 py-3 shadow-sm z-30", timeLeft !== null && "mt-[50px]")}>
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-sm bg-primary/10 hud-border flex items-center justify-center">
-                <Stethoscope className="h-3.5 w-3.5 text-primary" />
-              </div>
-              <span className="font-display font-black text-sm hidden sm:inline text-primary lcd-glow tracking-tighter">
-                BOLUS
-              </span>
+      {/* ── Fixed Header ──────────────────────────────────────────────── */}
+      <header className="shrink-0 bg-card border-b border-border px-3 py-2.5 z-30">
+        <div className="flex items-center justify-between gap-2">
+          {/* Left: logo + case name */}
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="w-7 h-7 rounded-sm bg-primary/10 hud-border flex items-center justify-center shrink-0">
+              <Stethoscope className="h-3.5 w-3.5 text-primary" />
             </div>
-            <div className={cn("px-3 py-1 rounded-sm border text-xs font-mono-vital font-bold uppercase tracking-wide flex items-center gap-2", getStatusColor(gameState.status_simulacao.estado_paciente))}>
-              <div className={cn("w-2 h-2 rounded-sm", gameState.status_simulacao.estado_paciente === "CRITICO" ? "bg-destructive animate-ping" : "bg-current")} />
-              {gameState.status_simulacao.estado_paciente}
-            </div>
-            {generatedCase && (
-              <div className="hidden lg:flex items-center gap-2 text-[10px] text-muted-foreground font-mono-vital">
-                <span>{generatedCase.patient.sex === "M" ? "♂" : "♀"} {generatedCase.patient.age}a</span>
-                <span className="text-border">|</span>
-                <span>{generatedCase.patient.comorbidities.join(", ")}</span>
-              </div>
-            )}
-          </div>
-
-          <div className="flex items-center gap-6">
-            {/* Game Time Display */}
-            <div className="flex items-center gap-2 lcd-screen rounded-sm px-3 py-1.5 hud-border">
-              <Clock className="h-3.5 w-3.5 text-primary" />
-              <span className="font-mono-vital text-sm font-bold text-primary lcd-glow">
-                {getEngine().getFormattedTime()}
-              </span>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="text-xs font-bold text-muted-foreground uppercase hidden sm:inline text-right leading-tight">
-                Nota<br />Atual
-              </span>
-              <div className="relative lcd-screen rounded-sm px-4 py-1.5 min-w-[100px] text-center hud-border">
-                <span className={cn("font-mono-vital text-xl font-bold", getScoreColor(gameState.status_simulacao.current_score))}>
-                  {gameState.status_simulacao.current_score.toFixed(1)}
+            <div className="min-w-0">
+              <h1 className="text-xs font-display font-bold text-foreground truncate leading-tight">
+                {gameState.interface_usuario.manchete}
+              </h1>
+              <div className="flex items-center gap-2 mt-0.5">
+                <span className={cn("text-[10px] font-mono-vital font-bold uppercase", statusColor)}>
+                  {patientState}
                 </span>
-                {scoreDiff !== null && (
-                  <span className={cn("absolute -bottom-4 right-0 text-xs font-bold animate-bounce", scoreDiff > 0 ? "text-primary" : "text-destructive")}>
-                    {scoreDiff > 0 ? "+" : ""}{scoreDiff.toFixed(1)}
+                {generatedCase && (
+                  <span className="text-[10px] text-muted-foreground font-mono-vital">
+                    {generatedCase.patient.sex === "M" ? "♂" : "♀"} {generatedCase.patient.age}a
                   </span>
                 )}
               </div>
             </div>
-            <div className="flex items-center gap-2 border-l border-border pl-4">
-              <Button variant="ghost" size="icon" onClick={onRestart} title="Reiniciar">
-                <RotateCcw className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="icon" onClick={onExit} title="Sair">
-                <LogOut className="h-4 w-4" />
-              </Button>
+          </div>
+
+          {/* Right: clock + score + actions */}
+          <div className="flex items-center gap-2 shrink-0">
+            {/* Game Clock */}
+            <div className="lcd-screen rounded-sm px-2.5 py-1 hud-border flex items-center gap-1.5">
+              <Clock className="h-3 w-3 text-primary" />
+              <span className="font-mono-vital text-sm font-bold text-primary lcd-glow">
+                {engine.getFormattedTime()}
+              </span>
             </div>
+
+            {/* Score */}
+            <div className="lcd-screen rounded-sm px-2.5 py-1 hud-border text-center relative">
+              <span className={cn("font-mono-vital text-sm font-bold", 
+                gameState.status_simulacao.current_score >= 7 ? "text-primary" :
+                gameState.status_simulacao.current_score >= 5 ? "text-warning" : "text-destructive"
+              )}>
+                {gameState.status_simulacao.current_score.toFixed(1)}
+              </span>
+              {scoreDiff !== null && (
+                <span className={cn(
+                  "absolute -bottom-3.5 right-0 text-[10px] font-bold animate-bounce",
+                  scoreDiff > 0 ? "text-primary" : "text-destructive"
+                )}>
+                  {scoreDiff > 0 ? "+" : ""}{scoreDiff.toFixed(1)}
+                </span>
+              )}
+            </div>
+
+            {/* Header buttons */}
+            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={onRestart} title="Reiniciar">
+              <RotateCcw className="h-3.5 w-3.5" />
+            </Button>
+            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={onExit} title="Sair">
+              <LogOut className="h-3.5 w-3.5" />
+            </Button>
           </div>
         </div>
       </header>
 
-      {/* Main Area */}
-      <div className="flex-1 flex flex-col md:flex-row overflow-hidden relative">
-        {/* Left Column: Narrative */}
-        <div className={cn("flex-1 flex flex-col min-w-0 bg-card md:bg-transparent", activeTab === "prontuario" ? "flex absolute inset-0 md:static z-10" : "hidden md:flex")}>
-          <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 md:pr-2">
-            <div className="bg-card border-l-4 border-primary shadow-sm p-4 rounded-r-lg">
-              <h2 className="text-lg font-bold text-foreground leading-tight">{gameState.interface_usuario.manchete}</h2>
-              <span className="text-xs text-primary font-bold uppercase mt-1 block tracking-wide">Evolução Clínica Atual</span>
-            </div>
-
-            <div className="prose prose-sm max-w-none text-muted-foreground leading-relaxed bg-card p-6 rounded-2xl shadow-sm border border-border">
-              <p className="whitespace-pre-line">{renderWithTooltips(gameState.interface_usuario.narrativa_principal)}</p>
-            </div>
-
-            {gameState.interface_usuario.score_feedback && !isGameOver && (
-              <div className="flex items-start gap-2 bg-secondary p-3 rounded-lg border border-border text-sm">
-                <GraduationCap className="h-4 w-4 text-muted-foreground mt-0.5" />
-                <div>
-                  <span className="font-bold text-muted-foreground text-xs uppercase block">Avaliação do Preceptor</span>
-                  <span className="text-foreground italic">{gameState.interface_usuario.score_feedback}</span>
-                </div>
-              </div>
-            )}
-
-            {!isGameOver && gameState.interface_usuario.feedback_mentor && (
-              <div className="mt-4">
-                {!showMentor ? (
-                  <button onClick={() => setShowMentor(true)} className="flex items-center gap-2 text-xs font-bold text-primary uppercase tracking-wide hover:text-primary/80 transition-colors py-2">
-                    <Stethoscope className="h-4 w-4" /> Ver Comentário do Preceptor
-                  </button>
-                ) : (
-                  <div className="bg-accent border border-border rounded-xl p-4 relative animate-in fade-in">
-                    <button onClick={() => setShowMentor(false)} className="absolute top-2 right-2 text-muted-foreground hover:text-foreground">✕</button>
-                    <div className="flex gap-3">
-                      <div className="shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                        <GraduationCap className="h-4 w-4" />
-                      </div>
-                      <div>
-                        <h4 className="text-xs font-bold text-foreground uppercase mb-1">Nota do Preceptor</h4>
-                        <p className="text-sm text-foreground italic">"{gameState.interface_usuario.feedback_mentor}"</p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-            <div ref={narrativeEndRef} className="h-4" />
-          </div>
-
-          {/* Vital Signs Monitor */}
-          <div className="bg-card border-t border-border p-4 shadow-sm z-20">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <div className="bg-[hsl(var(--vital-bg))] rounded-xl p-3 shadow-inner relative overflow-hidden">
-                <div className="flex justify-between items-center mb-1">
-                  <span className="text-[10px] font-bold text-[hsl(var(--vital-foreground))] uppercase flex items-center gap-1.5">
-                    <Stethoscope className="h-3 w-3 animate-pulse" /> Monitor
-                  </span>
-                </div>
-                <div className="font-mono-vital text-[hsl(var(--vital-foreground))] text-sm whitespace-pre-wrap leading-relaxed">
-                  {renderWithTooltips(gameState.dados_medicos.sinais_vitais)}
-                </div>
-              </div>
-              <div className="bg-secondary border border-border rounded-xl p-3 flex flex-col">
-                <span className="text-[10px] font-bold text-muted-foreground uppercase mb-1 flex items-center gap-1.5">
-                  <FileText className="h-3 w-3" /> Laboratório / Imagem
-                </span>
-                <div className="flex-1 overflow-y-auto max-h-24">
-                  <div className="font-mono-vital text-foreground text-xs whitespace-pre-wrap leading-relaxed">
-                    {gameState.dados_medicos.exames_resultados === "Nenhum exame solicitado" ? (
-                      <span className="text-muted-foreground italic">Nenhum resultado pendente.</span>
-                    ) : (
-                      renderWithTooltips(gameState.dados_medicos.exames_resultados)
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+      {/* ── Vital Monitor ─────────────────────────────────────────────── */}
+      {!isGameOver && (
+        <div className="shrink-0 px-3 py-2 bg-background">
+          <VitalMonitor
+            fc={vitals.hr}
+            pas={vitals.sbp}
+            pad={vitals.dbp}
+            satO2={vitals.spo2}
+            fr={vitals.rr}
+            status={vitalStatus}
+          />
         </div>
+      )}
 
-        {/* Right Column: Actions */}
-        <div className={cn("md:w-[400px] lg:w-[450px] flex-col bg-secondary border-l border-border shadow-xl z-20", activeTab === "conduta" ? "flex absolute inset-0 md:static z-20" : "hidden md:flex")}>
-          <div className="h-48 sm:h-56 bg-muted relative shrink-0 overflow-hidden border-b border-border">
-            <div className="absolute inset-0 flex items-center justify-center p-8 text-center">
-              <div>
-                <Stethoscope className="h-10 w-10 text-muted-foreground mx-auto mb-2" />
-                <p className="text-muted-foreground text-xs font-medium">{gameState.visualizacao.descricao_cenario_pt}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex-1 flex flex-col bg-card overflow-hidden">
-            <div className="p-4 border-b border-border bg-secondary/50">
-              <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
-                <Stethoscope className="h-3 w-3 text-primary" /> {isGameOver ? "Relatório Final" : "Condutas Disponíveis"}
-              </h3>
-            </div>
-
-            {isGameOver ? (
-              <div className="flex-1 overflow-y-auto p-4">
-                <div className="text-center mb-6">
-                  <div className={cn("w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3 text-3xl shadow-md", gameState.status_simulacao.estado_paciente === "CURADO" ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground")}>
-                    {gameState.status_simulacao.estado_paciente === "CURADO" ? <CheckCircle className="h-8 w-8" /> : <Skull className="h-8 w-8" />}
-                  </div>
-                  <h2 className="text-xl font-bold text-foreground mb-1">
-                    {gameState.status_simulacao.estado_paciente === "CURADO" ? "Alta Médica" : "Óbito Confirmado"}
-                  </h2>
-                  <p className="text-xs text-muted-foreground font-mono-vital mt-1">
-                    Tempo total: {getEngine().getFormattedTime()} ({getEngine().getGameTimeMinutes()} min)
-                  </p>
-                  <div className="inline-flex items-center gap-3 px-6 py-2 bg-foreground text-background rounded-full mt-2 shadow-lg">
-                    <span className="text-xs font-bold uppercase tracking-wider opacity-70">Nota Final</span>
-                    <span className="font-mono-vital text-2xl font-bold text-primary">{gameState.status_simulacao.current_score.toFixed(1)}</span>
-                  </div>
-                </div>
-
-                {/* Action Timeline */}
-                {getEngine().getActionTimeline().length > 0 && (
-                  <div className="bg-secondary p-4 rounded-xl border border-border mb-4">
-                    <h4 className="text-xs font-bold text-muted-foreground uppercase mb-3 flex items-center gap-2">
-                      <Clock className="h-3 w-3" /> Timeline de Ações
-                    </h4>
-                    <div className="space-y-1.5 max-h-40 overflow-y-auto">
-                      {getEngine().getActionTimeline().map((entry, i) => {
-                        const h = Math.floor(entry.gameTimeMinutes / 60);
-                        const m = entry.gameTimeMinutes % 60;
-                        const ts = `${String(h).padStart(2, "0")}:${String(Math.round(m)).padStart(2, "0")}`;
-                        return (
-                          <div key={i} className={cn(
-                            "flex items-center gap-2 text-xs font-mono-vital",
-                            entry.isCritical ? "text-destructive" : "text-muted-foreground"
-                          )}>
-                            <span className={cn("w-2 h-2 rounded-full shrink-0", entry.isCritical ? "bg-destructive" : "bg-muted-foreground/40")} />
-                            <span className="font-bold w-12 shrink-0">{ts}</span>
-                            <span className="truncate">{entry.actionText}</span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-
-                {/* Protocol Checklist */}
-                {protocolEval && (
-                  <div className="bg-card p-4 rounded-xl border border-border mb-4">
-                    <div className="flex items-center justify-between mb-3">
-                      <h4 className="text-xs font-bold text-muted-foreground uppercase flex items-center gap-2">
-                        <ClipboardList className="h-3 w-3 text-primary" /> Protocolo: {protocolEval.protocolName}
-                      </h4>
+      {/* ── Main Content: Event Log or Debriefing ─────────────────────── */}
+      <div className="flex-1 overflow-hidden">
+        {isGameOver ? (
+          <GameOverScreen
+            gameState={gameState}
+            debriefing={debriefing}
+            protocolEval={protocolEval}
+            engine={engine}
+            onRestart={onRestart}
+            onExit={onExit}
+          />
+        ) : (
+          <ScrollArea className="h-full">
+            <div className="px-3 py-2 space-y-2 pb-4">
+              {eventLog.map((entry) => (
+                <div
+                  key={entry.id}
+                  className={cn(
+                    "flex gap-2 text-sm",
+                    entry.type === "action" && "flex-row-reverse"
+                  )}
+                >
+                  {entry.type !== "action" ? (
+                    /* AI / System messages: left-aligned bubble */
+                    <div className="flex gap-2 max-w-[90%]">
                       <div className={cn(
-                        "text-xs font-mono-vital font-bold px-2 py-0.5 rounded-sm",
-                        protocolEval.adherenceScore >= 8 ? "bg-primary/10 text-primary" :
-                        protocolEval.adherenceScore >= 5 ? "bg-warning/10 text-warning" :
+                        "shrink-0 w-6 h-6 rounded-full flex items-center justify-center mt-0.5",
+                        entry.type === "narrative" ? "bg-primary/10 text-primary" :
+                        entry.type === "mentor" ? "bg-warning/10 text-warning" :
                         "bg-destructive/10 text-destructive"
                       )}>
-                        {protocolEval.adherenceScore.toFixed(1)}/10
+                        {getEventIcon(entry.type)}
+                      </div>
+                      <div>
+                        <div className={cn(
+                          "rounded-lg rounded-tl-none px-3 py-2 text-sm leading-relaxed",
+                          entry.type === "narrative" ? "bg-card border border-border text-foreground" :
+                          entry.type === "mentor" ? "bg-warning/5 border border-warning/20 text-foreground italic" :
+                          "bg-destructive/5 border border-destructive/20 text-destructive"
+                        )}>
+                          <p className="whitespace-pre-line">{renderWithTooltips(entry.text)}</p>
+                        </div>
+                        <span className="text-[10px] text-muted-foreground font-mono-vital mt-0.5 block">
+                          {entry.timestamp} ({entry.gameMinutes}min)
+                        </span>
                       </div>
                     </div>
-                    <div className="space-y-2">
-                      {protocolEval.results.map((r) => (
-                        <div key={r.itemId} className="text-xs">
-                          <div className="flex items-start gap-2">
-                            <span className="shrink-0 mt-0.5">
-                              {r.status === "done" ? "✅" : r.status === "late" ? "⏱️" : "❌"}
-                            </span>
-                            <div className="flex-1 min-w-0">
-                              <span className={cn(
-                                "font-semibold",
-                                r.status === "done" ? "text-primary" :
-                                r.status === "late" ? "text-warning" :
-                                "text-destructive"
-                              )}>
-                                {r.label}
-                              </span>
-                              {r.performedAt !== null && (
-                                <span className="text-muted-foreground ml-1">
-                                  — {r.performedAt}min
-                                  {r.targetMinutes !== null && (
-                                    <span className={r.performedAt > r.targetMinutes ? "text-destructive" : "text-primary"}>
-                                      {" "}(meta: &lt;{r.targetMinutes}min)
-                                    </span>
-                                  )}
-                                </span>
-                              )}
-                              {r.status === "missed" && r.targetMinutes !== null && (
-                                <span className="text-destructive ml-1">— meta: &lt;{r.targetMinutes}min</span>
-                              )}
-                            </div>
-                          </div>
-                          {r.status !== "done" && (
-                            <div className="ml-6 mt-0.5 text-muted-foreground italic flex items-start gap-1">
-                              <BookOpen className="h-3 w-3 shrink-0 mt-0.5" />
-                              <span>{r.reference}</span>
-                            </div>
-                          )}
-                        </div>
-                      ))}
+                  ) : (
+                    /* User actions: right-aligned bubble */
+                    <div className="flex flex-col items-end max-w-[80%] ml-auto">
+                      <div className="rounded-lg rounded-tr-none px-3 py-2 bg-primary/10 border border-primary/20 text-primary text-sm font-medium">
+                        {entry.text}
+                      </div>
+                      <span className="text-[10px] text-muted-foreground font-mono-vital mt-0.5">
+                        {entry.timestamp}
+                      </span>
                     </div>
-                  </div>
-                )}
+                  )}
+                </div>
+              ))}
 
-                {debriefing && (
-                  <div className="space-y-4 mb-8">
-                    <div className="bg-secondary p-4 rounded-xl border border-border">
-                      <h4 className="text-xs font-bold text-muted-foreground uppercase mb-2 flex items-center gap-2"><ClipboardList className="h-3 w-3" /> Resumo do Caso</h4>
-                      <p className="text-sm text-foreground leading-relaxed">{debriefing.resumo}</p>
+              {isLoading && (
+                <div className="flex gap-2">
+                  <div className="shrink-0 w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Stethoscope className="h-3 w-3 text-primary animate-pulse" />
+                  </div>
+                  <div className="bg-card border border-border rounded-lg rounded-tl-none px-4 py-3">
+                    <div className="flex items-center gap-1.5">
+                      <div className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce" />
+                      <div className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce [animation-delay:0.15s]" />
+                      <div className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce [animation-delay:0.3s]" />
                     </div>
-                    {debriefing.fortes && (
-                      <div className="bg-primary/5 p-4 rounded-xl border border-primary/10">
-                        <h4 className="text-xs font-bold text-primary uppercase mb-2 flex items-center gap-2"><ThumbsUp className="h-3 w-3" /> Pontos Fortes</h4>
-                        <p className="text-sm text-foreground leading-relaxed">{debriefing.fortes}</p>
-                      </div>
-                    )}
-                    {debriefing.melhoria && (
-                      <div className="bg-warning/5 p-4 rounded-xl border border-warning/10">
-                        <h4 className="text-xs font-bold text-warning uppercase mb-2 flex items-center gap-2"><AlertTriangle className="h-3 w-3" /> Pontos de Atenção</h4>
-                        <p className="text-sm text-foreground leading-relaxed">{debriefing.melhoria}</p>
-                      </div>
-                    )}
-                    {debriefing.gold && (
-                      <div className="bg-accent p-4 rounded-xl border border-border">
-                        <h4 className="text-xs font-bold text-accent-foreground uppercase mb-2 flex items-center gap-2"><BookOpen className="h-3 w-3" /> Gold Standard</h4>
-                        <p className="text-sm text-foreground leading-relaxed">{debriefing.gold}</p>
-                      </div>
-                    )}
                   </div>
-                )}
-                <div className="flex gap-3 w-full">
-                  <Button onClick={onRestart} className="flex-1">Novo Caso</Button>
-                  <Button variant="outline" onClick={onExit} className="flex-1">Menu</Button>
                 </div>
+              )}
+
+              <div ref={eventLogEndRef} />
+            </div>
+          </ScrollArea>
+        )}
+      </div>
+
+      {/* ── Fixed Bottom Input ────────────────────────────────────────── */}
+      {!isGameOver && (
+        <div className="shrink-0 border-t border-border bg-card p-3 z-30 safe-area-pb">
+          {/* Expandable actions panel */}
+          {showActions && predefinedActions.length > 0 && (
+            <div className="mb-3 space-y-1.5 max-h-48 overflow-y-auto">
+              {predefinedActions.map((opt) => (
+                <button
+                  key={opt.id}
+                  disabled={isLoading}
+                  onClick={() => handleAction(opt.id, opt.tipo)}
+                  className={cn(
+                    "w-full p-3 rounded-sm text-left transition-all border group",
+                    isLoading
+                      ? "opacity-50 cursor-not-allowed bg-muted"
+                      : "hover:border-primary/30 active:scale-[0.99] bg-secondary border-border"
+                  )}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={cn(
+                      "w-7 h-7 rounded-sm flex items-center justify-center shrink-0",
+                      opt.tipo === "EXAME" ? "bg-accent text-accent-foreground" :
+                      opt.tipo === "MEDICAMENTO" ? "bg-primary/10 text-primary" :
+                      "bg-warning/10 text-warning"
+                    )}>
+                      {getActionIcon(opt.tipo)}
+                    </div>
+                    <div className="min-w-0">
+                      <span className="text-[10px] font-bold text-muted-foreground uppercase block">{opt.tipo}</span>
+                      <span className="font-medium text-sm text-foreground leading-tight block truncate">{opt.texto}</span>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+
+          <div className="flex items-center gap-2">
+            {/* Toggle actions button */}
+            {predefinedActions.length > 0 && (
+              <Button
+                variant="outline"
+                size="icon"
+                className={cn("h-10 w-10 shrink-0", showActions && "border-primary text-primary")}
+                onClick={() => setShowActions(!showActions)}
+              >
+                <ClipboardList className="h-4 w-4" />
+              </Button>
+            )}
+
+            <Input
+              value={customActionText}
+              onChange={(e) => setCustomActionText(e.target.value)}
+              placeholder="Digite sua conduta..."
+              disabled={isLoading}
+              className="flex-1 bg-secondary"
+              onKeyDown={(e) => e.key === "Enter" && handleAction("LIVRE", ActionType.LIVRE)}
+            />
+            <Button
+              size="icon"
+              className="h-10 w-10 shrink-0"
+              onClick={() => handleAction("LIVRE", ActionType.LIVRE)}
+              disabled={isLoading || !customActionText.trim()}
+            >
+              <Send className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ── Game Over Screen ─────────────────────────────────────────────────────
+
+interface GameOverScreenProps {
+  gameState: SimulationState;
+  debriefing: { resumo: string; fortes: string; melhoria: string; gold: string } | null;
+  protocolEval: ProtocolEvaluation | null;
+  engine: ReturnType<typeof getEngine>;
+  onRestart: () => void;
+  onExit: () => void;
+}
+
+const GameOverScreen: React.FC<GameOverScreenProps> = ({
+  gameState, debriefing, protocolEval, engine, onRestart, onExit,
+}) => {
+  const isCured = gameState.status_simulacao.estado_paciente === "CURADO";
+
+  return (
+    <ScrollArea className="h-full">
+      <div className="px-4 py-6 space-y-4 max-w-lg mx-auto">
+        {/* Outcome header */}
+        <div className="text-center">
+          <div className={cn(
+            "w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-3",
+            isCured ? "bg-primary/10 text-primary" : "bg-destructive/10 text-destructive"
+          )}>
+            {isCured ? <CheckCircle className="h-7 w-7" /> : <Skull className="h-7 w-7" />}
+          </div>
+          <h2 className="text-lg font-display font-bold text-foreground">
+            {isCured ? "Alta Médica" : "Óbito Confirmado"}
+          </h2>
+          <p className="text-xs text-muted-foreground font-mono-vital mt-1">
+            Tempo total: {engine.getFormattedTime()} ({engine.getGameTimeMinutes()} min)
+          </p>
+          <div className="inline-flex items-center gap-3 px-5 py-1.5 bg-card border border-border rounded-sm mt-3">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Nota</span>
+            <span className="font-mono-vital text-xl font-bold text-primary lcd-glow">
+              {gameState.status_simulacao.current_score.toFixed(1)}
+            </span>
+          </div>
+        </div>
+
+        {/* Action Timeline */}
+        {engine.getActionTimeline().length > 0 && (
+          <div className="bg-secondary p-3 rounded-sm border border-border">
+            <h4 className="text-[10px] font-bold text-muted-foreground uppercase mb-2 flex items-center gap-2">
+              <Clock className="h-3 w-3" /> Timeline
+            </h4>
+            <div className="space-y-1 max-h-36 overflow-y-auto">
+              {engine.getActionTimeline().map((entry, i) => {
+                const h = Math.floor(entry.gameTimeMinutes / 60);
+                const m = entry.gameTimeMinutes % 60;
+                const ts = `${String(h).padStart(2, "0")}:${String(Math.round(m)).padStart(2, "0")}`;
+                return (
+                  <div key={i} className={cn(
+                    "flex items-center gap-2 text-xs font-mono-vital",
+                    entry.isCritical ? "text-destructive" : "text-muted-foreground"
+                  )}>
+                    <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", entry.isCritical ? "bg-destructive" : "bg-muted-foreground/40")} />
+                    <span className="font-bold w-11 shrink-0">{ts}</span>
+                    <span className="truncate">{entry.actionText}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Protocol Checklist */}
+        {protocolEval && (
+          <div className="bg-card p-3 rounded-sm border border-border">
+            <div className="flex items-center justify-between mb-2">
+              <h4 className="text-[10px] font-bold text-muted-foreground uppercase flex items-center gap-2">
+                <ClipboardList className="h-3 w-3 text-primary" /> {protocolEval.protocolName}
+              </h4>
+              <span className={cn(
+                "text-xs font-mono-vital font-bold px-2 py-0.5 rounded-sm",
+                protocolEval.adherenceScore >= 8 ? "bg-primary/10 text-primary" :
+                protocolEval.adherenceScore >= 5 ? "bg-warning/10 text-warning" :
+                "bg-destructive/10 text-destructive"
+              )}>
+                {protocolEval.adherenceScore.toFixed(1)}/10
+              </span>
+            </div>
+            <div className="space-y-1.5">
+              {protocolEval.results.map((r) => (
+                <div key={r.itemId} className="text-xs">
+                  <div className="flex items-start gap-2">
+                    <span className="shrink-0 mt-0.5">
+                      {r.status === "done" ? "✅" : r.status === "late" ? "⏱️" : "❌"}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <span className={cn(
+                        "font-semibold",
+                        r.status === "done" ? "text-primary" :
+                        r.status === "late" ? "text-warning" : "text-destructive"
+                      )}>
+                        {r.label}
+                      </span>
+                      {r.performedAt !== null && (
+                        <span className="text-muted-foreground ml-1">
+                          — {r.performedAt}min
+                          {r.targetMinutes !== null && (
+                            <span className={r.performedAt > r.targetMinutes ? "text-destructive" : "text-primary"}>
+                              {" "}(meta: &lt;{r.targetMinutes}min)
+                            </span>
+                          )}
+                        </span>
+                      )}
+                      {r.status === "missed" && r.targetMinutes !== null && (
+                        <span className="text-destructive ml-1">— meta: &lt;{r.targetMinutes}min</span>
+                      )}
+                    </div>
+                  </div>
+                  {r.status !== "done" && (
+                    <div className="ml-6 mt-0.5 text-muted-foreground italic flex items-start gap-1">
+                      <BookOpen className="h-3 w-3 shrink-0 mt-0.5" />
+                      <span>{r.reference}</span>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Debriefing sections */}
+        {debriefing && (
+          <div className="space-y-3">
+            <div className="bg-secondary p-3 rounded-sm border border-border">
+              <h4 className="text-[10px] font-bold text-muted-foreground uppercase mb-1.5 flex items-center gap-2">
+                <ClipboardList className="h-3 w-3" /> Resumo
+              </h4>
+              <p className="text-sm text-foreground leading-relaxed">{debriefing.resumo}</p>
+            </div>
+            {debriefing.fortes && (
+              <div className="bg-primary/5 p-3 rounded-sm border border-primary/10">
+                <h4 className="text-[10px] font-bold text-primary uppercase mb-1.5 flex items-center gap-2">
+                  <ThumbsUp className="h-3 w-3" /> Pontos Fortes
+                </h4>
+                <p className="text-sm text-foreground leading-relaxed">{debriefing.fortes}</p>
               </div>
-            ) : (
-              <div className="flex-1 flex flex-col min-h-0">
-                <div className="flex-1 overflow-y-auto p-3 space-y-2">
-                  {gameState.opcoes_interacao
-                    .filter((opt) => opt.tipo !== "LIVRE")
-                    .map((opt) => (
-                      <button
-                        key={opt.id}
-                        disabled={isLoading}
-                        onClick={() => handleAction(opt.id, opt.tipo)}
-                        className={cn(
-                          "w-full p-4 rounded-xl text-left transition-all border group relative",
-                          isLoading ? "opacity-50 cursor-not-allowed bg-muted" : "hover:border-primary/30 hover:shadow-md active:scale-[0.99] bg-card border-border"
-                        )}
-                      >
-                        <div className="flex items-start gap-3">
-                          <div className={cn("mt-0.5 w-8 h-8 rounded-lg flex items-center justify-center text-sm shrink-0",
-                            opt.tipo === "EXAME" ? "bg-blue-50 text-blue-600" :
-                            opt.tipo === "MEDICAMENTO" ? "bg-primary/10 text-primary" : "bg-warning/10 text-warning"
-                          )}>
-                            {getActionIcon(opt.tipo)}
-                          </div>
-                          <div>
-                            <span className="text-[10px] font-bold text-muted-foreground uppercase block mb-0.5">{opt.tipo}</span>
-                            <span className="font-semibold text-sm text-foreground leading-tight block">{opt.texto}</span>
-                          </div>
-                        </div>
-                      </button>
-                    ))}
-                </div>
-                <div className="p-4 bg-secondary border-t border-border">
-                  <label className="block text-[10px] text-muted-foreground mb-2 uppercase font-bold tracking-wider">Outra Conduta</label>
-                  <div className="flex gap-2">
-                    <Input
-                      value={customActionText}
-                      onChange={(e) => setCustomActionText(e.target.value)}
-                      placeholder="Digite sua ação..."
-                      disabled={isLoading}
-                      onKeyDown={(e) => e.key === "Enter" && handleAction("LIVRE", ActionType.LIVRE)}
-                    />
-                    <Button
-                      onClick={() => handleAction("LIVRE", ActionType.LIVRE)}
-                      disabled={isLoading || !customActionText.trim()}
-                    >
-                      <Send className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
+            )}
+            {debriefing.melhoria && (
+              <div className="bg-warning/5 p-3 rounded-sm border border-warning/10">
+                <h4 className="text-[10px] font-bold text-warning uppercase mb-1.5 flex items-center gap-2">
+                  <AlertTriangle className="h-3 w-3" /> Atenção
+                </h4>
+                <p className="text-sm text-foreground leading-relaxed">{debriefing.melhoria}</p>
+              </div>
+            )}
+            {debriefing.gold && (
+              <div className="bg-accent p-3 rounded-sm border border-border">
+                <h4 className="text-[10px] font-bold text-accent-foreground uppercase mb-1.5 flex items-center gap-2">
+                  <BookOpen className="h-3 w-3" /> Gold Standard
+                </h4>
+                <p className="text-sm text-foreground leading-relaxed">{debriefing.gold}</p>
               </div>
             )}
           </div>
+        )}
+
+        {/* CTA */}
+        <div className="flex gap-3 pt-2 pb-4">
+          <Button onClick={onRestart} className="flex-1">Novo Caso</Button>
+          <Button variant="outline" onClick={onExit} className="flex-1">Menu</Button>
         </div>
       </div>
-
-      {/* Mobile Tab Bar */}
-      <div className="md:hidden shrink-0 bg-card border-t border-border flex justify-around p-2 z-40 safe-area-pb shadow-sm">
-        <button onClick={() => setActiveTab("prontuario")} className={cn("flex flex-col items-center gap-1 p-2 rounded-lg w-1/2", activeTab === "prontuario" ? "text-primary bg-primary/10" : "text-muted-foreground")}>
-          <FileText className="h-5 w-5" />
-          <span className="text-[10px] font-bold uppercase">Prontuário</span>
-        </button>
-        <div className="w-px bg-border h-8 mx-2 self-center" />
-        <button onClick={() => setActiveTab("conduta")} className={cn("flex flex-col items-center gap-1 p-2 rounded-lg w-1/2", activeTab === "conduta" ? "text-primary bg-primary/10" : "text-muted-foreground")}>
-          <Stethoscope className="h-5 w-5" />
-          <span className="text-[10px] font-bold uppercase">Conduta</span>
-        </button>
-      </div>
-    </div>
+    </ScrollArea>
   );
 };
 
