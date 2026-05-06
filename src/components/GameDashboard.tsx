@@ -383,51 +383,50 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
           />
         ) : (
           <ScrollArea className="h-full">
-            <div className="px-3 py-2 space-y-3 pb-4">
+            <div className="max-w-4xl mx-auto px-4 py-6 space-y-6 pb-24">
               <AnimatePresence initial={false}>
                 {eventLog.map((entry) => (
                   <motion.div
                     key={entry.id}
-                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    transition={{ duration: 0.3, ease: "easeOut" }}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
                     className={cn(
-                      "flex gap-2 text-sm",
-                      entry.type === "action" && "flex-row-reverse"
+                      "flex gap-3",
+                      entry.type === "action" ? "flex-row-reverse" : "flex-row"
                     )}
                   >
                     {entry.type !== "action" ? (
-                      /* AI / System messages: left-aligned bubble */
-                      <div className="flex gap-2 max-w-[90%]">
+                      /* AI / System messages */
+                      <div className="flex gap-3 max-w-[85%] sm:max-w-[75%]">
                         <div className={cn(
-                          "shrink-0 w-6 h-6 rounded-full flex items-center justify-center mt-1",
-                          entry.type === "narrative" ? "bg-primary/10 text-primary border border-primary/20" :
-                          entry.type === "mentor" ? "bg-warning/10 text-warning border border-warning/20" :
-                          "bg-destructive/10 text-destructive border border-destructive/20"
+                          "shrink-0 w-8 h-8 rounded-lg flex items-center justify-center mt-1 shadow-sm",
+                          entry.type === "narrative" ? "bg-primary text-primary-foreground" :
+                          entry.type === "mentor" ? "bg-secondary text-secondary-foreground" :
+                          "bg-destructive text-destructive-foreground"
                         )}>
                           {getEventIcon(entry.type)}
                         </div>
-                        <div>
+                        <div className="space-y-1">
                           <div className={cn(
-                            "rounded-2xl rounded-tl-none px-4 py-2.5 text-sm leading-relaxed backdrop-blur-sm shadow-sm",
-                            entry.type === "narrative" ? "bg-card/80 border border-border/50 text-foreground" :
-                            entry.type === "mentor" ? "bg-warning/5 border border-warning/20 text-foreground italic" :
+                            "rounded-2xl rounded-tl-sm px-4 py-3 text-sm leading-relaxed shadow-sm",
+                            entry.type === "narrative" ? "bg-card border border-border text-foreground" :
+                            entry.type === "mentor" ? "bg-secondary/10 border border-secondary/20 text-foreground italic" :
                             "bg-destructive/5 border border-destructive/20 text-destructive"
                           )}>
                             <div className="whitespace-pre-line">{renderWithTooltips(entry.text)}</div>
                           </div>
-                          <span className="text-[10px] text-muted-foreground font-mono-vital mt-1 ml-1 block opacity-70">
-                            {entry.timestamp} ({entry.gameMinutes}min)
+                          <span className="text-[10px] text-muted-foreground font-medium ml-1">
+                            {entry.timestamp}
                           </span>
                         </div>
                       </div>
                     ) : (
-                      /* User actions: right-aligned bubble */
-                      <div className="flex flex-col items-end max-w-[80%] ml-auto">
-                        <div className="rounded-2xl rounded-tr-none px-4 py-2 bg-primary/20 border border-primary/30 text-primary text-sm font-semibold shadow-sm backdrop-blur-sm">
+                      /* User actions */
+                      <div className="flex flex-col items-end max-w-[80%]">
+                        <div className="rounded-2xl rounded-tr-sm px-4 py-2.5 bg-primary text-primary-foreground text-sm font-semibold shadow-md">
                           {entry.text}
                         </div>
-                        <span className="text-[10px] text-muted-foreground font-mono-vital mt-1 mr-1 block opacity-70">
+                        <span className="text-[10px] text-muted-foreground font-medium mt-1 mr-1">
                           {entry.timestamp}
                         </span>
                       </div>
@@ -435,6 +434,7 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
                   </motion.div>
                 ))}
               </AnimatePresence>
+
 
               {isLoading && (
                 <div className="flex gap-2">
