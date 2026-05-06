@@ -424,6 +424,8 @@ export function evaluateProtocol(
 
     // Search timeline for matching action
     let matchedEntry: ActionTimelineEntry | null = null;
+    
+    // Primary search: direct keyword match in timeline text
     for (const entry of timeline) {
       const normAction = normalize(entry.actionText);
       for (const kw of item.matchKeywords) {
@@ -435,16 +437,22 @@ export function evaluateProtocol(
       if (matchedEntry) break;
     }
 
-    // Also check appliedInterventions (some actions may be matched there but not in timeline text)
+    // Secondary search: if not found in text, check appliedInterventions 
+    // BUT we must find the actual timeline entry that triggered it to get the correct time
     if (!matchedEntry) {
       for (const kw of item.matchKeywords) {
         if (appliedInterventions.has(kw)) {
-          // Find the closest timeline entry or use first one
-          matchedEntry = timeline.length > 0 ? timeline[timeline.length - 1] : null;
+          // Find the earliest timeline entry that contains this keyword or a close variation
+          const found = timeline.find(entry => {
+             const normText = normalize(entry.actionText);
+             return normText.includes(normalize(kw)) || normalize(kw).includes(normText);
+          });
+          matchedEntry = found || (timeline.length > 0 ? timeline[0] : null);
           break;
         }
       }
     }
+
 
     if (matchedEntry) {
       const isLate = item.targetMinutes !== null && matchedEntry.gameTimeMinutes > item.targetMinutes;

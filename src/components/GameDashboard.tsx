@@ -78,6 +78,8 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
   const [eventLog, setEventLog] = useState<EventLogEntry[]>([]);
   const eventLogEndRef = useRef<HTMLDivElement>(null);
   const eventIdRef = useRef(0);
+  const scoreTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
 
   // ── Session init ───────────────────────────────────────────────────────
   useEffect(() => {
@@ -119,10 +121,17 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
   useEffect(() => {
     const currentScore = gameState.status_simulacao.current_score;
     if (currentScore !== prevScore) {
+      if (scoreTimeoutRef.current) clearTimeout(scoreTimeoutRef.current);
+      
       setScoreDiff(currentScore - prevScore);
-      setTimeout(() => setScoreDiff(null), 3000);
+      scoreTimeoutRef.current = setTimeout(() => {
+        setScoreDiff(null);
+        scoreTimeoutRef.current = null;
+      }, 3000);
+      
       setPrevScore(currentScore);
     }
+
 
     const status = gameState.status_simulacao.estado_paciente;
     if ((status === "OBITO" || status === "CURADO") && !hasSaved) {
@@ -147,12 +156,13 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
       setTimeLeft((prev) => {
         if (prev === null || prev <= 1) {
           clearInterval(interval);
-          handleAction("SYSTEM_TIMEOUT", "TIMEOUT");
+          handleAction("SYSTEM_TIMEOUT", "TIMEOUT", "TEMPO ESGOTADO");
           return 0;
         }
         return prev - 1;
       });
     }, 1000);
+
     return () => clearInterval(interval);
   }, [timeLeft, isLoading]);
 
@@ -169,15 +179,16 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
     );
   };
 
-  const handleAction = async (id: string, type: string) => {
+  const handleAction = async (id: string, type: string, text?: string) => {
     if (isLoading) return;
     if (type === ActionType.LIVRE && !customActionText.trim()) return;
     setIsLoading(true);
     setShowActions(false);
     setTimeLeft(null);
 
-    const actionLabel = type === ActionType.LIVRE ? customActionText : id;
+    const actionLabel = type === ActionType.LIVRE ? customActionText : (text || id);
     pushEvent("action", actionLabel);
+
 
     try {
       const newState = await sendAction(id, type === ActionType.LIVRE ? customActionText : undefined);
@@ -477,7 +488,7 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
                       <motion.button
                         key={opt.id}
                         disabled={isLoading}
-                        onClick={() => handleAction(opt.id, opt.tipo)}
+                        onClick={() => handleAction(opt.id, opt.tipo, opt.texto)}
                         className={cn(
                           "p-3 rounded-xl text-left transition-all border flex items-center gap-3 group",
                           isLoading
@@ -486,6 +497,7 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
                         )}
                         aria-label={`Ação: ${opt.texto}`}
                       >
+
                         <div className={cn(
                           "w-10 h-10 rounded-lg flex items-center justify-center shrink-0 transition-colors",
                           opt.tipo === "EXAME" ? "bg-accent/10 text-accent" :
