@@ -72,34 +72,43 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
         </section>
       </main>
 
-      <footer className="py-12 border-t border-border/50 bg-muted/20">
+      <footer className="py-24 border-t border-white/5 bg-[#030303] relative overflow-hidden">
+        <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
         <div className="container mx-auto px-6">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-8">
-            <div className="flex flex-col items-center md:items-start gap-4">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-                  <span className="text-primary-foreground font-black text-xs">B</span>
+          <div className="flex flex-col md:flex-row justify-between items-center gap-12">
+            <div className="flex flex-col items-center md:items-start gap-6">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
+                  <span className="text-black font-black text-sm">B</span>
                 </div>
-                <span className="font-black tracking-tighter text-xl">BOLUS</span>
+                <div className="flex flex-col">
+                  <span className="font-black tracking-tighter text-2xl text-white leading-none">BOLUS</span>
+                  <span className="text-[8px] font-black tracking-[0.4em] uppercase text-primary leading-none mt-1">Medical OS v4</span>
+                </div>
               </div>
-              <p className="text-sm text-muted-foreground text-center md:text-left">
-                © 2026 BOLUS Simulator. Todos os direitos reservados.
+              <p className="text-sm text-muted-foreground text-center md:text-left font-medium max-w-xs leading-relaxed">
+                Simulação de alto rigor para profissionais que buscam a excelência clínica.
               </p>
             </div>
             
-            <div className="flex flex-col items-center md:items-end gap-4">
-              <div className="flex items-center gap-6">
-                <a href="#" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Privacidade</a>
-                <a href="#" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Termos</a>
-                <a href="#" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Suporte</a>
+            <div className="flex flex-col items-center md:items-end gap-6">
+              <div className="flex items-center gap-10">
+                <a href="#" className="text-[10px] font-black tracking-[0.2em] uppercase text-muted-foreground hover:text-primary transition-colors">Privacidade</a>
+                <a href="#" className="text-[10px] font-black tracking-[0.2em] uppercase text-muted-foreground hover:text-primary transition-colors">Termos</a>
+                <a href="#" className="text-[10px] font-black tracking-[0.2em] uppercase text-muted-foreground hover:text-primary transition-colors">Suporte</a>
               </div>
-              <div className="flex items-start gap-2 max-w-xs text-center md:text-right opacity-50">
-                <ShieldAlert className="h-3 w-3 text-accent shrink-0 mt-0.5" />
-                <p className="text-[10px] text-muted-foreground leading-normal">
-                  EXCLUSIVAMENTE EDUCACIONAL. NÃO SUBSTITUI O JULGAMENTO CLÍNICO PROFISSIONAL.
+              <div className="flex items-start gap-3 max-w-sm p-4 bg-white/5 rounded-2xl border border-white/5">
+                <ShieldAlert className="h-4 w-4 text-warning shrink-0 mt-0.5" />
+                <p className="text-[10px] font-bold text-muted-foreground leading-normal uppercase tracking-wider opacity-60">
+                  EXCLUSIVAMENTE EDUCACIONAL. O BOLUS NÃO SUBSTITUI O JULGAMENTO CLÍNICO PROFISSIONAL E NÃO DEVE SER UTILIZADO EM AMBIENTES DE ASSISTÊNCIA REAL.
                 </p>
               </div>
             </div>
+          </div>
+          <div className="mt-20 pt-8 border-t border-white/5 text-center">
+            <p className="text-[10px] font-black text-white/20 uppercase tracking-[0.5em]">
+              © 2026 BOLUS Simulator • Developed for clinical excellence
+            </p>
           </div>
         </div>
       </footer>
