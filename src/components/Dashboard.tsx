@@ -134,38 +134,38 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartGame, isLoading, userEmail
   ];
 
   return (
-    <div className="min-h-screen flex bg-background">
+    <div className="min-h-screen flex bg-background transition-colors duration-500">
       {/* Sidebar */}
       <aside className="w-16 lg:w-64 bg-card border-r border-border flex flex-col shrink-0 z-20">
         <div className="p-4 flex items-center justify-center lg:justify-start gap-3 border-b border-border h-16">
-          <div className="w-8 h-8 rounded-sm bg-primary/10 hud-border flex items-center justify-center">
-            <Stethoscope className="h-4 w-4 text-primary" />
+          <div className="w-9 h-9 rounded-xl bg-primary/5 border border-primary/10 flex items-center justify-center">
+            <Stethoscope className="h-5 w-5 text-primary" />
           </div>
           <div className="hidden lg:block">
-            <span className="font-display font-black text-sm text-primary lcd-glow block leading-tight tracking-tighter">BOLUS</span>
-            <span className="text-[9px] font-mono-vital text-muted-foreground tracking-widest uppercase">NIGHT PROTOCOL</span>
+            <span className="font-bold text-base text-foreground block leading-tight tracking-tight uppercase">BOLUS</span>
+            <span className="text-[10px] font-bold text-muted-foreground tracking-widest uppercase opacity-60">Clinical</span>
           </div>
         </div>
 
-        <nav className="flex-1 p-2 space-y-1 overflow-y-auto">
+        <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
           {navItems.map(({ id, icon: Icon, label }) => (
             <button
               key={id}
               onClick={() => setActiveTab(id)}
               className={cn(
-                "w-full flex items-center gap-3 p-3 rounded-sm text-sm font-medium transition-colors",
-                activeTab === id ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-secondary"
+                "w-full flex items-center gap-3 p-3 rounded-xl text-sm font-semibold transition-all",
+                activeTab === id ? "bg-primary text-primary-foreground shadow-sm shadow-primary/20" : "text-muted-foreground hover:bg-muted hover:text-foreground"
               )}
             >
-              <Icon className="h-5 w-5 mx-auto lg:mx-0" />
+              <Icon className="h-5 w-5 shrink-0" />
               <span className="hidden lg:block">{label}</span>
             </button>
           ))}
         </nav>
 
-        <div className="p-4 border-t border-border">
-          <div className="flex items-center gap-3 mb-3 p-2">
-            <div className="w-8 h-8 rounded-sm bg-secondary flex items-center justify-center text-xs font-bold text-foreground border border-border overflow-hidden">
+        <div className="p-4 border-t border-border space-y-4">
+          <div className="flex items-center gap-3 p-1">
+            <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center text-xs font-bold text-foreground border border-border overflow-hidden shadow-inner">
               {sidebarAvatar ? (
                 <img src={sidebarAvatar} alt="" className="w-full h-full object-cover" />
               ) : (
@@ -174,17 +174,21 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartGame, isLoading, userEmail
             </div>
             <div className="hidden lg:block overflow-hidden flex-1">
               <p className="text-xs font-bold text-foreground truncate">{displayName || userEmail}</p>
-              <p className="text-[10px] text-muted-foreground truncate">
-                {userStats ? userStats.currentLevel : "Carregando..."}
+              <p className="text-[10px] font-medium text-muted-foreground truncate uppercase tracking-tight">
+                {userStats ? userStats.currentLevel : "Nível..."}
               </p>
             </div>
           </div>
-          <Button variant="outline" size="sm" onClick={onLogout} className="w-full">
-            <LogOut className="h-4 w-4" />
-            <span className="hidden lg:inline ml-2">Sair</span>
-          </Button>
+          <div className="flex flex-col gap-2">
+            <ThemeToggle />
+            <Button variant="outline" size="sm" onClick={onLogout} className="w-full h-10 rounded-xl font-bold border-border text-muted-foreground hover:text-foreground">
+              <LogOut className="h-4 w-4 lg:mr-2" />
+              <span className="hidden lg:inline">Sair</span>
+            </Button>
+          </div>
         </div>
       </aside>
+
 
       {/* Main */}
       <main className="flex-1 p-6 lg:p-10 overflow-y-auto">
