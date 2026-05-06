@@ -320,7 +320,7 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
       )}
 
       {/* ── Enhanced Header ──────────────────────────────────────────────── */}
-      <header className="shrink-0 bg-black/40 backdrop-blur-xl border-b border-white/5 px-6 py-4 z-30 shadow-2xl">
+      <header className="shrink-0 bg-black/40 backdrop-blur-xl border-b border-white/5 px-4 sm:px-6 py-4 z-30 shadow-2xl">
         <div className="max-w-[1800px] mx-auto flex items-center justify-between gap-6">
           {/* Left: Patient Info */}
           <div className="flex items-center gap-5 min-w-0">
