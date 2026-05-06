@@ -238,6 +238,8 @@ export class PhysiologyEngine {
   private actionTimeline: ActionTimelineEntry[] = [];
   private appliedInterventions: Set<string> = new Set();
   private activeConditions: string[] = [];
+  /** Tracks accumulated time for each condition rule to apply penalties. */
+  private conditionPenaltyAccumulators: Map<number, number> = new Map();
 
   constructor(initial?: Partial<EngineVitals>) {
     this.vitals = clampVitals({
@@ -252,6 +254,7 @@ export class PhysiologyEngine {
     this.actionTimeline = [];
     this.appliedInterventions = new Set();
     this.activeConditions = [];
+    this.conditionPenaltyAccumulators.clear();
     this.vitals = clampVitals({
       hr: 80, sbp: 120, dbp: 80, spo2: 97, rr: 16, temp: 36.5,
       ...initial,
@@ -299,6 +302,7 @@ export class PhysiologyEngine {
     // Apply condition-specific penalties
     this.applyConditionPenalties(minutes);
   }
+
 
   /** Apply condition-specific degradation if not mitigated. */
   private applyConditionPenalties(elapsedMinutes: number) {
