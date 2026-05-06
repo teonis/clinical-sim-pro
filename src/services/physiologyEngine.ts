@@ -306,15 +306,26 @@ export class PhysiologyEngine {
 
   /** Apply condition-specific degradation if not mitigated. */
   private applyConditionPenalties(elapsedMinutes: number) {
-    for (const rule of CONDITION_RULES) {
+    CONDITION_RULES.forEach((rule, index) => {
       const isActive = rule.keywords.some(kw => this.activeConditions.includes(kw));
-      if (!isActive) continue;
+      if (!isActive) {
+        this.conditionPenaltyAccumulators.delete(index);
+        return;
+      }
 
       const isMitigated = rule.mitigatedBy.some(m => this.appliedInterventions.has(m));
-      if (isMitigated) continue;
+      if (isMitigated) {
+        this.conditionPenaltyAccumulators.delete(index);
+        return;
+      }
 
-      // How many penalty intervals fit in elapsed time
-      const ticks = Math.floor(elapsedMinutes / rule.intervalMinutes);
+      // Accumulate time
+      const currentAcc = this.conditionPenaltyAccumulators.get(index) ?? 0;
+      const totalAcc = currentAcc + elapsedMinutes;
+      
+      // How many penalty intervals fit in total accumulated time
+      const ticks = Math.floor(totalAcc / rule.intervalMinutes);
+      
       if (ticks > 0) {
         this.vitals = clampVitals({
           hr:   this.vitals.hr   + (rule.penalty.hr   ?? 0) * ticks,
@@ -324,9 +335,15 @@ export class PhysiologyEngine {
           rr:   this.vitals.rr   + (rule.penalty.rr   ?? 0) * ticks,
           temp: this.vitals.temp + (rule.penalty.temp ?? 0) * ticks,
         });
+        
+        // Save the remainder
+        this.conditionPenaltyAccumulators.set(index, totalAcc % rule.intervalMinutes);
+      } else {
+        this.conditionPenaltyAccumulators.set(index, totalAcc);
       }
-    }
+    });
   }
+
 
   /** Apply a deterministic intervention effect. Returns true if matched. */
   applyIntervention(actionText: string): boolean {
