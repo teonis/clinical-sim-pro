@@ -149,7 +149,14 @@ export const sendAction = async (
   const fullNarrative = conversationHistory
     .filter(m => m.role === "assistant")
     .map(m => {
-      try { const p = JSON.parse(m.content); return `${p.interface_usuario?.manchete ?? ""} ${p.interface_usuario?.narrativa_principal ?? ""} ${p.interface_usuario?.exame_fisico_detalhado ?? ""}`; }
+      try { 
+        const p = JSON.parse(m.content); 
+        return [
+          p.interface_usuario?.manchete,
+          p.interface_usuario?.narrativa_principal,
+          p.interface_usuario?.exame_fisico_detalhado
+        ].filter(Boolean).join(" ");
+      }
       catch { return ""; }
     }).join(" ");
   const protocol = detectProtocol(fullNarrative);
