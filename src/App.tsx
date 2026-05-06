@@ -114,7 +114,7 @@ const App: React.FC = () => {
             setShowWelcome(false);
           }}
         />
-        <Toaster />
+        <Toaster theme="dark" position="top-right" closeButton />
       </>
     );
   }
