@@ -127,12 +127,13 @@ const App: React.FC = () => {
     return (
       <div className="w-full h-screen bg-background flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-14 h-14 rounded-sm lcd-screen hud-border flex items-center justify-center animate-pulse">
-            <Activity className="h-7 w-7 text-primary lcd-glow" />
+          <div className="w-12 h-12 rounded-xl bg-primary/5 border border-primary/10 flex items-center justify-center animate-pulse">
+            <Activity className="h-6 w-6 text-primary" />
           </div>
-          <p className="font-display font-black text-sm text-primary lcd-glow tracking-tighter uppercase">BOLUS</p>
+          <p className="font-bold text-sm text-foreground tracking-widest uppercase opacity-40">BOLUS</p>
         </div>
       </div>
+
     );
   }
 
