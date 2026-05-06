@@ -516,6 +516,7 @@ export function evaluateProtocol(
         performedAt: null,
         targetMinutes: item.targetMinutes,
         reference: item.reference,
+        rationale: item.rationale,
         weight: item.weight,
       });
     }
