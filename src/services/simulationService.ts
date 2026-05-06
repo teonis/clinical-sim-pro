@@ -18,19 +18,25 @@ export const getConversationHistory = (): ChatMessageAI[] => [...conversationHis
 /** Map the LLM's sinais_vitais string into initial engine vitals (best-effort). */
 function parseVitalsFromResponse(state: SimulationState): Partial<EngineVitals> {
   const raw = state.dados_medicos?.sinais_vitais ?? "";
-  const nums = (pattern: RegExp): number | undefined => {
-    const m = raw.match(pattern);
-    return m ? parseFloat(m[1]) : undefined;
+  
+  const extract = (patterns: RegExp[]): number | undefined => {
+    for (const p of patterns) {
+      const m = raw.match(p);
+      if (m) return parseFloat(m[1]);
+    }
+    return undefined;
   };
+
   return {
-    hr: nums(/FC[:\s]*(\d+)/i),
-    sbp: nums(/PA[:\s]*(\d+)/i),
-    dbp: nums(/\/(\d+)\s*mmHg/i),
-    spo2: nums(/SpO2[:\s]*(\d+)/i) ?? nums(/Sat[:\s]*(\d+)/i),
-    rr: nums(/FR[:\s]*(\d+)/i),
-    temp: nums(/Temp[:\s]*([\d.]+)/i),
+    hr: extract([/FC[:\s]*(\d+)/i, /Frequência Cardíaca[:\s]*(\d+)/i, /HR[:\s]*(\d+)/i]),
+    sbp: extract([/PA[:\s]*(\d+)/i, /Pressão Arterial[:\s]*(\d+)/i, /BP[:\s]*(\d+)/i]),
+    dbp: extract([/\/(\d+)\s*mmHg/i, /PA[:\s]*\d+\/(\d+)/i, /BP[:\s]*\d+\/(\d+)/i]),
+    spo2: extract([/SpO2[:\s]*(\d+)/i, /Sat[:\s]*(\d+)/i, /Saturação[:\s]*(\d+)/i]),
+    rr: extract([/FR[:\s]*(\d+)/i, /Frequência Respiratória[:\s]*(\d+)/i, /RR[:\s]*(\d+)/i]),
+    temp: extract([/Temp[:\s]*([\d.]+)/i, /Temperatura[:\s]*([\d.]+)/i]),
   };
 }
+
 
 export const startSimulation = async (params: StartParams): Promise<SimulationState> => {
   conversationHistory = [];
