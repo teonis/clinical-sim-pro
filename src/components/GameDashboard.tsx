@@ -310,21 +310,28 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
             </div>
 
             {/* Score */}
-            <div className="lcd-screen rounded-sm px-2.5 py-1 hud-border text-center relative">
+            <div className="lcd-screen rounded-sm px-2.5 py-1 hud-border text-center relative overflow-visible">
               <span className={cn("font-mono-vital text-sm font-bold", 
                 gameState.status_simulacao.current_score >= 7 ? "text-primary" :
                 gameState.status_simulacao.current_score >= 5 ? "text-warning" : "text-destructive"
               )}>
                 {gameState.status_simulacao.current_score.toFixed(1)}
               </span>
-              {scoreDiff !== null && (
-                <span className={cn(
-                  "absolute -bottom-3.5 right-0 text-[10px] font-bold animate-bounce",
-                  scoreDiff > 0 ? "text-primary" : "text-destructive"
-                )}>
-                  {scoreDiff > 0 ? "+" : ""}{scoreDiff.toFixed(1)}
-                </span>
-              )}
+              <AnimatePresence>
+                {scoreDiff !== null && (
+                  <motion.span 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 20 }}
+                    exit={{ opacity: 0 }}
+                    className={cn(
+                      "absolute top-0 right-0 text-[10px] font-bold whitespace-nowrap",
+                      scoreDiff > 0 ? "text-primary" : "text-destructive"
+                    )}
+                  >
+                    {scoreDiff > 0 ? "+" : ""}{scoreDiff.toFixed(1)}
+                  </motion.span>
+                )}
+              </AnimatePresence>
             </div>
 
             {/* Header buttons */}
