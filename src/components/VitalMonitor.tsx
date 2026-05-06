@@ -119,5 +119,3 @@ const VitalItem = ({ icon, label, shortLabel, value, unit, color }: {
 );
 
 export default VitalMonitor;
-
-export default VitalMonitor;
