@@ -37,12 +37,24 @@ const features = [
 
 const LandingFeatures: React.FC = () => {
   return (
-    <section className="py-24 bg-muted/30">
-      <div className="container mx-auto px-6">
-        <div className="text-center mb-20">
-          <h2 className="text-3xl md:text-5xl font-bold mb-6 tracking-tight">Funcionalidades do Sistema</h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
-            Uma plataforma desenhada para transformar teoria em reflexo clínico imediato.
+    <section className="py-32 bg-[#050505] relative overflow-hidden">
+      {/* Background Decorative */}
+      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+      
+      <div className="container mx-auto px-6 relative z-10">
+        <div className="text-center mb-24">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 mb-6 backdrop-blur-sm"
+          >
+            <ShieldCheck className="h-4 w-4 text-primary" />
+            <span className="text-[10px] font-black tracking-[0.3em] uppercase text-primary">Arquitetura de Alto Rigor</span>
+          </motion.div>
+          <h2 className="text-4xl md:text-6xl font-black mb-6 tracking-tighter text-white">Funcionalidades do Sistema</h2>
+          <p className="text-muted-foreground max-w-2xl mx-auto text-xl font-medium">
+            Uma plataforma desenhada por especialistas para transformar teoria em reflexo clínico imediato.
           </p>
         </div>
 
@@ -54,13 +66,13 @@ const LandingFeatures: React.FC = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
-              className="bg-card p-8 rounded-2xl border border-border/50 hover:border-primary/30 transition-all hover:shadow-xl group"
+              className="bg-white/[0.02] p-10 rounded-[2.5rem] border border-white/5 hover:border-primary/40 transition-all hover:bg-white/[0.04] group hover:-translate-y-2"
             >
-              <div className="w-14 h-14 rounded-xl bg-primary/5 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform border border-primary/10">
-                <feature.icon className="h-7 w-7 text-primary" />
+              <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-primary/20 shadow-inner shadow-primary/20">
+                <feature.icon className="h-8 w-8 text-primary" />
               </div>
-              <h3 className="text-xl font-bold mb-4">{feature.title}</h3>
-              <p className="text-muted-foreground leading-relaxed">
+              <h3 className="text-2xl font-bold mb-4 text-white tracking-tight">{feature.title}</h3>
+              <p className="text-muted-foreground leading-relaxed text-lg">
                 {feature.description}
               </p>
             </motion.div>
