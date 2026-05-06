@@ -3,8 +3,9 @@ import { SPECIALTIES, DIFFICULTIES, StartParams } from "@/types/simulation";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowRight, Loader2, PlayCircle, ShieldCheck } from "lucide-react";
+import { ArrowRight, Loader2, PlayCircle, ShieldCheck, BookOpen, Activity } from "lucide-react";
 import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 interface StartGameProps {
   onStart: (params: StartParams) => void;
@@ -44,60 +45,63 @@ const StartGame: React.FC<StartGameProps> = ({ onStart, isLoading }) => {
 
   return (
     <motion.div 
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="space-y-8 max-w-4xl mx-auto py-4"
+      className="space-y-10 max-w-5xl mx-auto py-6"
     >
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h1 className="text-4xl font-bold text-foreground tracking-tight">Iniciar Plantão</h1>
-          <p className="text-muted-foreground mt-1 font-medium">Configure seu cenário de simulação clínica.</p>
+          <h1 className="text-5xl font-black text-white tracking-tighter">Iniciar Plantão</h1>
+          <p className="text-muted-foreground mt-2 text-lg font-medium">Configure seu cenário de simulação clínica de alto rigor.</p>
         </div>
-        <div className="flex items-center gap-2 px-3 py-1.5 bg-secondary/10 rounded-full border border-secondary/20">
-          <ShieldCheck className="h-4 w-4 text-secondary" />
-          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-            Ambiente Seguro
+        <div className="flex items-center gap-3 px-4 py-2 bg-primary/10 rounded-xl border border-primary/20 backdrop-blur-md">
+          <ShieldCheck className="h-5 w-5 text-primary" />
+          <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">
+            Ambiente Certificado
           </span>
         </div>
       </div>
 
-      <div className="bg-card rounded-2xl shadow-sm border border-border p-6 md:p-10 relative overflow-hidden group">
-        <div className="grid md:grid-cols-2 gap-10 relative">
-          <div className="space-y-8">
-            <div className="space-y-3">
-              <label className="block text-xs font-bold text-muted-foreground uppercase tracking-widest ml-1">
+      <div className="bg-white/[0.02] backdrop-blur-xl rounded-[2.5rem] shadow-2xl border border-white/5 p-8 md:p-12 relative overflow-hidden group">
+        {/* Decorative background */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-[100px] -mr-32 -mt-32" />
+        
+        <div className="grid lg:grid-cols-2 gap-12 relative z-10">
+          <div className="space-y-10">
+            <div className="space-y-4">
+              <label className="block text-xs font-black text-muted-foreground uppercase tracking-[0.3em] ml-1">
                 Especialidade Clínica
               </label>
               <Select value={specialty} onValueChange={setSpecialty}>
-                <SelectTrigger className="h-12 rounded-xl bg-muted/30 border-border text-base font-bold focus:ring-primary/20">
+                <SelectTrigger className="h-16 rounded-2xl bg-white/5 border-white/10 text-lg font-bold focus:ring-primary/20 transition-all hover:bg-white/10">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="rounded-xl border-border bg-card">
+                <SelectContent className="rounded-2xl border-white/10 bg-[#0a0a0a] text-white">
                   {SPECIALTIES.map((s) => (
-                    <SelectItem key={s} value={s} className="font-bold py-3 transition-colors">{s}</SelectItem>
+                    <SelectItem key={s} value={s} className="font-bold py-4 focus:bg-primary focus:text-primary-foreground transition-colors cursor-pointer">{s}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
 
-            <div className="space-y-3">
-              <label className="block text-xs font-bold text-muted-foreground uppercase tracking-widest ml-1">
+            <div className="space-y-4">
+              <label className="block text-xs font-black text-muted-foreground uppercase tracking-[0.3em] ml-1">
                 Nível de Proficiência
               </label>
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-3 gap-4">
                 {DIFFICULTIES.map((d) => (
                   <button
                     key={d}
                     onClick={() => setDifficulty(d)}
-                    className={`h-20 rounded-xl border transition-all flex flex-col items-center justify-center gap-1 ${
+                    className={`h-24 rounded-2xl border-2 transition-all flex flex-col items-center justify-center gap-2 group/btn ${
                       difficulty === d
-                        ? "bg-primary/10 text-primary border-primary/30 shadow-sm"
-                        : "bg-muted/30 text-muted-foreground border-border hover:bg-muted/50 hover:border-border transition-all"
+                        ? "bg-primary text-primary-foreground border-primary shadow-[0_10px_30px_rgba(var(--primary),0.3)]"
+                        : "bg-white/5 text-muted-foreground border-white/5 hover:bg-white/10 hover:border-white/10"
                     }`}
                   >
-                    <span className="text-[10px] sm:text-xs font-bold tracking-tight">{d}</span>
-                    <span className={`text-[9px] font-bold uppercase tracking-widest ${difficulty === d ? "opacity-100" : "opacity-40"}`}>
-                      {getMultiplierLabel(d)}
+                    <span className="text-xs font-black tracking-widest uppercase">{d}</span>
+                    <span className={cn("text-[9px] font-black uppercase tracking-[0.2em] opacity-60", difficulty === d ? "text-primary-foreground" : "text-primary")}>
+                      {getMultiplierLabel(d).split(' ')[1]}
                     </span>
                   </button>
                 ))}
@@ -105,13 +109,13 @@ const StartGame: React.FC<StartGameProps> = ({ onStart, isLoading }) => {
             </div>
           </div>
 
-          <div className="space-y-8 flex flex-col">
-            <div className="space-y-3 flex-1">
-              <label className="block text-xs font-bold text-muted-foreground uppercase tracking-widest ml-1">
-                Contexto Adicional (Opcional)
+          <div className="space-y-10 flex flex-col">
+            <div className="space-y-4 flex-1">
+              <label className="block text-xs font-black text-muted-foreground uppercase tracking-[0.3em] ml-1">
+                Contexto Adicional (Personalizado)
               </label>
               <Textarea
-                className="h-full min-h-[140px] rounded-xl bg-muted/30 border-border p-4 font-medium resize-none focus:ring-primary/20"
+                className="h-full min-h-[160px] rounded-2xl bg-white/5 border-white/10 p-6 font-medium resize-none focus:ring-primary/20 transition-all hover:bg-white/10 text-white placeholder:text-white/20"
                 value={customCase}
                 onChange={(e) => setCustomCase(e.target.value)}
                 placeholder="Ex: Paciente 45 anos, dor precordial típica, tabagista, HAS..."
@@ -122,17 +126,17 @@ const StartGame: React.FC<StartGameProps> = ({ onStart, isLoading }) => {
               onClick={handleStart}
               disabled={isLoading}
               size="lg"
-              className="h-14 text-base font-bold rounded-xl shadow-lg shadow-primary/10 group hover:translate-y-[-2px] active:translate-y-0 transition-all"
+              className="h-20 text-xl font-black rounded-2xl shadow-2xl shadow-primary/20 group hover:-translate-y-1 active:scale-95 transition-all bg-primary text-primary-foreground"
             >
               {isLoading ? (
                 <>
-                  <Loader2 className="h-5 w-5 animate-spin mr-2" /> 
-                  <span>Preparando Sala...</span>
+                  <Loader2 className="h-6 w-6 animate-spin mr-3" /> 
+                  <span className="tracking-widest">Sincronizando...</span>
                 </>
               ) : (
                 <>
-                  <PlayCircle className="h-5 w-5 mr-2" /> 
-                  INICIAR SIMULAÇÃO <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                  <PlayCircle className="h-6 w-6 mr-3" /> 
+                  ADMITIR PACIENTE <ArrowRight className="h-6 w-6 ml-3 group-hover:translate-x-1 transition-transform" />
                 </>
               )}
             </Button>
@@ -140,15 +144,20 @@ const StartGame: React.FC<StartGameProps> = ({ onStart, isLoading }) => {
         </div>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {[
-          { label: "Casos Clínicos", val: "1.2k+" },
-          { label: "Médicos Ativos", val: "4.5k+" },
-          { label: "Diretrizes", val: "150+" }
+          { label: "Cenários Disponíveis", val: "1.2k+", icon: BookOpen },
+          { label: "Sessões Concluídas", val: "45k+", icon: ShieldCheck },
+          { label: "Guidelines Ativos", val: "150+", icon: Activity }
         ].map((stat, i) => (
-          <div key={i} className="bg-card border border-border rounded-2xl p-4 text-center">
-            <div className="text-2xl font-bold text-primary">{stat.val}</div>
-            <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1">{stat.label}</div>
+          <div key={i} className="bg-white/[0.02] border border-white/5 rounded-3xl p-6 flex items-center gap-5 hover:bg-white/[0.05] transition-all group">
+            <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20 group-hover:scale-110 transition-transform">
+              <stat.icon className="h-6 w-6 text-primary" />
+            </div>
+            <div>
+              <div className="text-2xl font-black text-white">{stat.val}</div>
+              <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mt-1">{stat.label}</div>
+            </div>
           </div>
         ))}
       </div>
