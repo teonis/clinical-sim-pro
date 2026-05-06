@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { SimulationState, StartParams } from "@/types/simulation";
 import { startSimulation, resetConversation } from "@/services/simulationService";
-import WelcomeScreen from "@/components/WelcomeScreen";
+import LandingPage from "@/pages/LandingPage";
 import AuthScreen from "@/components/AuthScreen";
 import ResetPasswordScreen from "@/components/ResetPasswordScreen";
 import OnboardingTutorial from "@/components/OnboardingTutorial";
@@ -107,12 +107,12 @@ const App: React.FC = () => {
     }
   };
 
-  // Welcome screen
+  // Landing Page
   if (showWelcome) {
     return (
       <>
-        <WelcomeScreen
-          onContinue={() => {
+        <LandingPage
+          onStart={() => {
             localStorage.setItem("rma_welcome_seen", "true");
             setShowWelcome(false);
           }}
