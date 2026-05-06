@@ -590,7 +590,7 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
 
 interface GameOverScreenProps {
   gameState: SimulationState;
-  debriefing: { resumo: string; fortes: string; melhoria: string; gold: string } | null;
+  debriefing: { resumo: string; fortes: string; melhoria: string; gold: string; pearls: string } | null;
   protocolEval: ProtocolEvaluation | null;
   engine: ReturnType<typeof getEngine>;
   onRestart: () => void;
