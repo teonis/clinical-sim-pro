@@ -122,7 +122,7 @@ export const sendAction = async (
       currentPatientState = parsed.status_simulacao?.estado_paciente ?? "ESTAVEL";
 
       // Update conditions from latest narrative
-      const narr = `${parsed.interface_usuario?.manchete ?? ""} ${parsed.interface_usuario?.narrativa_principal ?? ""}`;
+      const narr = `${parsed.interface_usuario?.manchete ?? ""} ${parsed.interface_usuario?.narrativa_principal ?? ""} ${parsed.interface_usuario?.exame_fisico_detalhado ?? ""}`;
       engine.setConditionsFromNarrative(narr);
     } catch { /* keep default */ }
   }
