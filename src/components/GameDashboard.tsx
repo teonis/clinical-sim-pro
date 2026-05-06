@@ -34,7 +34,9 @@ import {
   User,
   MessageSquare,
   ChevronRight,
+  Loader2,
 } from "lucide-react";
+
 
 
 // ── Types ────────────────────────────────────────────────────────────────
