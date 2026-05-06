@@ -1,5 +1,6 @@
 import { Heart, Activity, Wind, Thermometer } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { motion } from 'framer-motion';
 
 type PatientStatus = 'stable' | 'warning' | 'critical';
 
@@ -48,29 +49,37 @@ const VitalMonitor = ({ fc, pas, pad, satO2, fr, status }: VitalMonitorProps) =>
   };
 
   return (
-    <div className={cn('lcd-screen rounded-sm p-3 transition-colors duration-500', statusBorder[status])}>
+    <div 
+      className={cn('lcd-screen rounded-sm p-3 transition-colors duration-500', statusBorder[status])}
+      role="region" 
+      aria-label="Monitor de Sinais Vitais"
+    >
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
-          <div className={cn('h-2 w-2 rounded-full', statusDot[status])} />
+          <div className={cn('h-2 w-2 rounded-full', statusDot[status])} aria-hidden="true" />
           <span className="text-[10px] font-mono-vital font-medium uppercase tracking-widest text-primary/60">
             MONITOR v2.4
           </span>
         </div>
-        <span className={cn(
-          'text-[10px] font-mono-vital font-bold uppercase px-2 py-0.5 rounded-sm',
-          statusBadge[status],
-        )}>
+        <span 
+          className={cn(
+            'text-[10px] font-mono-vital font-bold uppercase px-2 py-0.5 rounded-sm',
+            statusBadge[status],
+          )}
+          aria-live="polite"
+        >
           {statusLabel[status]}
         </span>
       </div>
       
       <div className="grid grid-cols-4 gap-2">
         <VitalItem
-          icon={<Heart className="h-3.5 w-3.5" />}
+          icon={<motion.div animate={{ scale: fc > 100 ? [1, 1.2, 1] : 1 }} transition={{ repeat: Infinity, duration: 60/fc }}><Heart className="h-3.5 w-3.5" /></motion.div>}
           label="FC"
           value={`${fc}`}
           unit="bpm"
           color={getVitalColor('fc')}
+          description={`${fc} batimentos por minuto`}
         />
         <VitalItem
           icon={<Activity className="h-3.5 w-3.5" />}
@@ -78,6 +87,7 @@ const VitalMonitor = ({ fc, pas, pad, satO2, fr, status }: VitalMonitorProps) =>
           value={`${pas}/${pad}`}
           unit="mmHg"
           color={getVitalColor('pa')}
+          description={`Pressão arterial ${pas} por ${pad} milímetros de mercúrio`}
         />
         <VitalItem
           icon={<Wind className="h-3.5 w-3.5" />}
@@ -85,6 +95,7 @@ const VitalMonitor = ({ fc, pas, pad, satO2, fr, status }: VitalMonitorProps) =>
           value={`${satO2}`}
           unit="%"
           color={getVitalColor('satO2')}
+          description={`Saturação de oxigênio em ${satO2} por cento`}
         />
         <VitalItem
           icon={<Thermometer className="h-3.5 w-3.5" />}
@@ -92,26 +103,28 @@ const VitalMonitor = ({ fc, pas, pad, satO2, fr, status }: VitalMonitorProps) =>
           value={`${fr}`}
           unit="irpm"
           color={getVitalColor('fr')}
+          description={`Frequência respiratória em ${fr} incursões por minuto`}
         />
       </div>
     </div>
   );
 };
 
-const VitalItem = ({ icon, label, value, unit, color }: {
+const VitalItem = ({ icon, label, value, unit, color, description }: {
   icon: React.ReactNode;
   label: string;
   value: string;
   unit: string;
   color: string;
+  description: string;
 }) => (
-  <div className="flex flex-col items-center gap-0.5">
+  <div className="flex flex-col items-center gap-0.5" aria-label={description}>
     <div className={cn('flex items-center gap-1', color)}>
       {icon}
-      <span className="text-[10px] font-mono-vital font-medium uppercase tracking-wider text-muted-foreground">{label}</span>
+      <span className="text-[10px] font-mono-vital font-medium uppercase tracking-wider text-muted-foreground" aria-hidden="true">{label}</span>
     </div>
-    <span className={cn('font-mono-vital text-lg font-bold leading-none lcd-glow', color)}>{value}</span>
-    <span className="text-[9px] font-mono-vital text-muted-foreground">{unit}</span>
+    <span className={cn('font-mono-vital text-lg font-bold leading-none lcd-glow', color)} aria-hidden="true">{value}</span>
+    <span className="text-[9px] font-mono-vital text-muted-foreground" aria-hidden="true">{unit}</span>
   </div>
 );
 
