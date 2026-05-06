@@ -3,8 +3,9 @@ import { SPECIALTIES, DIFFICULTIES, StartParams } from "@/types/simulation";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowRight, Loader2, PlayCircle, ShieldCheck } from "lucide-react";
+import { ArrowRight, Loader2, PlayCircle, ShieldCheck, BookOpen, Activity } from "lucide-react";
 import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 interface StartGameProps {
   onStart: (params: StartParams) => void;
