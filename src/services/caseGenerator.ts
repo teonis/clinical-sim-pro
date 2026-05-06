@@ -212,7 +212,7 @@ const TEMPLATES: CaseTemplate[] = [
         ? "dor torácica em aperto há 2 horas, irradiando para ombro esquerdo, com náuseas leves"
         : "desconforto torácico retroesternal há 4 horas, em aperto, sem irradiação clara";
       const duration = p.severity === "grave" ? "há 1 hora" : p.severity === "moderada" ? "há 3 horas" : "há 6 horas";
-      return `Paciente ${p.sex === "M" ? "masculino" : "feminino"}, ${p.age} anos, dá entrada na emergência com ${painDesc}, iniciada ${duration}. Antecedentes: ${formatComorbidities(p.comorbidities)}. Gravidade do quadro: ${p.severity}. Gere um caso de IAM com Supra de ST adequado a este perfil. Adicione sons de gemidos de dor e um ambiente tenso de pronto-socorro.`;
+      return `Paciente ${p.sex === "M" ? "masculino" : "feminino"}, ${p.age} anos, dá entrada na emergência com ${painDesc}, iniciada ${duration}. Antecedentes: ${formatComorbidities(p.comorbidities)}. Gravidade do quadro: ${p.severity}. Gere um caso de IAM com Supra de ST (STEMI) adequado a este perfil. Adicione sons de gemidos de dor e um ambiente tenso de pronto-socorro.`;
     },
   },
   {
