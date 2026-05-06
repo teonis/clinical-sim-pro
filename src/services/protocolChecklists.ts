@@ -503,6 +503,7 @@ export function evaluateProtocol(
         performedAt: matchedEntry.gameTimeMinutes,
         targetMinutes: item.targetMinutes,
         reference: item.reference,
+        rationale: item.rationale,
         weight: item.weight,
       });
       // Full credit for done, partial for late
