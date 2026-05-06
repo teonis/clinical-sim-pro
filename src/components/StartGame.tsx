@@ -161,7 +161,6 @@ const StartGame: React.FC<StartGameProps> = ({ onStart, isLoading }) => {
         ))}
       </div>
     </motion.div>
-    </motion.div>
   );
 };
 
