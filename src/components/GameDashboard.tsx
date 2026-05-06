@@ -355,17 +355,20 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
 
       {/* ── Vital Monitor ─────────────────────────────────────────────── */}
       {!isGameOver && (
-        <div className="shrink-0 px-3 py-2 bg-background">
-          <VitalMonitor
-            fc={vitals.hr}
-            pas={vitals.sbp}
-            pad={vitals.dbp}
-            satO2={vitals.spo2}
-            fr={vitals.rr}
-            status={vitalStatus}
-          />
+        <div className="shrink-0 px-4 py-4 bg-muted/20">
+          <div className="max-w-7xl mx-auto">
+            <VitalMonitor
+              fc={vitals.hr}
+              pas={vitals.sbp}
+              pad={vitals.dbp}
+              satO2={vitals.spo2}
+              fr={vitals.rr}
+              status={vitalStatus}
+            />
+          </div>
         </div>
       )}
+
 
       {/* ── Main Content: Event Log or Debriefing ─────────────────────── */}
       <div className="flex-1 overflow-hidden">
