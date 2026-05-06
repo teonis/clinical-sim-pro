@@ -260,58 +260,59 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
 
   // ── Render ─────────────────────────────────────────────────────────────
   return (
-    <div className="flex flex-col h-[100dvh] bg-background overflow-hidden">
+    <div className="flex flex-col h-[100dvh] bg-background text-foreground overflow-hidden transition-colors duration-500">
       {/* Critical Timer Bar */}
       {timeLeft !== null && maxTime !== null && !isGameOver && (
         <div className="shrink-0 z-50">
-          <div className="bg-destructive text-destructive-foreground px-4 py-2 flex justify-between items-center animate-pulse">
+          <div className="bg-accent text-accent-foreground px-4 py-2 flex justify-between items-center animate-pulse">
             <span className="text-xs font-bold uppercase tracking-widest flex items-center gap-2">
-              <Clock className="h-4 w-4 animate-spin" /> Decisão Crítica
+              <Clock className="h-4 w-4" /> Decisão Crítica
             </span>
-            <span className="font-mono-vital text-xl font-bold">{timeLeft}s</span>
+            <span className="font-bold text-lg">{timeLeft}s</span>
           </div>
-          <Progress value={(timeLeft / maxTime) * 100} className="h-1 rounded-none [&>div]:bg-destructive" />
+          <Progress value={(timeLeft / maxTime) * 100} className="h-1 rounded-none bg-accent/20 [&>div]:bg-accent" />
         </div>
       )}
 
       {/* ── Fixed Header ──────────────────────────────────────────────── */}
-      <header className="shrink-0 bg-card border-b border-border px-3 py-2.5 z-30">
-        <div className="flex items-center justify-between gap-2">
-          {/* Left: logo + case name */}
-          <div className="flex items-center gap-2 min-w-0">
-            <div className="w-7 h-7 rounded-sm bg-primary/10 hud-border flex items-center justify-center shrink-0">
-              <Stethoscope className="h-3.5 w-3.5 text-primary" />
+      <header className="shrink-0 bg-background/80 backdrop-blur-md border-b border-border px-4 py-3 z-30">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+          {/* Left: Patient Info */}
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-10 h-10 rounded-xl bg-primary/5 flex items-center justify-center shrink-0 border border-primary/10">
+              <User className="h-5 w-5 text-primary" />
             </div>
             <div className="min-w-0">
-              <h1 className="text-xs font-display font-bold text-foreground truncate leading-tight">
+              <h1 className="text-sm font-bold text-foreground truncate leading-tight">
                 {gameState.interface_usuario.manchete}
               </h1>
               <div className="flex items-center gap-2 mt-0.5">
-                <span className={cn("text-[10px] font-mono-vital font-bold uppercase", statusColor)}>
+                <span className={cn("text-[10px] font-bold uppercase tracking-wider", statusColor)}>
                   {patientState}
                 </span>
                 {generatedCase && (
-                  <span className="text-[10px] text-muted-foreground font-mono-vital">
-                    {generatedCase.patient.sex === "M" ? "♂" : "♀"} {generatedCase.patient.age}a
+                  <span className="text-[10px] text-muted-foreground font-medium bg-muted px-1.5 py-0.5 rounded">
+                    {generatedCase.patient.sex === "M" ? "Masculino" : "Feminino"}, {generatedCase.patient.age} anos
                   </span>
                 )}
               </div>
             </div>
           </div>
 
-          {/* Right: clock + score + actions */}
-          <div className="flex items-center gap-2 shrink-0">
-            {/* Game Clock */}
-            <div className="lcd-screen rounded-sm px-2.5 py-1 hud-border flex items-center gap-1.5">
-              <Clock className="h-3 w-3 text-primary" />
-              <span className="font-mono-vital text-sm font-bold text-primary lcd-glow">
+          {/* Right: Controls & Stats */}
+          <div className="flex items-center gap-3 shrink-0">
+            {/* Simulation Time */}
+            <div className="hidden sm:flex items-center gap-2 bg-muted/50 px-3 py-1.5 rounded-lg border border-border/50">
+              <Clock className="h-3.5 w-3.5 text-muted-foreground" />
+              <span className="text-sm font-bold text-foreground tabular-nums">
                 {engine.getFormattedTime()}
               </span>
             </div>
 
             {/* Score */}
-            <div className="lcd-screen rounded-sm px-2.5 py-1 hud-border text-center relative overflow-visible">
-              <span className={cn("font-mono-vital text-sm font-bold", 
+            <div className="relative flex items-center gap-2 bg-primary/5 px-3 py-1.5 rounded-lg border border-primary/10">
+              <span className="text-[10px] font-bold text-primary uppercase tracking-tight hidden xs:block">Score</span>
+              <span className={cn("text-sm font-bold tabular-nums", 
                 gameState.status_simulacao.current_score >= 7 ? "text-primary" :
                 gameState.status_simulacao.current_score >= 5 ? "text-warning" : "text-destructive"
               )}>
@@ -320,12 +321,12 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
               <AnimatePresence>
                 {scoreDiff !== null && (
                   <motion.span 
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 20 }}
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: -15 }}
                     exit={{ opacity: 0 }}
                     className={cn(
                       "absolute top-0 right-0 text-[10px] font-bold whitespace-nowrap",
-                      scoreDiff > 0 ? "text-primary" : "text-destructive"
+                      scoreDiff > 0 ? "text-success" : "text-destructive"
                     )}
                   >
                     {scoreDiff > 0 ? "+" : ""}{scoreDiff.toFixed(1)}
@@ -334,16 +335,21 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
               </AnimatePresence>
             </div>
 
-            {/* Header buttons */}
-            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={onRestart} title="Reiniciar">
-              <RotateCcw className="h-3.5 w-3.5" />
-            </Button>
-            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={onExit} title="Sair">
-              <LogOut className="h-3.5 w-3.5" />
-            </Button>
+            <div className="h-6 w-px bg-border mx-1 hidden sm:block" />
+
+            <div className="flex items-center gap-1">
+              <ThemeToggle />
+              <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground" onClick={onRestart} title="Reiniciar">
+                <RotateCcw className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground" onClick={onExit} title="Sair">
+                <LogOut className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </div>
       </header>
+
 
       {/* ── Vital Monitor ─────────────────────────────────────────────── */}
       {!isGameOver && (
