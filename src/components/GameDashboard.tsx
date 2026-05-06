@@ -229,15 +229,19 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
   };
 
   const parseDebriefing = (text: string) => {
-    const sections = { resumo: "", fortes: "", melhoria: "", gold: "" };
+    const sections = { resumo: "", fortes: "", melhoria: "", gold: "", pearls: "" };
     const r = text.match(/\[RESUMO\]([\s\S]*?)(\[|$)/);
     const f = text.match(/\[PONTOS FORTES\]([\s\S]*?)(\[|$)/);
     const m = text.match(/\[PONTOS DE MELHORIA\]([\s\S]*?)(\[|$)/);
     const g = text.match(/\[GOLD STANDARD\]([\s\S]*?)(\[|$)/);
+    const p = text.match(/\[CLINICAL PEARLS\]([\s\S]*?)(\[|$)/);
+    
     if (r) sections.resumo = r[1].trim();
     if (f) sections.fortes = f[1].trim();
     if (m) sections.melhoria = m[1].trim();
     if (g) sections.gold = g[1].trim();
+    if (p) sections.pearls = p[1].trim();
+    
     if (!sections.resumo && !sections.fortes) sections.resumo = text;
     return sections;
   };
