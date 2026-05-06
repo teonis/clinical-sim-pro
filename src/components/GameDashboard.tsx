@@ -78,6 +78,8 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
   const [eventLog, setEventLog] = useState<EventLogEntry[]>([]);
   const eventLogEndRef = useRef<HTMLDivElement>(null);
   const eventIdRef = useRef(0);
+  const scoreTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
 
   // ── Session init ───────────────────────────────────────────────────────
   useEffect(() => {
