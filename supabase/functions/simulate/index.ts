@@ -112,7 +112,7 @@ serve(async (req) => {
       body: JSON.stringify({
         model: "google/gemini-3-flash-preview",
         messages: allMessages,
-        temperature: 1.0,
+        temperature: 0.7,
         response_format: { type: "json_object" },
       }),
     });
