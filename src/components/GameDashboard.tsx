@@ -792,6 +792,21 @@ const GameOverScreen: React.FC<GameOverScreenProps> = ({
                 <p className="text-xs text-muted-foreground leading-relaxed italic">{debriefing.gold}</p>
               </div>
             )}
+            {debriefing.pearls && (
+              <div className="bg-primary/5 p-6 rounded-2xl border border-primary/10 shadow-sm">
+                <h4 className="text-[10px] font-bold text-primary uppercase mb-3 flex items-center gap-2 tracking-widest">
+                  <GraduationCap className="h-4 w-4" /> Pérolas Clínicas
+                </h4>
+                <div className="space-y-3">
+                  {debriefing.pearls.split("\n").filter(p => p.trim()).map((pearl, i) => (
+                    <div key={i} className="flex gap-3 items-start">
+                      <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
+                      <p className="text-sm text-foreground/80 leading-relaxed italic">{pearl.replace(/^[•\-\d.]+\s*/, "")}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
 
