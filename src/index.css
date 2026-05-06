@@ -90,9 +90,27 @@
     font-family: 'JetBrains Mono', monospace;
   }
 
-  .animate-pulse-vital {
-    animation: pulseVital 1.5s ease-in-out infinite;
+  .animate-scan-line {
+    animation: scan-line 4s linear infinite;
   }
+
+  .animate-clinical-pulse {
+    animation: clinical-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .glass-panel {
+    @apply bg-black/20 backdrop-blur-md border border-white/5;
+  }
+}
+
+@keyframes scan-line {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+@keyframes clinical-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(0.98); }
 }
 
 @keyframes pulseVital {
