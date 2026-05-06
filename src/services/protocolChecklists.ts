@@ -23,6 +23,8 @@ export interface ProtocolItem {
   weight: number;
   /** Bibliographic reference for this recommendation */
   reference: string;
+  /** Clinical rationale for why this action is important */
+  rationale: string;
 }
 
 export interface ProtocolDefinition {
