@@ -207,7 +207,12 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
 
 
     try {
-      const newState = await sendAction(id, type === ActionType.LIVRE ? customActionText : undefined);
+      const actionPayload = type === ActionType.LIVRE ? customActionText : undefined;
+      const enrichedAction = diagnosticHypothesis.trim() 
+        ? `[IMPRESSÃO CLÍNICA DO ALUNO: ${diagnosticHypothesis}]\n${actionPayload || actionLabel}`
+        : actionPayload;
+
+      const newState = await sendAction(id, enrichedAction);
       setGameState(newState);
       setCustomActionText("");
 
