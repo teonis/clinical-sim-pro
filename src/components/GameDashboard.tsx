@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Send,
   RotateCcw,
@@ -52,6 +53,7 @@ interface EventLogEntry {
 }
 
 // ── Component ────────────────────────────────────────────────────────────
+
 
 const GameDashboard: React.FC<GameDashboardProps> = ({
   initialState,
