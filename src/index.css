@@ -110,7 +110,7 @@
   }
 
   .glass-panel {
-    @apply bg-black/20 backdrop-blur-md border border-white/5;
+    @apply bg-white/50 backdrop-blur-md border border-black/5;
   }
 }
 
@@ -121,7 +121,7 @@
 
 @keyframes clinical-pulse {
   0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.8; transform: scale(0.98); }
+  50% { opacity: 0.8; transform: scale(0.99); }
 }
 
 @keyframes pulseVital {
