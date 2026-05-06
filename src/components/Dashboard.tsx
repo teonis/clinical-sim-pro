@@ -11,6 +11,7 @@ import { Progress } from "@/components/ui/progress";
 import StartGame from "@/components/StartGame";
 import SessionReview from "@/components/SessionReview";
 import ProfilePerformance from "@/components/ProfilePerformance";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { cn } from "@/lib/utils";
 import {
   Home, BarChart3, Clock, MessageSquare, LogOut, Stethoscope,
@@ -18,6 +19,7 @@ import {
   Ambulance, Wind, Bug, Baby, Bone, GraduationCap, ChevronRight,
   Lock, Eye, EyeOff, Pencil, Save, Loader2, User, Shield,
 } from "lucide-react";
+
 import { StartParams } from "@/types/simulation";
 
 type TabType = "home" | "performance" | "history" | "feedback";
