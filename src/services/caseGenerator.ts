@@ -247,7 +247,7 @@ const TEMPLATES: CaseTemplate[] = [
         : p.severity === "moderada"
         ? `sepse com taquicardia, febre alta, hipotensão leve, foco provável ${focus}`
         : `sinais de SIRS com foco infeccioso ${focus}, sem disfunção orgânica evidente`;
-      return `Paciente ${p.sex === "M" ? "masculino" : "feminino"}, ${p.age} anos, trazido à emergência com ${desc}. Antecedentes: ${formatComorbidities(p.comorbidities)}. Gravidade do quadro: ${p.severity}. Gere um caso de Sepse adequado a este perfil. Descreva a voz fraca do paciente e o som dos alarmes do monitor.`;
+      return `Paciente ${p.sex === "M" ? "masculino" : "feminino"}, ${p.age} anos, trazido à emergência com ${desc}. Antecedentes: ${formatComorbidities(p.comorbidities)}. Gravidade do quadro: ${p.severity}. Gere um caso de Sepse ou Choque Séptico adequado a este perfil. Descreva a voz fraca do paciente e o som dos alarmes do monitor.`;
     },
   },
 ];
