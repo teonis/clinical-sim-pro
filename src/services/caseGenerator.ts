@@ -38,6 +38,9 @@ export interface CaseTemplate {
   matchSpecialties: string[];
   /** Base vitals before patient profile adjustments */
   baseVitals: Partial<EngineVitals>;
+  /** Initial findings for Physical Exam and Labs */
+  physicalExamBase: string;
+  labResultsBase: string;
   /** Function that builds the scenario text from the patient profile */
   buildScenario: (patient: PatientProfile) => string;
 }
