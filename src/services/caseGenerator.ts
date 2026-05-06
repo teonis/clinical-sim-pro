@@ -26,6 +26,8 @@ export interface GeneratedCase {
   specialty: string;
   patient: PatientProfile;
   initialVitals: Partial<EngineVitals>;
+  physicalExamBase: string;
+  labResultsBase: string;
   /** Full scenario text to inject as caso_especifico */
   scenarioPrompt: string;
 }
