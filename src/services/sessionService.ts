@@ -24,7 +24,8 @@ export const createGameSession = async (
   initialState: SimulationState,
   conversationHistory: ChatMessageAI[]
 ): Promise<string | null> => {
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { session } } = await supabase.auth.getSession();
+  const user = session?.user;
   if (!user) return null;
 
   const { data, error } = await supabase
