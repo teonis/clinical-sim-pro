@@ -37,9 +37,10 @@ const features = [
 
 const LandingFeatures: React.FC = () => {
   return (
-    <section className="py-32 bg-[#050505] relative overflow-hidden">
+    <section className="py-32 bg-[#030303] relative overflow-hidden">
       {/* Background Decorative */}
-      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+      <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/10 to-transparent" />
       
       <div className="container mx-auto px-6 relative z-10">
         <div className="text-center mb-24">
@@ -47,14 +48,14 @@ const LandingFeatures: React.FC = () => {
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 mb-6 backdrop-blur-sm"
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-6 backdrop-blur-sm"
           >
             <ShieldCheck className="h-4 w-4 text-primary" />
-            <span className="text-[10px] font-black tracking-[0.3em] uppercase text-primary">Arquitetura de Alto Rigor</span>
+            <span className="text-[10px] font-black tracking-[0.3em] uppercase text-primary">Engenharia de Alto Rigor</span>
           </motion.div>
-          <h2 className="text-4xl md:text-6xl font-black mb-6 tracking-tighter text-white">Funcionalidades do Sistema</h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto text-xl font-medium">
-            Uma plataforma desenhada por especialistas para transformar teoria em reflexo clínico imediato.
+          <h2 className="text-5xl md:text-7xl font-black mb-6 tracking-tighter text-white uppercase">Arquitetura Clínica</h2>
+          <p className="text-muted-foreground max-w-2xl mx-auto text-xl font-medium tracking-tight">
+            Uma plataforma desenhada para transformar teoria em reflexo clínico imediato através de simulação imersiva.
           </p>
         </div>
 
@@ -66,13 +67,13 @@ const LandingFeatures: React.FC = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
-              className="bg-white/[0.02] p-10 rounded-[2.5rem] border border-white/5 hover:border-primary/40 transition-all hover:bg-white/[0.04] group hover:-translate-y-2"
+              className="bg-white/[0.02] p-12 rounded-[3rem] border border-white/5 hover:border-primary/40 transition-all hover:bg-white/[0.04] group hover:-translate-y-2 shadow-2xl"
             >
-              <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform border border-primary/20 shadow-inner shadow-primary/20">
+              <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-10 group-hover:scale-110 transition-transform border border-primary/20 shadow-[0_0_30px_rgba(var(--primary),0.1)]">
                 <feature.icon className="h-8 w-8 text-primary" />
               </div>
-              <h3 className="text-2xl font-bold mb-4 text-white tracking-tight">{feature.title}</h3>
-              <p className="text-muted-foreground leading-relaxed text-lg">
+              <h3 className="text-2xl font-black mb-4 text-white tracking-tight uppercase">{feature.title}</h3>
+              <p className="text-muted-foreground leading-relaxed text-lg font-medium tracking-tight">
                 {feature.description}
               </p>
             </motion.div>
