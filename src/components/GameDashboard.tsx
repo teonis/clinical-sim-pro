@@ -426,8 +426,7 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
       )}
 
 
-      {/* ── Main Content: Event Log or Debriefing ─────────────────────── */}
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-hidden flex flex-col">
         {isGameOver ? (
           <GameOverScreen
             gameState={gameState}
@@ -438,78 +437,159 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
             onExit={onExit}
           />
         ) : (
-          <ScrollArea className="h-full">
-            <div className="max-w-4xl mx-auto px-4 py-6 space-y-6 pb-24">
-              <AnimatePresence initial={false}>
-                {eventLog.map((entry) => (
-                  <motion.div
-                    key={entry.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className={cn(
-                      "flex gap-3",
-                      entry.type === "action" ? "flex-row-reverse" : "flex-row"
-                    )}
-                  >
-                    {entry.type !== "action" ? (
-                      /* AI / System messages */
-                      <div className="flex gap-3 max-w-[85%] sm:max-w-[75%]">
-                        <div className={cn(
-                          "shrink-0 w-8 h-8 rounded-lg flex items-center justify-center mt-1 shadow-sm",
-                          entry.type === "narrative" ? "bg-primary text-primary-foreground" :
-                          entry.type === "mentor" ? "bg-secondary text-secondary-foreground" :
-                          "bg-destructive text-destructive-foreground"
-                        )}>
-                          {getEventIcon(entry.type)}
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
+            <div className="px-4 border-b border-border bg-card/50">
+              <TabsList className="h-12 w-full max-w-md mx-auto bg-transparent gap-4">
+                <TabsTrigger value="narrative" className="flex-1 data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none font-bold text-xs uppercase tracking-widest gap-2">
+                  <MessageSquare className="h-3.5 w-3.5" /> Prontuário
+                </TabsTrigger>
+                <TabsTrigger value="exam" className="flex-1 data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none font-bold text-xs uppercase tracking-widest gap-2">
+                  <Stethoscope className="h-3.5 w-3.5" /> Exame Físico
+                </TabsTrigger>
+                <TabsTrigger value="labs" className="flex-1 data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none font-bold text-xs uppercase tracking-widest gap-2">
+                  <Activity className="h-3.5 w-3.5" /> Exames
+                </TabsTrigger>
+              </TabsList>
+            </div>
+
+            <TabsContent value="narrative" className="flex-1 overflow-hidden m-0 p-0">
+              <ScrollArea className="h-full">
+                <div className="max-w-4xl mx-auto px-4 py-6 space-y-6 pb-24">
+                  {/* Preceptor Hint */}
+                  <AnimatePresence>
+                    {gameState.interface_usuario.dicas_preceptor && (
+                      <motion.div 
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="bg-warning/10 border border-warning/20 rounded-2xl p-4 flex gap-3 items-start shadow-sm"
+                      >
+                        <GraduationCap className="h-5 w-5 text-warning shrink-0" />
+                        <div>
+                          <p className="text-[10px] font-bold text-warning uppercase tracking-widest mb-1">Dica do Preceptor</p>
+                          <p className="text-sm text-foreground/80 leading-relaxed italic">{gameState.interface_usuario.dicas_preceptor}</p>
                         </div>
-                        <div className="space-y-1">
-                          <div className={cn(
-                            "rounded-2xl rounded-tl-sm px-4 py-3 text-sm leading-relaxed shadow-sm",
-                            entry.type === "narrative" ? "bg-card border border-border text-foreground" :
-                            entry.type === "mentor" ? "bg-secondary/10 border border-secondary/20 text-foreground italic" :
-                            "bg-destructive/5 border border-destructive/20 text-destructive"
-                          )}>
-                            <div className="whitespace-pre-line">{renderWithTooltips(entry.text)}</div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
+                  <AnimatePresence initial={false}>
+                    {eventLog.map((entry) => (
+                      <motion.div
+                        key={entry.id}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className={cn(
+                          "flex gap-3",
+                          entry.type === "action" ? "flex-row-reverse" : "flex-row"
+                        )}
+                      >
+                        {entry.type !== "action" ? (
+                          <div className="flex gap-3 max-w-[85%] sm:max-w-[75%]">
+                            <div className={cn(
+                              "shrink-0 w-8 h-8 rounded-lg flex items-center justify-center mt-1 shadow-sm",
+                              entry.type === "narrative" ? "bg-primary text-primary-foreground" :
+                              entry.type === "mentor" ? "bg-secondary text-secondary-foreground" :
+                              "bg-destructive text-destructive-foreground"
+                            )}>
+                              {getEventIcon(entry.type)}
+                            </div>
+                            <div className="space-y-1">
+                              <div className={cn(
+                                "rounded-2xl rounded-tl-sm px-4 py-3 text-sm leading-relaxed shadow-sm",
+                                entry.type === "narrative" ? "bg-card border border-border text-foreground" :
+                                entry.type === "mentor" ? "bg-secondary/10 border border-secondary/20 text-foreground italic" :
+                                "bg-destructive/5 border border-destructive/20 text-destructive"
+                              )}>
+                                <div className="whitespace-pre-line">{renderWithTooltips(entry.text)}</div>
+                              </div>
+                              <span className="text-[10px] text-muted-foreground font-medium ml-1">
+                                {entry.timestamp}
+                              </span>
+                            </div>
                           </div>
-                          <span className="text-[10px] text-muted-foreground font-medium ml-1">
-                            {entry.timestamp}
-                          </span>
-                        </div>
-                      </div>
-                    ) : (
-                      /* User actions */
-                      <div className="flex flex-col items-end max-w-[80%]">
-                        <div className="rounded-2xl rounded-tr-sm px-4 py-2.5 bg-primary text-primary-foreground text-sm font-semibold shadow-md">
-                          {entry.text}
-                        </div>
-                        <span className="text-[10px] text-muted-foreground font-medium mt-1 mr-1">
-                          {entry.timestamp}
-                        </span>
-                      </div>
-                    )}
-                  </motion.div>
-                ))}
-              </AnimatePresence>
+                        ) : (
+                          <div className="flex flex-col items-end max-w-[80%]">
+                            <div className="rounded-2xl rounded-tr-sm px-4 py-2.5 bg-primary text-primary-foreground text-sm font-semibold shadow-md">
+                              {entry.text}
+                            </div>
+                            <span className="text-[10px] text-muted-foreground font-medium mt-1 mr-1">
+                              {entry.timestamp}
+                            </span>
+                          </div>
+                        )}
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                  <div ref={eventLogEndRef} />
+                </div>
+              </ScrollArea>
+            </TabsContent>
 
-
-              {isLoading && (
-                <div className="flex gap-2">
-                  <div className="shrink-0 w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Stethoscope className="h-3 w-3 text-primary animate-pulse" />
-                  </div>
-                  <div className="bg-card border border-border rounded-lg rounded-tl-none px-4 py-3">
-                    <div className="flex items-center gap-1.5">
-                      <div className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce" />
-                      <div className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce [animation-delay:0.15s]" />
-                      <div className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce [animation-delay:0.3s]" />
+            <TabsContent value="exam" className="flex-1 overflow-hidden m-0 p-0">
+              <ScrollArea className="h-full">
+                <div className="max-w-2xl mx-auto px-6 py-8 space-y-6">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                      <Stethoscope className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold">Exame Físico</h3>
+                      <p className="text-xs text-muted-foreground uppercase tracking-widest font-medium">Achados Clínicos Detalhados</p>
                     </div>
                   </div>
+                  
+                  <Card className="border-border shadow-sm overflow-hidden">
+                    <CardContent className="p-6">
+                      {gameState.interface_usuario.exame_fisico_detalhado ? (
+                        <div className="prose prose-sm dark:prose-invert max-w-none">
+                          <p className="text-sm leading-relaxed text-foreground/80 whitespace-pre-line">
+                            {gameState.interface_usuario.exame_fisico_detalhado}
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="text-center py-12 space-y-3">
+                          <Stethoscope className="h-8 w-8 text-muted-foreground/30 mx-auto" />
+                          <p className="text-sm text-muted-foreground italic">Realize uma inspeção para ver detalhes.</p>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
                 </div>
-              )}
+              </ScrollArea>
+            </TabsContent>
 
-              <div ref={eventLogEndRef} />
-            </div>
-          </ScrollArea>
+            <TabsContent value="labs" className="flex-1 overflow-hidden m-0 p-0">
+              <ScrollArea className="h-full">
+                <div className="max-w-2xl mx-auto px-6 py-8 space-y-6">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center">
+                      <Microscope className="h-5 w-5 text-secondary" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold">Laboratório & Imagem</h3>
+                      <p className="text-xs text-muted-foreground uppercase tracking-widest font-medium">Resultados de Exames Solicitados</p>
+                    </div>
+                  </div>
+                  
+                  <Card className="border-border shadow-sm">
+                    <CardContent className="p-6">
+                      {gameState.interface_usuario.achados_exames_detalhados ? (
+                        <div className="bg-muted/30 rounded-lg p-4 font-mono text-xs leading-relaxed border border-border">
+                          <p className="whitespace-pre-line">{gameState.interface_usuario.achados_exames_detalhados}</p>
+                        </div>
+                      ) : (
+                        <div className="text-center py-12 space-y-3">
+                          <Microscope className="h-8 w-8 text-muted-foreground/30 mx-auto" />
+                          <p className="text-sm text-muted-foreground italic">Solicite exames para visualizar os resultados aqui.</p>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </div>
+              </ScrollArea>
+            </TabsContent>
+          </Tabs>
         )}
       </div>
 
