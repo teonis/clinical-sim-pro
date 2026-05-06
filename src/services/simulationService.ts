@@ -60,7 +60,7 @@ export const startSimulation = async (params: StartParams): Promise<SimulationSt
   // Seed engine with generated vitals (will be overwritten by LLM response if available)
   const engine = resetEngine(engineSeedVitals);
 
-  const startCommand = `START_GAME { "especialidade": "${params.especialidade}", "dificuldade": "${params.dificuldade}", "caso_especifico": "${generatedScenario}" }\n\n[DADOS VITAIS INICIAIS DESEJADOS]: ${engine.toPromptBlock()}`;
+  const startCommand = `START_GAME { "especialidade": "${params.especialidade}", "dificuldade": "${params.dificuldade}", "caso_especifico": "${generatedScenario}" }\n\n[DADOS VITAIS INICIAIS DESEJADOS]: ${engine.toPromptBlock()}\n\n[DADOS DE EXAME FÍSICO INICIAIS]: ${lastGeneratedCase?.physicalExamBase || ""}\n\n[DADOS DE EXAMES LABORATORIAIS INICIAIS]: ${lastGeneratedCase?.labResultsBase || ""}`;
 
   conversationHistory.push({ role: "user", content: startCommand });
 

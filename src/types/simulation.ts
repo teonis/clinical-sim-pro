@@ -35,6 +35,9 @@ export interface UserInterfaceData {
   narrativa_principal: string;
   feedback_mentor: string;
   score_feedback: string;
+  dicas_preceptor?: string;
+  exame_fisico_detalhado?: string;
+  achados_exames_detalhados?: string;
 }
 
 export interface MedicalData {
@@ -159,4 +162,11 @@ export const MEDICAL_TERMS: Record<string, string> = {
   FC: "Frequência Cardíaca.",
   FR: "Frequência Respiratória.",
   SpO2: "Saturação de Oxigênio.",
+  Diaforético: "Suor excessivo, comum em infartos ou choque.",
+  Estertores: "Ruídos anormais na respiração, indicam líquido no pulmão.",
+  Crepitantes: "Som de 'velcro' na respiração, típico de pneumonia.",
+  Desvio: "Presença de células de defesa jovens no sangue, indica infecção aguda.",
+  Acidose: "Sangue mais ácido, sinal de gravidade metabólica.",
+  Trombo: "Coágulo de sangue que obstrui um vaso.",
+  Isquemia: "Falta de sangue e oxigênio em um tecido.",
 };

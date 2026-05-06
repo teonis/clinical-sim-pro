@@ -15,6 +15,12 @@ import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
+import {
   Send,
   RotateCcw,
   LogOut,
@@ -35,7 +41,15 @@ import {
   MessageSquare,
   ChevronRight,
   Loader2,
+  FileText,
+  Activity,
+  Heart,
+  Thermometer,
+  Zap,
 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 
 
@@ -76,6 +90,8 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
   const [maxTime, setMaxTime] = useState<number | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [eventLog, setEventLog] = useState<EventLogEntry[]>([]);
+  const [diagnosticHypothesis, setDiagnosticHypothesis] = useState("");
+  const [activeTab, setActiveTab] = useState("narrative");
   const eventLogEndRef = useRef<HTMLDivElement>(null);
   const eventIdRef = useRef(0);
   const scoreTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -191,7 +207,12 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
 
 
     try {
-      const newState = await sendAction(id, type === ActionType.LIVRE ? customActionText : undefined);
+      const actionPayload = type === ActionType.LIVRE ? customActionText : undefined;
+      const enrichedAction = diagnosticHypothesis.trim() 
+        ? `[IMPRESSÃO CLÍNICA DO ALUNO: ${diagnosticHypothesis}]\n${actionPayload || actionLabel}`
+        : actionPayload;
+
+      const newState = await sendAction(id, enrichedAction);
       setGameState(newState);
       setCustomActionText("");
 
@@ -213,15 +234,19 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
   };
 
   const parseDebriefing = (text: string) => {
-    const sections = { resumo: "", fortes: "", melhoria: "", gold: "" };
+    const sections = { resumo: "", fortes: "", melhoria: "", gold: "", pearls: "" };
     const r = text.match(/\[RESUMO\]([\s\S]*?)(\[|$)/);
     const f = text.match(/\[PONTOS FORTES\]([\s\S]*?)(\[|$)/);
     const m = text.match(/\[PONTOS DE MELHORIA\]([\s\S]*?)(\[|$)/);
     const g = text.match(/\[GOLD STANDARD\]([\s\S]*?)(\[|$)/);
+    const p = text.match(/\[CLINICAL PEARLS\]([\s\S]*?)(\[|$)/);
+    
     if (r) sections.resumo = r[1].trim();
     if (f) sections.fortes = f[1].trim();
     if (m) sections.melhoria = m[1].trim();
     if (g) sections.gold = g[1].trim();
+    if (p) sections.pearls = p[1].trim();
+    
     if (!sections.resumo && !sections.fortes) sections.resumo = text;
     return sections;
   };
@@ -315,9 +340,32 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
           </div>
 
           {/* Right: Controls & Stats */}
-          <div className="flex items-center gap-3 shrink-0">
+          <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+            {/* ABCD Status - Immersion */}
+            <div className="hidden md:flex items-center gap-1">
+              {['A', 'B', 'C', 'D'].map((letter) => (
+                <TooltipProvider key={letter}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className={cn(
+                        "w-7 h-7 rounded-lg flex items-center justify-center text-[10px] font-black border transition-all",
+                        patientState === "CRITICO" || patientState === "OBITO" ? "bg-destructive/10 text-destructive border-destructive/20 animate-pulse" :
+                        patientState === "INSTAVEL" ? "bg-warning/10 text-warning border-warning/20" :
+                        "bg-success/10 text-success border-success/20"
+                      )}>
+                        {letter}
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom" className="text-[10px] font-bold">
+                      {letter === 'A' ? 'Via Aérea' : letter === 'B' ? 'Respiração' : letter === 'C' ? 'Circulação' : 'Neurológico'}
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              ))}
+            </div>
+
             {/* Simulation Time */}
-            <div className="hidden sm:flex items-center gap-2 bg-muted/50 px-3 py-1.5 rounded-lg border border-border/50">
+            <div className="flex items-center gap-2 bg-muted/50 px-3 py-1.5 rounded-lg border border-border/50">
               <Clock className="h-3.5 w-3.5 text-muted-foreground" />
               <span className="text-sm font-bold text-foreground tabular-nums">
                 {engine.getFormattedTime()}
@@ -383,8 +431,7 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
       )}
 
 
-      {/* ── Main Content: Event Log or Debriefing ─────────────────────── */}
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-hidden flex flex-col">
         {isGameOver ? (
           <GameOverScreen
             gameState={gameState}
@@ -395,78 +442,159 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
             onExit={onExit}
           />
         ) : (
-          <ScrollArea className="h-full">
-            <div className="max-w-4xl mx-auto px-4 py-6 space-y-6 pb-24">
-              <AnimatePresence initial={false}>
-                {eventLog.map((entry) => (
-                  <motion.div
-                    key={entry.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className={cn(
-                      "flex gap-3",
-                      entry.type === "action" ? "flex-row-reverse" : "flex-row"
-                    )}
-                  >
-                    {entry.type !== "action" ? (
-                      /* AI / System messages */
-                      <div className="flex gap-3 max-w-[85%] sm:max-w-[75%]">
-                        <div className={cn(
-                          "shrink-0 w-8 h-8 rounded-lg flex items-center justify-center mt-1 shadow-sm",
-                          entry.type === "narrative" ? "bg-primary text-primary-foreground" :
-                          entry.type === "mentor" ? "bg-secondary text-secondary-foreground" :
-                          "bg-destructive text-destructive-foreground"
-                        )}>
-                          {getEventIcon(entry.type)}
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
+            <div className="px-4 border-b border-border bg-card/50">
+              <TabsList className="h-12 w-full max-w-md mx-auto bg-transparent gap-4">
+                <TabsTrigger value="narrative" className="flex-1 data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none font-bold text-xs uppercase tracking-widest gap-2">
+                  <MessageSquare className="h-3.5 w-3.5" /> Prontuário
+                </TabsTrigger>
+                <TabsTrigger value="exam" className="flex-1 data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none font-bold text-xs uppercase tracking-widest gap-2">
+                  <Stethoscope className="h-3.5 w-3.5" /> Exame Físico
+                </TabsTrigger>
+                <TabsTrigger value="labs" className="flex-1 data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none font-bold text-xs uppercase tracking-widest gap-2">
+                  <Activity className="h-3.5 w-3.5" /> Exames
+                </TabsTrigger>
+              </TabsList>
+            </div>
+
+            <TabsContent value="narrative" className="flex-1 overflow-hidden m-0 p-0">
+              <ScrollArea className="h-full">
+                <div className="max-w-4xl mx-auto px-4 py-6 space-y-6 pb-24">
+                  {/* Preceptor Hint */}
+                  <AnimatePresence>
+                    {gameState.interface_usuario.dicas_preceptor && (
+                      <motion.div 
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="bg-warning/10 border border-warning/20 rounded-2xl p-4 flex gap-3 items-start shadow-sm"
+                      >
+                        <GraduationCap className="h-5 w-5 text-warning shrink-0" />
+                        <div>
+                          <p className="text-[10px] font-bold text-warning uppercase tracking-widest mb-1">Dica do Preceptor</p>
+                          <p className="text-sm text-foreground/80 leading-relaxed italic">{gameState.interface_usuario.dicas_preceptor}</p>
                         </div>
-                        <div className="space-y-1">
-                          <div className={cn(
-                            "rounded-2xl rounded-tl-sm px-4 py-3 text-sm leading-relaxed shadow-sm",
-                            entry.type === "narrative" ? "bg-card border border-border text-foreground" :
-                            entry.type === "mentor" ? "bg-secondary/10 border border-secondary/20 text-foreground italic" :
-                            "bg-destructive/5 border border-destructive/20 text-destructive"
-                          )}>
-                            <div className="whitespace-pre-line">{renderWithTooltips(entry.text)}</div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
+                  <AnimatePresence initial={false}>
+                    {eventLog.map((entry) => (
+                      <motion.div
+                        key={entry.id}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className={cn(
+                          "flex gap-3",
+                          entry.type === "action" ? "flex-row-reverse" : "flex-row"
+                        )}
+                      >
+                        {entry.type !== "action" ? (
+                          <div className="flex gap-3 max-w-[85%] sm:max-w-[75%]">
+                            <div className={cn(
+                              "shrink-0 w-8 h-8 rounded-lg flex items-center justify-center mt-1 shadow-sm",
+                              entry.type === "narrative" ? "bg-primary text-primary-foreground" :
+                              entry.type === "mentor" ? "bg-secondary text-secondary-foreground" :
+                              "bg-destructive text-destructive-foreground"
+                            )}>
+                              {getEventIcon(entry.type)}
+                            </div>
+                            <div className="space-y-1">
+                              <div className={cn(
+                                "rounded-2xl rounded-tl-sm px-4 py-3 text-sm leading-relaxed shadow-sm",
+                                entry.type === "narrative" ? "bg-card border border-border text-foreground" :
+                                entry.type === "mentor" ? "bg-secondary/10 border border-secondary/20 text-foreground italic" :
+                                "bg-destructive/5 border border-destructive/20 text-destructive"
+                              )}>
+                                <div className="whitespace-pre-line">{renderWithTooltips(entry.text)}</div>
+                              </div>
+                              <span className="text-[10px] text-muted-foreground font-medium ml-1">
+                                {entry.timestamp}
+                              </span>
+                            </div>
                           </div>
-                          <span className="text-[10px] text-muted-foreground font-medium ml-1">
-                            {entry.timestamp}
-                          </span>
-                        </div>
-                      </div>
-                    ) : (
-                      /* User actions */
-                      <div className="flex flex-col items-end max-w-[80%]">
-                        <div className="rounded-2xl rounded-tr-sm px-4 py-2.5 bg-primary text-primary-foreground text-sm font-semibold shadow-md">
-                          {entry.text}
-                        </div>
-                        <span className="text-[10px] text-muted-foreground font-medium mt-1 mr-1">
-                          {entry.timestamp}
-                        </span>
-                      </div>
-                    )}
-                  </motion.div>
-                ))}
-              </AnimatePresence>
+                        ) : (
+                          <div className="flex flex-col items-end max-w-[80%]">
+                            <div className="rounded-2xl rounded-tr-sm px-4 py-2.5 bg-primary text-primary-foreground text-sm font-semibold shadow-md">
+                              {entry.text}
+                            </div>
+                            <span className="text-[10px] text-muted-foreground font-medium mt-1 mr-1">
+                              {entry.timestamp}
+                            </span>
+                          </div>
+                        )}
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                  <div ref={eventLogEndRef} />
+                </div>
+              </ScrollArea>
+            </TabsContent>
 
-
-              {isLoading && (
-                <div className="flex gap-2">
-                  <div className="shrink-0 w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Stethoscope className="h-3 w-3 text-primary animate-pulse" />
-                  </div>
-                  <div className="bg-card border border-border rounded-lg rounded-tl-none px-4 py-3">
-                    <div className="flex items-center gap-1.5">
-                      <div className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce" />
-                      <div className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce [animation-delay:0.15s]" />
-                      <div className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce [animation-delay:0.3s]" />
+            <TabsContent value="exam" className="flex-1 overflow-hidden m-0 p-0">
+              <ScrollArea className="h-full">
+                <div className="max-w-2xl mx-auto px-6 py-8 space-y-6">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                      <Stethoscope className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold">Exame Físico</h3>
+                      <p className="text-xs text-muted-foreground uppercase tracking-widest font-medium">Achados Clínicos Detalhados</p>
                     </div>
                   </div>
+                  
+                  <Card className="border-border shadow-sm overflow-hidden">
+                    <CardContent className="p-6">
+                      {gameState.interface_usuario.exame_fisico_detalhado ? (
+                        <div className="prose prose-sm dark:prose-invert max-w-none">
+                          <p className="text-sm leading-relaxed text-foreground/80 whitespace-pre-line">
+                            {gameState.interface_usuario.exame_fisico_detalhado}
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="text-center py-12 space-y-3">
+                          <Stethoscope className="h-8 w-8 text-muted-foreground/30 mx-auto" />
+                          <p className="text-sm text-muted-foreground italic">Realize uma inspeção para ver detalhes.</p>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
                 </div>
-              )}
+              </ScrollArea>
+            </TabsContent>
 
-              <div ref={eventLogEndRef} />
-            </div>
-          </ScrollArea>
+            <TabsContent value="labs" className="flex-1 overflow-hidden m-0 p-0">
+              <ScrollArea className="h-full">
+                <div className="max-w-2xl mx-auto px-6 py-8 space-y-6">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center">
+                      <Microscope className="h-5 w-5 text-secondary" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold">Laboratório & Imagem</h3>
+                      <p className="text-xs text-muted-foreground uppercase tracking-widest font-medium">Resultados de Exames Solicitados</p>
+                    </div>
+                  </div>
+                  
+                  <Card className="border-border shadow-sm">
+                    <CardContent className="p-6">
+                      {gameState.interface_usuario.achados_exames_detalhados ? (
+                        <div className="bg-muted/30 rounded-lg p-4 font-mono text-xs leading-relaxed border border-border">
+                          <p className="whitespace-pre-line">{gameState.interface_usuario.achados_exames_detalhados}</p>
+                        </div>
+                      ) : (
+                        <div className="text-center py-12 space-y-3">
+                          <Microscope className="h-8 w-8 text-muted-foreground/30 mx-auto" />
+                          <p className="text-sm text-muted-foreground italic">Solicite exames para visualizar os resultados aqui.</p>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </div>
+              </ScrollArea>
+            </TabsContent>
+          </Tabs>
         )}
       </div>
 
@@ -516,6 +644,20 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
                 </motion.div>
               )}
             </AnimatePresence>
+
+            {/* Diagnostic Hypothesis Input */}
+            <div className="relative group mb-3">
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center gap-2 pointer-events-none transition-opacity group-focus-within:opacity-50">
+                <FileText className="h-3.5 w-3.5 text-muted-foreground" />
+                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Impressão Clínica:</span>
+              </div>
+              <Input 
+                value={diagnosticHypothesis}
+                onChange={(e) => setDiagnosticHypothesis(e.target.value)}
+                className="bg-muted/30 border-dashed border-border/50 h-9 pl-32 text-xs font-medium focus:bg-background focus:border-primary/30 rounded-lg"
+                placeholder="Sua principal suspeita..."
+              />
+            </div>
 
             <div className="flex items-center gap-3">
               {/* Toggle actions button */}
@@ -570,7 +712,7 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
 
 interface GameOverScreenProps {
   gameState: SimulationState;
-  debriefing: { resumo: string; fortes: string; melhoria: string; gold: string } | null;
+  debriefing: { resumo: string; fortes: string; melhoria: string; gold: string; pearls: string } | null;
   protocolEval: ProtocolEvaluation | null;
   engine: ReturnType<typeof getEngine>;
   onRestart: () => void;
@@ -715,14 +857,18 @@ const GameOverScreen: React.FC<GameOverScreenProps> = ({
                           )}
                         </div>
                       </div>
-                      {r.status !== "done" && (
-                        <div className="bg-muted/30 rounded-xl p-3 border border-border/50">
-                          <div className="flex items-start gap-2">
-                            <BookOpen className="h-3.5 w-3.5 text-muted-foreground shrink-0 mt-0.5" />
-                            <p className="text-xs text-muted-foreground italic leading-relaxed">{r.reference}</p>
-                          </div>
+                      <div className="bg-muted/30 rounded-xl p-3 border border-border/50 space-y-2">
+                        <div className="flex items-start gap-2">
+                          <Zap className="h-3.5 w-3.5 text-warning shrink-0 mt-0.5" />
+                          <p className="text-xs text-foreground/80 leading-relaxed font-medium">
+                            <span className="font-bold">Racional:</span> {r.rationale}
+                          </p>
                         </div>
-                      )}
+                        <div className="flex items-start gap-2 pt-1 border-t border-border/30">
+                          <BookOpen className="h-3 w-3 text-muted-foreground shrink-0 mt-0.5" />
+                          <p className="text-[10px] text-muted-foreground italic leading-relaxed">{r.reference}</p>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -766,6 +912,21 @@ const GameOverScreen: React.FC<GameOverScreenProps> = ({
                   <BookOpen className="h-3.5 w-3.5" /> Conduta Padrão-Ouro
                 </h4>
                 <p className="text-xs text-muted-foreground leading-relaxed italic">{debriefing.gold}</p>
+              </div>
+            )}
+            {debriefing.pearls && (
+              <div className="bg-primary/5 p-6 rounded-2xl border border-primary/10 shadow-sm">
+                <h4 className="text-[10px] font-bold text-primary uppercase mb-3 flex items-center gap-2 tracking-widest">
+                  <GraduationCap className="h-4 w-4" /> Pérolas Clínicas
+                </h4>
+                <div className="space-y-3">
+                  {debriefing.pearls.split("\n").filter(p => p.trim()).map((pearl, i) => (
+                    <div key={i} className="flex gap-3 items-start">
+                      <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
+                      <p className="text-sm text-foreground/80 leading-relaxed italic">{pearl.replace(/^[•\-\d.]+\s*/, "")}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>

@@ -23,6 +23,8 @@ export interface ProtocolItem {
   weight: number;
   /** Bibliographic reference for this recommendation */
   reference: string;
+  /** Clinical rationale for why this action is important */
+  rationale: string;
 }
 
 export interface ProtocolDefinition {
@@ -43,6 +45,7 @@ export interface ChecklistResult {
   /** Target in minutes */
   targetMinutes: number | null;
   reference: string;
+  rationale: string;
   weight: number;
 }
 
@@ -67,6 +70,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 10,
         weight: 0.15,
         reference: "AHA/ACC 2023 STEMI Guidelines — ECG within 10 min of first medical contact",
+        rationale: "O ECG é a ferramenta diagnóstica definitiva para identificar o supradesnivelamento do segmento ST e iniciar a terapia de reperfusão precocemente.",
       },
       {
         id: "iam_aas",
@@ -75,6 +79,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 15,
         weight: 0.15,
         reference: "ESC 2023 ACS Guidelines — Aspirin loading dose as soon as possible",
+        rationale: "A aspirina inibe a agregação plaquetária e reduz a mortalidade e o reinfarto em pacientes com síndromes coronarianas agudas.",
       },
       {
         id: "iam_clopidogrel",
@@ -83,6 +88,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 30,
         weight: 0.12,
         reference: "ESC 2023 — Dual antiplatelet therapy (DAPT) recommended",
+        rationale: "A dupla antiagregação plaquetária é superior à aspirina isolada na redução de eventos isquêmicos recorrentes.",
       },
       {
         id: "iam_heparina",
@@ -91,6 +97,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 30,
         weight: 0.12,
         reference: "AHA/ACC 2023 — Anticoagulation during PCI or fibrinolysis",
+        rationale: "A anticoagulação ajuda a prevenir a propagação do trombo e a reoclusão da artéria coronária.",
       },
       {
         id: "iam_morfina",
@@ -99,6 +106,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: null,
         weight: 0.06,
         reference: "AHA 2023 — Morphine for refractory chest pain (use with caution)",
+        rationale: "A dor intensa causa ativação simpática, o que aumenta o consumo de oxigênio pelo miocárdio.",
       },
       {
         id: "iam_reperfusao",
@@ -107,6 +115,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 90,
         weight: 0.25,
         reference: "AHA/ACC 2023 — Door-to-Balloon <90 min, Door-to-Needle <30 min",
+        rationale: "No IAM com supra, 'tempo é músculo'. A abertura da artéria deve ser o objetivo primordial para salvar tecido miocárdico.",
       },
       {
         id: "iam_monitor",
@@ -115,6 +124,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 5,
         weight: 0.08,
         reference: "AHA ACLS 2020 — Continuous cardiac monitoring in ACS",
+        rationale: "Pacientes com IAM têm alto risco de arritmias fatais (como FV) nas primeiras horas e devem ser monitorados para desfibrilação imediata.",
       },
       {
         id: "iam_acesso",
@@ -123,6 +133,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 10,
         weight: 0.07,
         reference: "ACLS 2020 — IV access for medication administration",
+        rationale: "Necessário para administração rápida de medicamentos de emergência e fluidos.",
       },
     ],
   },
@@ -137,6 +148,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 15,
         weight: 0.12,
         reference: "Surviving Sepsis Campaign 2021 — Measure lactate within 1 hour",
+        rationale: "O lactato elevado é um marcador de hipoperfusão tecidual e disfunção celular, sendo fundamental para identificar o choque séptico oculto.",
       },
       {
         id: "sepse_hemocultura",
@@ -145,6 +157,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 30,
         weight: 0.12,
         reference: "SSC 2021 — Obtain blood cultures before antimicrobials when possible",
+        rationale: "A identificação do agente etiológico permite o ajuste da antibioticoterapia para um espectro mais estreito e eficaz.",
       },
       {
         id: "sepse_atb",
@@ -153,6 +166,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 60,
         weight: 0.25,
         reference: "SSC 2021 — Administer antimicrobials within 1 hour of sepsis recognition",
+        rationale: "Cada hora de atraso na administração de antibióticos na sepse está associada a um aumento mensurável na mortalidade.",
       },
       {
         id: "sepse_volume",
@@ -161,6 +175,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 180,
         weight: 0.20,
         reference: "SSC 2021 — 30 mL/kg IV crystalloid for hypotension or lactate ≥4",
+        rationale: "A ressuscitação volêmica precoce é essencial para restaurar o volume intravascular e a perfusão orgânica.",
       },
       {
         id: "sepse_vasopressor",
@@ -169,6 +184,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: null,
         weight: 0.12,
         reference: "SSC 2021 — Norepinephrine first-line vasopressor, target MAP ≥65 mmHg",
+        rationale: "Se a reposição volêmica não for suficiente, o vasopressor é necessário para manter a pressão de perfusão crítica dos órgãos.",
       },
       {
         id: "sepse_acesso",
@@ -177,6 +193,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 10,
         weight: 0.07,
         reference: "SSC 2021 — IV access for fluid resuscitation",
+        rationale: "Acesso rápido é crucial para iniciar a expansão volêmica e a antibioticoterapia sem atrasos.",
       },
       {
         id: "sepse_monitor",
@@ -185,6 +202,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: null,
         weight: 0.06,
         reference: "SSC 2021 — Reassess volume status and tissue perfusion",
+        rationale: "A resposta ao tratamento deve ser guiada por reavaliações clínicas frequentes para evitar sobrecarga ou sub-ressuscitação.",
       },
       {
         id: "sepse_gasometria",
@@ -193,6 +211,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 30,
         weight: 0.06,
         reference: "SSC 2021 — Assess acid-base status early",
+        rationale: "Avalia o equilíbrio ácido-base e a ventilação, indicadores da gravidade metabólica do choque.",
       },
     ],
   },
@@ -207,6 +226,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 1,
         weight: 0.30,
         reference: "AHA ACLS 2020 — Begin high-quality CPR immediately",
+        rationale: "Compressões torácicas eficazes mantêm a perfusão coronária e cerebral até que o ritmo possa ser revertido.",
       },
       {
         id: "pcr_defib",
@@ -215,6 +235,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 3,
         weight: 0.25,
         reference: "AHA ACLS 2020 — Defibrillation within 3 min for VF/pVT",
+        rationale: "A desfibrilação precoce é o tratamento definitivo para FV e TV sem pulso, com as maiores taxas de sucesso nas fases iniciais.",
       },
       {
         id: "pcr_epinefrina",
@@ -223,6 +244,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 5,
         weight: 0.15,
         reference: "AHA ACLS 2020 — Epinephrine q3-5 min during cardiac arrest",
+        rationale: "A epinefrina aumenta a pressão de perfusão coronária através de seus efeitos alfa-adrenérgicos, facilitando o retorno da circulação espontânea.",
       },
       {
         id: "pcr_via_aerea",
@@ -231,6 +253,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 10,
         weight: 0.15,
         reference: "AHA ACLS 2020 — Advanced airway when feasible without interrupting CPR",
+        rationale: "Uma via aérea avançada permite ventilação contínua e proteção contra aspiração, sem necessidade de pausas para compressão.",
       },
       {
         id: "pcr_acesso",
@@ -239,6 +262,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 5,
         weight: 0.08,
         reference: "AHA ACLS 2020 — IV/IO access for drug delivery",
+        rationale: "Essencial para a administração rápida de vasopressores e antiarrítmicos durante a ressuscitação.",
       },
       {
         id: "pcr_amiodarona",
@@ -247,6 +271,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: null,
         weight: 0.07,
         reference: "AHA ACLS 2020 — Amiodarone 300mg for refractory VF/pVT",
+        rationale: "A amiodarona estabiliza o potencial de membrana cardíaco em ritmos de colapso refratários ao choque.",
       },
     ],
   },
@@ -261,6 +286,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 2,
         weight: 0.20,
         reference: "BTS 2017 — Oxygen therapy to maintain SpO2 94-98%",
+        rationale: "A correção da hipoxemia é a prioridade imediata para prevenir danos orgânicos por falta de oxigênio.",
       },
       {
         id: "irpa_monitor",
@@ -269,6 +295,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 5,
         weight: 0.10,
         reference: "BTS 2017 — Continuous pulse oximetry monitoring",
+        rationale: "Permite a detecção precoce de fadiga respiratória ou falha no tratamento inicial.",
       },
       {
         id: "irpa_gasometria",
@@ -277,6 +304,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 15,
         weight: 0.12,
         reference: "BTS 2017 — ABG to assess ventilation and acid-base",
+        rationale: "Fornece informações cruciais sobre o pH e a pCO2, essenciais para distinguir entre insuficiência respiratória tipo 1 e tipo 2.",
       },
       {
         id: "irpa_rx",
@@ -285,6 +313,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 30,
         weight: 0.10,
         reference: "ATS/ERS 2017 — Chest X-ray for acute respiratory failure evaluation",
+        rationale: "Ajuda a identificar a causa subjacente (pneumonia, edema, pneumotórax) para direcionar o tratamento específico.",
       },
       {
         id: "irpa_broncodilatador",
@@ -293,6 +322,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 10,
         weight: 0.12,
         reference: "GINA 2023 — Short-acting beta-agonist for acute bronchospasm",
+        rationale: "Reduz a resistência das vias aéreas e o trabalho respiratório em casos de broncoespasmo agudo.",
       },
       {
         id: "irpa_corticoide",
@@ -301,6 +331,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 30,
         weight: 0.10,
         reference: "GINA 2023 — Systemic corticosteroids in severe exacerbations",
+        rationale: "Reduz a inflamação brônquica, prevenindo a recidiva e acelerando a recuperação em crises de asma ou DPOC.",
       },
       {
         id: "irpa_intubacao",
@@ -309,6 +340,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: null,
         weight: 0.15,
         reference: "ATS/ERS 2017 — Invasive ventilation for refractory respiratory failure",
+        rationale: "Garante a oxigenação e ventilação quando os mecanismos próprios do paciente não são mais suficientes.",
       },
       {
         id: "irpa_acesso",
@@ -317,6 +349,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 10,
         weight: 0.06,
         reference: "General — IV access for medication administration",
+        rationale: "Necessário para administração de corticoides, antibióticos ou sedação para intubação.",
       },
     ],
   },
@@ -331,6 +364,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 5,
         weight: 0.15,
         reference: "ATLS 10th Ed — Primary survey ABCDE approach",
+        rationale: "Um método sistemático para identificar e tratar as ameaças imediatas à vida na ordem de prioridade letal.",
       },
       {
         id: "trauma_acesso",
@@ -339,6 +373,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 5,
         weight: 0.10,
         reference: "ATLS 10th Ed — Two large-bore IV lines",
+        rationale: "Permite a infusão rápida de grandes volumes de fluidos e sangue necessários no choque hemorrágico.",
       },
       {
         id: "trauma_volume",
@@ -347,6 +382,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 15,
         weight: 0.18,
         reference: "ATLS 10th Ed — Isotonic crystalloid for hemorrhagic shock",
+        rationale: "Restaura o volume circulante para manter a perfusão orgânica até que o controle da hemorragia e a transfusão sejam possíveis.",
       },
       {
         id: "trauma_hemoderivado",
@@ -355,6 +391,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 30,
         weight: 0.15,
         reference: "ATLS 10th Ed — Blood transfusion for class III/IV hemorrhage",
+        rationale: "O sangue repõe a capacidade de transporte de oxigênio e os fatores de coagulação que os cristaloides não possuem.",
       },
       {
         id: "trauma_imagem",
@@ -363,6 +400,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 30,
         weight: 0.12,
         reference: "ATLS 10th Ed — FAST exam in trauma assessment",
+        rationale: "Identifica rapidamente fontes ocultas de sangramento interno (abdome, pelve, tórax) que requerem intervenção cirúrgica.",
       },
       {
         id: "trauma_o2",
@@ -371,6 +409,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 5,
         weight: 0.08,
         reference: "ATLS 10th Ed — High-flow O2 for trauma patients",
+        rationale: "Maximiza o conteúdo arterial de oxigênio em um paciente com perfusão tecidual comprometida.",
       },
       {
         id: "trauma_drenagem",
@@ -379,6 +418,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: null,
         weight: 0.12,
         reference: "ATLS 10th Ed — Tube thoracostomy for hemopneumothorax",
+        rationale: "Alivia a compressão pulmonar e mediastinal, melhorando a ventilação e o retorno venoso cardíaco.",
       },
     ],
   },
@@ -463,6 +503,7 @@ export function evaluateProtocol(
         performedAt: matchedEntry.gameTimeMinutes,
         targetMinutes: item.targetMinutes,
         reference: item.reference,
+        rationale: item.rationale,
         weight: item.weight,
       });
       // Full credit for done, partial for late
@@ -475,6 +516,7 @@ export function evaluateProtocol(
         performedAt: null,
         targetMinutes: item.targetMinutes,
         reference: item.reference,
+        rationale: item.rationale,
         weight: item.weight,
       });
     }

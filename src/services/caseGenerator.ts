@@ -26,6 +26,8 @@ export interface GeneratedCase {
   specialty: string;
   patient: PatientProfile;
   initialVitals: Partial<EngineVitals>;
+  physicalExamBase: string;
+  labResultsBase: string;
   /** Full scenario text to inject as caso_especifico */
   scenarioPrompt: string;
 }
@@ -38,6 +40,9 @@ export interface CaseTemplate {
   matchSpecialties: string[];
   /** Base vitals before patient profile adjustments */
   baseVitals: Partial<EngineVitals>;
+  /** Initial findings for Physical Exam and Labs */
+  physicalExamBase: string;
+  labResultsBase: string;
   /** Function that builds the scenario text from the patient profile */
   buildScenario: (patient: PatientProfile) => string;
 }
@@ -198,6 +203,8 @@ const TEMPLATES: CaseTemplate[] = [
     specialty: "Cardiologia",
     matchSpecialties: ["Cardiologia", "Trauma / Emergência"],
     baseVitals: { hr: 95, sbp: 135, dbp: 85, spo2: 95, rr: 20, temp: 36.8 },
+    physicalExamBase: "Paciente ansioso, pálido e diaforético. Murmúrio vesicular universal sem ruídos adventícios. Bulhas cardíacas rítmicas e normofonéticas sem sopros. Pulsos periféricos presentes e simétricos.",
+    labResultsBase: "Troponina I: 0.85 ng/mL (Aumentada), CPK-MB: 42 U/L (Aumentada), Potássio: 4.2 mEq/L, Creatinina: 0.9 mg/dL.",
     buildScenario: (p) => {
       const painDesc = p.severity === "grave"
         ? "dor torácica intensa, opressiva, irradiando para membro superior esquerdo e mandíbula, sudorese profusa, náuseas e sensação de morte iminente"
@@ -205,7 +212,7 @@ const TEMPLATES: CaseTemplate[] = [
         ? "dor torácica em aperto há 2 horas, irradiando para ombro esquerdo, com náuseas leves"
         : "desconforto torácico retroesternal há 4 horas, em aperto, sem irradiação clara";
       const duration = p.severity === "grave" ? "há 1 hora" : p.severity === "moderada" ? "há 3 horas" : "há 6 horas";
-      return `Paciente ${p.sex === "M" ? "masculino" : "feminino"}, ${p.age} anos, dá entrada na emergência com ${painDesc}, iniciada ${duration}. Antecedentes: ${formatComorbidities(p.comorbidities)}. Gravidade do quadro: ${p.severity}. Gere um caso de IAM com Supra de ST adequado a este perfil.`;
+      return `Paciente ${p.sex === "M" ? "masculino" : "feminino"}, ${p.age} anos, dá entrada na emergência com ${painDesc}, iniciada ${duration}. Antecedentes: ${formatComorbidities(p.comorbidities)}. Gravidade do quadro: ${p.severity}. Gere um caso de IAM com Supra de ST adequado a este perfil. Adicione sons de gemidos de dor e um ambiente tenso de pronto-socorro.`;
     },
   },
   {
@@ -214,13 +221,15 @@ const TEMPLATES: CaseTemplate[] = [
     specialty: "Pneumologia",
     matchSpecialties: ["Pneumologia", "Infectologia", "Trauma / Emergência"],
     baseVitals: { hr: 100, sbp: 115, dbp: 70, spo2: 91, rr: 24, temp: 38.5 },
+    physicalExamBase: "Paciente em regular estado geral, taquipneico, usando musculatura acessória leve. À ausculta pulmonar, presença de estertores crepitantes em base direita e redução do murmúrio vesicular na mesma área. Sem outras alterações.",
+    labResultsBase: "Leucograma: 16.500/mm³ com desvio à esquerda (8% bastões), PCR: 145 mg/L (Aumentada), Ureia: 52 mg/dL, Creatinina: 1.1 mg/dL.",
     buildScenario: (p) => {
       const onset = p.severity === "grave"
         ? "dispneia intensa, tosse produtiva com escarro purulento, febre alta (39.5°C) há 2 dias, confusão mental"
         : p.severity === "moderada"
         ? "tosse produtiva há 5 dias, febre de 38.5°C, dispneia aos esforços moderados"
         : "tosse com expectoração amarelada há 7 dias, febre baixa intermitente, sem dispneia em repouso";
-      return `Paciente ${p.sex === "M" ? "masculino" : "feminino"}, ${p.age} anos, chega à emergência com ${onset}. Antecedentes: ${formatComorbidities(p.comorbidities)}. Gravidade do quadro: ${p.severity}. Gere um caso de Pneumonia Adquirida na Comunidade adequado a este perfil.`;
+      return `Paciente ${p.sex === "M" ? "masculino" : "feminino"}, ${p.age} anos, chega à emergência com ${onset}. Antecedentes: ${formatComorbidities(p.comorbidities)}. Gravidade do quadro: ${p.severity}. Gere um caso de Pneumonia Adquirida na Comunidade adequado a este perfil. Descreva o som da tosse produtiva e a respiração ofegante.`;
     },
   },
   {
@@ -229,6 +238,8 @@ const TEMPLATES: CaseTemplate[] = [
     specialty: "Infectologia",
     matchSpecialties: ["Infectologia", "Trauma / Emergência", "Pneumologia"],
     baseVitals: { hr: 110, sbp: 95, dbp: 55, spo2: 92, rr: 26, temp: 38.8 },
+    physicalExamBase: "Paciente prostrado, tempo de enchimento capilar lentificado (4 segundos), extremidades frias. Escala de Glasgow: 13 (Confuso). Abdome plano, ruídos hidroaéreos presentes, sem dor à palpação.",
+    labResultsBase: "Lactato: 4.8 mmol/L (Elevado), Procalcitonina: 12 ng/mL (Elevada), pH: 7.28 (Acidose), Plaquetas: 98.000/mm³.",
     buildScenario: (p) => {
       const focus = pick(["urinário", "pulmonar", "abdominal", "cutâneo"]);
       const desc = p.severity === "grave"
@@ -236,7 +247,7 @@ const TEMPLATES: CaseTemplate[] = [
         : p.severity === "moderada"
         ? `sepse com taquicardia, febre alta, hipotensão leve, foco provável ${focus}`
         : `sinais de SIRS com foco infeccioso ${focus}, sem disfunção orgânica evidente`;
-      return `Paciente ${p.sex === "M" ? "masculino" : "feminino"}, ${p.age} anos, trazido à emergência com ${desc}. Antecedentes: ${formatComorbidities(p.comorbidities)}. Gravidade do quadro: ${p.severity}. Gere um caso de Sepse adequado a este perfil.`;
+      return `Paciente ${p.sex === "M" ? "masculino" : "feminino"}, ${p.age} anos, trazido à emergência com ${desc}. Antecedentes: ${formatComorbidities(p.comorbidities)}. Gravidade do quadro: ${p.severity}. Gere um caso de Sepse adequado a este perfil. Descreva a voz fraca do paciente e o som dos alarmes do monitor.`;
     },
   },
 ];
@@ -266,6 +277,8 @@ export function generateCase(specialty: string): GeneratedCase | null {
     specialty: template.specialty,
     patient,
     initialVitals,
+    physicalExamBase: template.physicalExamBase,
+    labResultsBase: template.labResultsBase,
     scenarioPrompt,
   };
 }
