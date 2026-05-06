@@ -13,6 +13,7 @@ import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import {
   Send,
   RotateCcw,
@@ -34,6 +35,7 @@ import {
   MessageSquare,
   ChevronRight,
 } from "lucide-react";
+
 
 // ── Types ────────────────────────────────────────────────────────────────
 
