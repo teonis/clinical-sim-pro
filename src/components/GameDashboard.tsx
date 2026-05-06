@@ -459,93 +459,94 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
 
       {/* ── Fixed Bottom Input ────────────────────────────────────────── */}
       {!isGameOver && (
-        <div className="shrink-0 border-t border-border bg-card/50 backdrop-blur-md p-3 z-30 safe-area-pb">
-          {/* Expandable actions panel */}
-          <AnimatePresence>
-            {showActions && predefinedActions.length > 0 && (
-              <motion.div 
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: "auto", opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                className="mb-3 space-y-1.5 max-h-48 overflow-y-auto overflow-x-hidden scrollbar-none"
-              >
-                {predefinedActions.map((opt) => (
-                  <motion.button
-                    key={opt.id}
-                    initial={{ x: -20, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    disabled={isLoading}
-                    onClick={() => handleAction(opt.id, opt.tipo)}
-                    className={cn(
-                      "w-full p-3 rounded-xl text-left transition-all border group",
-                      isLoading
-                        ? "opacity-50 cursor-not-allowed bg-muted"
-                        : "hover:border-primary/50 hover:bg-primary/5 active:scale-[0.98] bg-secondary border-border/50"
-                    )}
-                    aria-label={`Ação: ${opt.texto}`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className={cn(
-                        "w-8 h-8 rounded-lg flex items-center justify-center shrink-0 shadow-inner",
-                        opt.tipo === "EXAME" ? "bg-accent/20 text-accent-foreground" :
-                        opt.tipo === "MEDICAMENTO" ? "bg-primary/10 text-primary" :
-                        "bg-warning/10 text-warning"
-                      )}>
-                        {getActionIcon(opt.tipo)}
-                      </div>
-                      <div className="min-w-0">
-                        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-tight block">{opt.tipo}</span>
-                        <span className="font-semibold text-sm text-foreground leading-tight block truncate">{opt.texto}</span>
-                      </div>
-                    </div>
-                  </motion.button>
-                ))}
-              </motion.div>
-            )}
-          </AnimatePresence>
+        <div className="shrink-0 border-t border-border bg-background/95 backdrop-blur-md p-4 z-30 pb-safe">
+          <div className="max-w-4xl mx-auto">
+            {/* Expandable actions panel */}
+            <AnimatePresence>
+              {showActions && predefinedActions.length > 0 && (
+                <motion.div 
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="mb-4 space-y-2 max-h-56 overflow-y-auto pr-2"
+                >
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {predefinedActions.map((opt) => (
+                      <motion.button
+                        key={opt.id}
+                        disabled={isLoading}
+                        onClick={() => handleAction(opt.id, opt.tipo)}
+                        className={cn(
+                          "p-3 rounded-xl text-left transition-all border flex items-center gap-3 group",
+                          isLoading
+                            ? "opacity-50 cursor-not-allowed bg-muted"
+                            : "bg-card border-border hover:border-primary/50 hover:shadow-sm active:scale-[0.98]"
+                        )}
+                        aria-label={`Ação: ${opt.texto}`}
+                      >
+                        <div className={cn(
+                          "w-10 h-10 rounded-lg flex items-center justify-center shrink-0 transition-colors",
+                          opt.tipo === "EXAME" ? "bg-accent/10 text-accent" :
+                          opt.tipo === "MEDICAMENTO" ? "bg-primary/10 text-primary" :
+                          "bg-secondary/10 text-secondary"
+                        )}>
+                          {getActionIcon(opt.tipo)}
+                        </div>
+                        <div className="min-w-0">
+                          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">{opt.tipo}</span>
+                          <span className="font-bold text-sm text-foreground leading-tight block truncate">{opt.texto}</span>
+                        </div>
+                      </motion.button>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
-          <div className="flex items-center gap-2">
-            {/* Toggle actions button */}
-            {predefinedActions.length > 0 && (
-              <Button
-                variant="outline"
-                size="icon"
-                className={cn(
-                  "h-11 w-11 shrink-0 rounded-xl transition-all border-border/50", 
-                  showActions && "border-primary bg-primary/10 text-primary shadow-[0_0_10px_rgba(0,255,148,0.2)]"
-                )}
-                onClick={() => setShowActions(!showActions)}
-                aria-expanded={showActions}
-                aria-label="Ver ações recomendadas"
-              >
-                <ClipboardList className="h-5 w-5" />
-              </Button>
-            )}
+            <div className="flex items-center gap-3">
+              {/* Toggle actions button */}
+              {predefinedActions.length > 0 && (
+                <Button
+                  variant={showActions ? "default" : "outline"}
+                  size="icon"
+                  className={cn(
+                    "h-12 w-12 shrink-0 rounded-xl transition-all", 
+                    showActions && "shadow-lg shadow-primary/20"
+                  )}
+                  onClick={() => setShowActions(!showActions)}
+                  aria-expanded={showActions}
+                  aria-label="Ver ações recomendadas"
+                >
+                  <ClipboardList className="h-5 w-5" />
+                </Button>
+              )}
 
-            <div className="relative flex-1">
-              <Input
-                value={customActionText}
-                onChange={(e) => setCustomActionText(e.target.value)}
-                placeholder="O que você quer fazer agora?..."
-                disabled={isLoading}
-                className="h-11 rounded-xl bg-secondary border-border/50 pr-10 focus-visible:ring-primary/30"
-                onKeyDown={(e) => e.key === "Enter" && handleAction("LIVRE", ActionType.LIVRE)}
-                aria-label="Entrada de conduta livre"
-              />
-              <Button
-                size="icon"
-                variant="ghost"
-                className="absolute right-1 top-1 h-9 w-9 text-primary hover:bg-primary/10 hover:text-primary rounded-lg"
-                onClick={() => handleAction("LIVRE", ActionType.LIVRE)}
-                disabled={isLoading || !customActionText.trim()}
-                aria-label="Enviar conduta"
-              >
-                <Send className="h-4 w-4" />
-              </Button>
+              <div className="relative flex-1">
+                <Input
+                  value={customActionText}
+                  onChange={(e) => setCustomActionText(e.target.value)}
+                  placeholder="Descreva sua conduta clínica..."
+                  disabled={isLoading}
+                  className="h-12 rounded-xl bg-muted/50 border-border focus:ring-primary/20 pr-12 text-base"
+                  onKeyDown={(e) => e.key === "Enter" && handleAction("LIVRE", ActionType.LIVRE)}
+                  aria-label="Entrada de conduta livre"
+                />
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="absolute right-1 top-1 h-10 w-10 text-primary hover:bg-primary/10 hover:text-primary rounded-lg transition-colors"
+                  onClick={() => handleAction("LIVRE", ActionType.LIVRE)}
+                  disabled={isLoading || !customActionText.trim()}
+                  aria-label="Enviar conduta"
+                >
+                  {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                </Button>
+              </div>
             </div>
           </div>
         </div>
       )}
+
 
     </div>
   );
