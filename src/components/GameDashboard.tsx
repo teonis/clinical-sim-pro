@@ -558,157 +558,231 @@ const GameOverScreen: React.FC<GameOverScreenProps> = ({
 
   return (
     <ScrollArea className="h-full">
-      <div className="px-4 py-6 space-y-4 max-w-lg mx-auto">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="px-4 py-8 space-y-6 max-w-lg mx-auto"
+      >
         {/* Outcome header */}
         <div className="text-center">
-          <div className={cn(
-            "w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-3",
-            isCured ? "bg-primary/10 text-primary" : "bg-destructive/10 text-destructive"
-          )}>
-            {isCured ? <CheckCircle className="h-7 w-7" /> : <Skull className="h-7 w-7" />}
-          </div>
-          <h2 className="text-lg font-display font-bold text-foreground">
-            {isCured ? "Alta Médica" : "Óbito Confirmado"}
-          </h2>
-          <p className="text-xs text-muted-foreground font-mono-vital mt-1">
-            Tempo total: {engine.getFormattedTime()} ({engine.getGameTimeMinutes()} min)
-          </p>
-          <div className="inline-flex items-center gap-3 px-5 py-1.5 bg-card border border-border rounded-sm mt-3">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Nota</span>
-            <span className="font-mono-vital text-xl font-bold text-primary lcd-glow">
-              {gameState.status_simulacao.current_score.toFixed(1)}
-            </span>
-          </div>
+          <motion.div 
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: "spring", damping: 12 }}
+            className={cn(
+              "w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-lg",
+              isCured ? "bg-primary/20 text-primary border border-primary/30" : "bg-destructive/20 text-destructive border border-destructive/30"
+            )}
+          >
+            {isCured ? <CheckCircle className="h-10 w-10" /> : <Skull className="h-10 w-10" />}
+          </motion.div>
+          
+          <motion.h2 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="text-2xl font-display font-black text-foreground tracking-tight"
+          >
+            {isCured ? "ALTA MÉDICA" : "ÓBITO CONFIRMADO"}
+          </motion.h2>
+          
+          <motion.p 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="text-xs text-muted-foreground font-mono-vital mt-1 uppercase tracking-widest"
+          >
+            Simulação Finalizada em {engine.getFormattedTime()}
+          </motion.p>
+          
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="inline-flex items-center gap-4 px-6 py-2.5 bg-card border border-border/50 rounded-2xl mt-5 shadow-sm"
+          >
+            <div className="text-left">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground block">Desempenho</span>
+              <span className="font-mono-vital text-3xl font-black text-primary lcd-glow leading-none">
+                {gameState.status_simulacao.current_score.toFixed(1)}
+              </span>
+            </div>
+            <div className="w-px h-8 bg-border/50" />
+            <div className="text-left">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground block">Tempo Total</span>
+              <span className="font-mono-vital text-lg font-bold text-foreground leading-none">
+                {engine.getGameTimeMinutes()} min
+              </span>
+            </div>
+          </motion.div>
         </div>
 
         {/* Action Timeline */}
         {engine.getActionTimeline().length > 0 && (
-          <div className="bg-secondary p-3 rounded-sm border border-border">
-            <h4 className="text-[10px] font-bold text-muted-foreground uppercase mb-2 flex items-center gap-2">
-              <Clock className="h-3 w-3" /> Timeline
+          <motion.div 
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.5 }}
+            className="bg-secondary/50 backdrop-blur-sm p-4 rounded-2xl border border-border/50"
+          >
+            <h4 className="text-[10px] font-black text-muted-foreground uppercase mb-3 flex items-center gap-2 tracking-widest">
+              <Clock className="h-3 w-3" /> Cronologia de Eventos
             </h4>
-            <div className="space-y-1 max-h-36 overflow-y-auto">
+            <div className="space-y-2 max-h-40 overflow-y-auto pr-2 scrollbar-thin">
               {engine.getActionTimeline().map((entry, i) => {
                 const h = Math.floor(entry.gameTimeMinutes / 60);
                 const m = entry.gameTimeMinutes % 60;
                 const ts = `${String(h).padStart(2, "0")}:${String(Math.round(m)).padStart(2, "0")}`;
                 return (
                   <div key={i} className={cn(
-                    "flex items-center gap-2 text-xs font-mono-vital",
+                    "flex items-center gap-3 text-xs font-mono-vital group",
                     entry.isCritical ? "text-destructive" : "text-muted-foreground"
                   )}>
-                    <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", entry.isCritical ? "bg-destructive" : "bg-muted-foreground/40")} />
-                    <span className="font-bold w-11 shrink-0">{ts}</span>
-                    <span className="truncate">{entry.actionText}</span>
+                    <span className={cn(
+                      "w-2 h-2 rounded-full shrink-0 shadow-sm", 
+                      entry.isCritical ? "bg-destructive animate-pulse" : "bg-muted-foreground/30 group-hover:bg-muted-foreground/50 transition-colors"
+                    )} />
+                    <span className="font-bold w-12 shrink-0 opacity-80">{ts}</span>
+                    <span className="truncate group-hover:text-foreground transition-colors">{entry.actionText}</span>
                   </div>
                 );
               })}
             </div>
-          </div>
+          </motion.div>
         )}
 
         {/* Protocol Checklist */}
         {protocolEval && (
-          <div className="bg-card p-3 rounded-sm border border-border">
-            <div className="flex items-center justify-between mb-2">
-              <h4 className="text-[10px] font-bold text-muted-foreground uppercase flex items-center gap-2">
+          <motion.div 
+            initial={{ opacity: 0, x: 10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.6 }}
+            className="bg-card p-4 rounded-2xl border border-border shadow-sm"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h4 className="text-[10px] font-black text-muted-foreground uppercase flex items-center gap-2 tracking-widest">
                 <ClipboardList className="h-3 w-3 text-primary" /> {protocolEval.protocolName}
               </h4>
-              <span className={cn(
-                "text-xs font-mono-vital font-bold px-2 py-0.5 rounded-sm",
+              <div className={cn(
+                "text-xs font-mono-vital font-black px-3 py-1 rounded-lg shadow-inner",
                 protocolEval.adherenceScore >= 8 ? "bg-primary/10 text-primary" :
                 protocolEval.adherenceScore >= 5 ? "bg-warning/10 text-warning" :
                 "bg-destructive/10 text-destructive"
               )}>
                 {protocolEval.adherenceScore.toFixed(1)}/10
-              </span>
+              </div>
             </div>
-            <div className="space-y-1.5">
+            <div className="space-y-3">
               {protocolEval.results.map((r) => (
-                <div key={r.itemId} className="text-xs">
-                  <div className="flex items-start gap-2">
-                    <span className="shrink-0 mt-0.5">
+                <div key={r.itemId} className="text-xs group">
+                  <div className="flex items-start gap-3">
+                    <span className="shrink-0 text-base leading-none">
                       {r.status === "done" ? "✅" : r.status === "late" ? "⏱️" : "❌"}
                     </span>
                     <div className="flex-1 min-w-0">
-                      <span className={cn(
-                        "font-semibold",
-                        r.status === "done" ? "text-primary" :
-                        r.status === "late" ? "text-warning" : "text-destructive"
-                      )}>
-                        {r.label}
-                      </span>
-                      {r.performedAt !== null && (
-                        <span className="text-muted-foreground ml-1">
-                          — {r.performedAt}min
-                          {r.targetMinutes !== null && (
-                            <span className={r.performedAt > r.targetMinutes ? "text-destructive" : "text-primary"}>
-                              {" "}(meta: &lt;{r.targetMinutes}min)
-                            </span>
-                          )}
+                      <div className="flex justify-between items-start">
+                        <span className={cn(
+                          "font-bold text-sm",
+                          r.status === "done" ? "text-primary" :
+                          r.status === "late" ? "text-warning" : "text-destructive"
+                        )}>
+                          {r.label}
                         </span>
-                      )}
-                      {r.status === "missed" && r.targetMinutes !== null && (
-                        <span className="text-destructive ml-1">— meta: &lt;{r.targetMinutes}min</span>
+                      </div>
+                      <div className="flex items-center gap-2 mt-0.5 font-mono-vital text-[10px] text-muted-foreground">
+                        {r.performedAt !== null && (
+                          <span>Realizado: {r.performedAt}min</span>
+                        )}
+                        {r.targetMinutes !== null && (
+                          <span className={cn(
+                            "px-1.5 py-0.5 rounded-md",
+                            r.status === "late" || r.status === "missed" ? "bg-destructive/10 text-destructive" : "bg-primary/10 text-primary"
+                          )}>
+                            Meta: &lt;{r.targetMinutes}min
+                          </span>
+                        )}
+                      </div>
+                      {r.status !== "done" && (
+                        <div className="mt-1.5 text-[11px] text-muted-foreground leading-relaxed italic border-l-2 border-border/50 pl-2 py-0.5">
+                          <div className="flex items-start gap-1.5">
+                            <BookOpen className="h-3 w-3 shrink-0 mt-0.5 opacity-50" />
+                            <span>{r.reference}</span>
+                          </div>
+                        </div>
                       )}
                     </div>
                   </div>
-                  {r.status !== "done" && (
-                    <div className="ml-6 mt-0.5 text-muted-foreground italic flex items-start gap-1">
-                      <BookOpen className="h-3 w-3 shrink-0 mt-0.5" />
-                      <span>{r.reference}</span>
-                    </div>
-                  )}
                 </div>
               ))}
             </div>
-          </div>
+          </motion.div>
         )}
 
         {/* Debriefing sections */}
         {debriefing && (
-          <div className="space-y-3">
-            <div className="bg-secondary p-3 rounded-sm border border-border">
-              <h4 className="text-[10px] font-bold text-muted-foreground uppercase mb-1.5 flex items-center gap-2">
-                <ClipboardList className="h-3 w-3" /> Resumo
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.7 }}
+            className="space-y-4"
+          >
+            <div className="bg-secondary/40 p-4 rounded-2xl border border-border/50">
+              <h4 className="text-[10px] font-black text-muted-foreground uppercase mb-2 flex items-center gap-2 tracking-widest">
+                <MessageSquare className="h-3 w-3" /> Feedback do Mentor
               </h4>
-              <p className="text-sm text-foreground leading-relaxed">{debriefing.resumo}</p>
+              <p className="text-sm text-foreground leading-relaxed font-medium">{debriefing.resumo}</p>
             </div>
-            {debriefing.fortes && (
-              <div className="bg-primary/5 p-3 rounded-sm border border-primary/10">
-                <h4 className="text-[10px] font-bold text-primary uppercase mb-1.5 flex items-center gap-2">
-                  <ThumbsUp className="h-3 w-3" /> Pontos Fortes
-                </h4>
-                <p className="text-sm text-foreground leading-relaxed">{debriefing.fortes}</p>
+            
+            {(debriefing.fortes || debriefing.melhoria) && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {debriefing.fortes && (
+                  <div className="bg-primary/5 p-4 rounded-2xl border border-primary/20 shadow-sm">
+                    <h4 className="text-[10px] font-black text-primary uppercase mb-2 flex items-center gap-2 tracking-widest">
+                      <ThumbsUp className="h-3 w-3" /> Pontos Fortes
+                    </h4>
+                    <p className="text-xs text-foreground/90 leading-relaxed">{debriefing.fortes}</p>
+                  </div>
+                )}
+                {debriefing.melhoria && (
+                  <div className="bg-warning/5 p-4 rounded-2xl border border-warning/20 shadow-sm">
+                    <h4 className="text-[10px] font-black text-warning uppercase mb-2 flex items-center gap-2 tracking-widest">
+                      <AlertTriangle className="h-3 w-3" /> Para Melhorar
+                    </h4>
+                    <p className="text-xs text-foreground/90 leading-relaxed">{debriefing.melhoria}</p>
+                  </div>
+                )}
               </div>
             )}
-            {debriefing.melhoria && (
-              <div className="bg-warning/5 p-3 rounded-sm border border-warning/10">
-                <h4 className="text-[10px] font-bold text-warning uppercase mb-1.5 flex items-center gap-2">
-                  <AlertTriangle className="h-3 w-3" /> Atenção
-                </h4>
-                <p className="text-sm text-foreground leading-relaxed">{debriefing.melhoria}</p>
-              </div>
-            )}
+
             {debriefing.gold && (
-              <div className="bg-accent p-3 rounded-sm border border-border">
-                <h4 className="text-[10px] font-bold text-accent-foreground uppercase mb-1.5 flex items-center gap-2">
-                  <BookOpen className="h-3 w-3" /> Gold Standard
+              <div className="bg-accent/10 p-4 rounded-2xl border border-border shadow-sm">
+                <h4 className="text-[10px] font-black text-accent-foreground uppercase mb-2 flex items-center gap-2 tracking-widest">
+                  <BookOpen className="h-3 w-3" /> Conduta Padrão-Ouro
                 </h4>
-                <p className="text-sm text-foreground leading-relaxed">{debriefing.gold}</p>
+                <p className="text-xs text-foreground/80 leading-relaxed italic">{debriefing.gold}</p>
               </div>
             )}
-          </div>
+          </motion.div>
         )}
 
         {/* CTA */}
-        <div className="flex gap-3 pt-2 pb-4">
-          <Button onClick={onRestart} className="flex-1">Novo Caso</Button>
-          <Button variant="outline" onClick={onExit} className="flex-1">Menu</Button>
-        </div>
-      </div>
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8 }}
+          className="flex gap-4 pt-4 pb-8"
+        >
+          <Button onClick={onRestart} className="flex-1 h-12 rounded-xl font-bold shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98]">
+            <RotateCcw className="mr-2 h-4 w-4" /> Novo Caso
+          </Button>
+          <Button variant="outline" onClick={onExit} className="flex-1 h-12 rounded-xl font-bold border-border/50 hover:bg-secondary transition-all hover:scale-[1.02] active:scale-[0.98]">
+            <LogOut className="mr-2 h-4 w-4" /> Finalizar
+          </Button>
+        </motion.div>
+      </motion.div>
     </ScrollArea>
   );
+
 };
 
 export default GameDashboard;
