@@ -26,6 +26,9 @@ const statusLabel: Record<PatientStatus, string> = {
 };
 
 const VitalMonitor = ({ fc, pas, pad, satO2, fr, status }: VitalMonitorProps) => {
+  const heartRate = fc || 0;
+  const pulseDuration = heartRate > 0 ? 60 / heartRate : 1;
+
   const getVitalColor = (type: string) => {
     switch (type) {
       case 'fc': return fc > 100 || fc < 60 ? 'text-destructive' : 'text-primary';
