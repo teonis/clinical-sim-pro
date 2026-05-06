@@ -37,25 +37,21 @@ const features = [
 
 const LandingFeatures: React.FC = () => {
   return (
-    <section className="py-32 bg-[#030303] relative overflow-hidden">
-      {/* Background Decorative */}
-      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
-      <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/10 to-transparent" />
-      
+    <section className="py-32 bg-background relative overflow-hidden">
       <div className="container mx-auto px-6 relative z-10">
         <div className="text-center mb-24">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-6 backdrop-blur-sm"
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/5 border border-primary/10 mb-6"
           >
             <ShieldCheck className="h-4 w-4 text-primary" />
-            <span className="text-[10px] font-black tracking-[0.3em] uppercase text-primary">Engenharia de Alto Rigor</span>
+            <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-primary">Simulação de Alto Rigor</span>
           </motion.div>
-          <h2 className="text-5xl md:text-7xl font-black mb-6 tracking-tighter text-white uppercase">Arquitetura Clínica</h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto text-xl font-medium tracking-tight">
-            Uma plataforma desenhada para transformar teoria em reflexo clínico imediato através de simulação imersiva.
+          <h2 className="text-4xl md:text-6xl font-black mb-6 tracking-tighter text-foreground uppercase">Excelência Clínica</h2>
+          <p className="text-muted-foreground max-w-2xl mx-auto text-lg font-medium tracking-tight">
+            Uma plataforma minimalista desenhada para transformar teoria em reflexo clínico imediato.
           </p>
         </div>
 
@@ -63,17 +59,17 @@ const LandingFeatures: React.FC = () => {
           {features.map((feature, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 15 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
-              className="bg-white/[0.02] p-12 rounded-[3rem] border border-white/5 hover:border-primary/40 transition-all hover:bg-white/[0.04] group hover:-translate-y-2 shadow-2xl"
+              className="bg-card p-10 rounded-[2rem] border border-border hover:border-primary/30 transition-all hover:shadow-xl group"
             >
-              <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-10 group-hover:scale-110 transition-transform border border-primary/20 shadow-[0_0_30px_rgba(var(--primary),0.1)]">
-                <feature.icon className="h-8 w-8 text-primary" />
+              <div className="w-14 h-14 rounded-2xl bg-primary/5 flex items-center justify-center mb-8 border border-primary/10 transition-transform group-hover:scale-110">
+                <feature.icon className="h-7 w-7 text-primary" />
               </div>
-              <h3 className="text-2xl font-black mb-4 text-white tracking-tight uppercase">{feature.title}</h3>
-              <p className="text-muted-foreground leading-relaxed text-lg font-medium tracking-tight">
+              <h3 className="text-xl font-bold mb-4 text-foreground uppercase tracking-tight">{feature.title}</h3>
+              <p className="text-muted-foreground leading-relaxed font-medium">
                 {feature.description}
               </p>
             </motion.div>
