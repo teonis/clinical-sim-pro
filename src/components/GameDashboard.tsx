@@ -479,7 +479,7 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
                       <motion.button
                         key={opt.id}
                         disabled={isLoading}
-                        onClick={() => handleAction(opt.id, opt.tipo)}
+                        onClick={() => handleAction(opt.id, opt.tipo, opt.texto)}
                         className={cn(
                           "p-3 rounded-xl text-left transition-all border flex items-center gap-3 group",
                           isLoading
@@ -488,6 +488,7 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
                         )}
                         aria-label={`Ação: ${opt.texto}`}
                       >
+
                         <div className={cn(
                           "w-10 h-10 rounded-lg flex items-center justify-center shrink-0 transition-colors",
                           opt.tipo === "EXAME" ? "bg-accent/10 text-accent" :
