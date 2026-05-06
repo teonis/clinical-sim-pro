@@ -64,7 +64,8 @@ export const saveGameResult = async (
   score: number, outcome: string, difficulty: string,
   specialty: string, caseTitle: string
 ) => {
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { session } } = await supabase.auth.getSession();
+  const user = session?.user;
   if (!user) return;
 
   await supabase.from("game_history").insert({
