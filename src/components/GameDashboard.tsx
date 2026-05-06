@@ -300,63 +300,77 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
 
   // ── Render ─────────────────────────────────────────────────────────────
   return (
-    <div className="flex flex-col h-[100dvh] bg-background text-foreground overflow-hidden transition-colors duration-500">
+    <div className="flex flex-col h-[100dvh] bg-[#050505] text-foreground overflow-hidden transition-colors duration-500">
+      {/* Background Ambience */}
+      <div className="absolute inset-0 opacity-[0.02] pointer-events-none" 
+        style={{ backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)', backgroundSize: '30px 30px' }} 
+      />
+
       {/* Critical Timer Bar */}
       {timeLeft !== null && maxTime !== null && !isGameOver && (
         <div className="shrink-0 z-50">
-          <div className="bg-accent text-accent-foreground px-4 py-2 flex justify-between items-center animate-pulse">
-            <span className="text-xs font-bold uppercase tracking-widest flex items-center gap-2">
-              <Clock className="h-4 w-4" /> Decisão Crítica
+          <div className="bg-destructive text-destructive-foreground px-6 py-2.5 flex justify-between items-center animate-pulse shadow-lg">
+            <span className="text-xs font-black uppercase tracking-[0.3em] flex items-center gap-3">
+              <AlertTriangle className="h-5 w-5" /> Decisão Crítica em Curso
             </span>
-            <span className="font-bold text-lg">{timeLeft}s</span>
+            <span className="font-black text-2xl tabular-nums">{timeLeft}s</span>
           </div>
-          <Progress value={(timeLeft / maxTime) * 100} className="h-1 rounded-none bg-accent/20 [&>div]:bg-accent" />
+          <Progress value={(timeLeft / maxTime) * 100} className="h-1.5 rounded-none bg-destructive/20 [&>div]:bg-destructive transition-all duration-1000" />
         </div>
       )}
 
-      {/* ── Fixed Header ──────────────────────────────────────────────── */}
-      <header className="shrink-0 bg-background/80 backdrop-blur-md border-b border-border px-4 py-3 z-30">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+      {/* ── Enhanced Header ──────────────────────────────────────────────── */}
+      <header className="shrink-0 bg-black/40 backdrop-blur-xl border-b border-white/5 px-6 py-4 z-30 shadow-2xl">
+        <div className="max-w-[1800px] mx-auto flex items-center justify-between gap-6">
           {/* Left: Patient Info */}
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="w-10 h-10 rounded-xl bg-primary/5 flex items-center justify-center shrink-0 border border-primary/10">
-              <User className="h-5 w-5 text-primary" />
+          <div className="flex items-center gap-5 min-w-0">
+            <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20 shadow-inner">
+              <User className="h-6 w-6 text-primary" />
             </div>
             <div className="min-w-0">
-              <h1 className="text-sm font-bold text-foreground truncate leading-tight">
-                {gameState.interface_usuario.manchete}
-              </h1>
-              <div className="flex items-center gap-2 mt-0.5">
-                <span className={cn("text-[10px] font-bold uppercase tracking-wider", statusColor)}>
+              <div className="flex items-center gap-3">
+                <h1 className="text-lg font-black text-white truncate leading-none tracking-tight">
+                  {gameState.interface_usuario.manchete}
+                </h1>
+                <Badge variant="outline" className={cn("border-2 font-black text-[10px] px-2 py-0 uppercase tracking-widest", 
+                  patientState === "CRITICO" ? "border-destructive text-destructive animate-pulse" : 
+                  patientState === "INSTAVEL" ? "border-warning text-warning" : "border-primary text-primary"
+                )}>
                   {patientState}
-                </span>
+                </Badge>
+              </div>
+              <div className="flex items-center gap-3 mt-2">
                 {generatedCase && (
-                  <span className="text-[10px] text-muted-foreground font-medium bg-muted px-1.5 py-0.5 rounded">
-                    {generatedCase.patient.sex === "M" ? "Masculino" : "Feminino"}, {generatedCase.patient.age} anos
+                  <span className="text-[10px] text-muted-foreground font-black uppercase tracking-widest bg-white/5 px-2 py-1 rounded-md border border-white/5">
+                    {generatedCase.patient.sex === "M" ? "Masculino" : "Feminino"} • {generatedCase.patient.age} anos
                   </span>
                 )}
+                <div className="flex items-center gap-1.5 ml-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
+                  <span className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em]">Telemetry: Live</span>
+                </div>
               </div>
             </div>
           </div>
 
           {/* Right: Controls & Stats */}
-          <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+          <div className="flex items-center gap-4 lg:gap-8 shrink-0">
             {/* ABCD Status - Immersion */}
-            <div className="hidden md:flex items-center gap-1">
+            <div className="hidden xl:flex items-center gap-2">
               {['A', 'B', 'C', 'D'].map((letter) => (
                 <TooltipProvider key={letter}>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <div className={cn(
-                        "w-7 h-7 rounded-lg flex items-center justify-center text-[10px] font-black border transition-all",
-                        patientState === "CRITICO" || patientState === "OBITO" ? "bg-destructive/10 text-destructive border-destructive/20 animate-pulse" :
-                        patientState === "INSTAVEL" ? "bg-warning/10 text-warning border-warning/20" :
-                        "bg-success/10 text-success border-success/20"
+                        "w-9 h-9 rounded-xl flex items-center justify-center text-xs font-black border-2 transition-all cursor-help",
+                        patientState === "CRITICO" || patientState === "OBITO" ? "bg-destructive/10 text-destructive border-destructive/30 animate-pulse" :
+                        patientState === "INSTAVEL" ? "bg-warning/10 text-warning border-warning/30" :
+                        "bg-primary/10 text-primary border-primary/30 shadow-[0_0_15px_rgba(var(--primary),0.1)]"
                       )}>
                         {letter}
                       </div>
                     </TooltipTrigger>
-                    <TooltipContent side="bottom" className="text-[10px] font-bold">
+                    <TooltipContent side="bottom" className="text-[10px] font-black uppercase tracking-widest p-2 bg-black border-white/10">
                       {letter === 'A' ? 'Via Aérea' : letter === 'B' ? 'Respiração' : letter === 'C' ? 'Circulação' : 'Neurológico'}
                     </TooltipContent>
                   </Tooltip>
@@ -364,49 +378,53 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
               ))}
             </div>
 
-            {/* Simulation Time */}
-            <div className="flex items-center gap-2 bg-muted/50 px-3 py-1.5 rounded-lg border border-border/50">
-              <Clock className="h-3.5 w-3.5 text-muted-foreground" />
-              <span className="text-sm font-bold text-foreground tabular-nums">
-                {engine.getFormattedTime()}
-              </span>
+            <div className="flex items-center gap-4">
+              {/* Simulation Time */}
+              <div className="hidden sm:flex items-center gap-3 bg-white/5 px-4 py-2 rounded-xl border border-white/5 shadow-inner">
+                <Clock className="h-4 w-4 text-primary" />
+                <span className="text-sm font-black text-white tabular-nums tracking-widest">
+                  {engine.getFormattedTime()}
+                </span>
+              </div>
+
+              {/* Score - Premium Look */}
+              <div className="relative group">
+                <div className="flex items-center gap-3 bg-primary/10 px-5 py-2.5 rounded-xl border-2 border-primary/20 shadow-[0_0_30px_rgba(var(--primary),0.1)]">
+                  <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em] hidden md:block">Score</span>
+                  <span className={cn("text-xl font-black tabular-nums tracking-tighter", 
+                    gameState.status_simulacao.current_score >= 7 ? "text-primary" :
+                    gameState.status_simulacao.current_score >= 5 ? "text-warning" : "text-destructive"
+                  )}>
+                    {gameState.status_simulacao.current_score.toFixed(1)}
+                  </span>
+                </div>
+                <AnimatePresence>
+                  {scoreDiff !== null && (
+                    <motion.div 
+                      initial={{ opacity: 0, scale: 0.5, y: 0 }}
+                      animate={{ opacity: 1, scale: 1, y: -40 }}
+                      exit={{ opacity: 0, scale: 0.5 }}
+                      className={cn(
+                        "absolute top-0 right-0 font-black text-sm drop-shadow-lg",
+                        scoreDiff > 0 ? "text-success" : "text-destructive"
+                      )}
+                    >
+                      {scoreDiff > 0 ? "+" : ""}{scoreDiff.toFixed(1)}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
 
-            {/* Score */}
-            <div className="relative flex items-center gap-2 bg-primary/5 px-3 py-1.5 rounded-lg border border-primary/10">
-              <span className="text-[10px] font-bold text-primary uppercase tracking-tight hidden xs:block">Score</span>
-              <span className={cn("text-sm font-bold tabular-nums", 
-                gameState.status_simulacao.current_score >= 7 ? "text-primary" :
-                gameState.status_simulacao.current_score >= 5 ? "text-warning" : "text-destructive"
-              )}>
-                {gameState.status_simulacao.current_score.toFixed(1)}
-              </span>
-              <AnimatePresence>
-                {scoreDiff !== null && (
-                  <motion.span 
-                    initial={{ opacity: 0, y: 5 }}
-                    animate={{ opacity: 1, y: -15 }}
-                    exit={{ opacity: 0 }}
-                    className={cn(
-                      "absolute top-0 right-0 text-[10px] font-bold whitespace-nowrap",
-                      scoreDiff > 0 ? "text-success" : "text-destructive"
-                    )}
-                  >
-                    {scoreDiff > 0 ? "+" : ""}{scoreDiff.toFixed(1)}
-                  </motion.span>
-                )}
-              </AnimatePresence>
-            </div>
+            <div className="h-10 w-px bg-white/10 hidden sm:block" />
 
-            <div className="h-6 w-px bg-border mx-1 hidden sm:block" />
-
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-2">
               <ThemeToggle />
-              <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground" onClick={onRestart} title="Reiniciar">
-                <RotateCcw className="h-4 w-4" />
+              <Button variant="ghost" size="icon" className="h-10 w-10 text-muted-foreground hover:text-white hover:bg-white/5 rounded-xl" onClick={onRestart} title="Reiniciar">
+                <RotateCcw className="h-5 w-5" />
               </Button>
-              <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground" onClick={onExit} title="Sair">
-                <LogOut className="h-4 w-4" />
+              <Button variant="ghost" size="icon" className="h-10 w-10 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-xl" onClick={onExit} title="Sair">
+                <LogOut className="h-5 w-5" />
               </Button>
             </div>
           </div>
