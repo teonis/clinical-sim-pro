@@ -94,7 +94,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
               <Activity className="h-8 w-8 text-primary lcd-glow" />
             </div>
             <h1 className="text-2xl font-display font-black text-primary lcd-glow tracking-tighter">BOLUS</h1>
-            <p className="text-muted-foreground text-xs font-mono-vital tracking-widest uppercase mt-1">NIGHT PROTOCOL</p>
+            <p className="text-muted-foreground text-[10px] font-mono-vital tracking-widest uppercase mt-1">Sua dose de realidade clínica</p>
           </div>
         </div>
 
