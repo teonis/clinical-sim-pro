@@ -212,7 +212,7 @@ const TEMPLATES: CaseTemplate[] = [
         ? "dor torácica em aperto há 2 horas, irradiando para ombro esquerdo, com náuseas leves"
         : "desconforto torácico retroesternal há 4 horas, em aperto, sem irradiação clara";
       const duration = p.severity === "grave" ? "há 1 hora" : p.severity === "moderada" ? "há 3 horas" : "há 6 horas";
-      return `Paciente ${p.sex === "M" ? "masculino" : "feminino"}, ${p.age} anos, dá entrada na emergência com ${painDesc}, iniciada ${duration}. Antecedentes: ${formatComorbidities(p.comorbidities)}. Gravidade do quadro: ${p.severity}. Gere um caso de IAM com Supra de ST adequado a este perfil. Adicione sons de gemidos de dor e um ambiente tenso de pronto-socorro.`;
+      return `Paciente ${p.sex === "M" ? "masculino" : "feminino"}, ${p.age} anos, dá entrada na emergência com ${painDesc}, iniciada ${duration}. Antecedentes: ${formatComorbidities(p.comorbidities)}. Gravidade do quadro: ${p.severity}. Gere um caso de IAM com Supra de ST (STEMI) adequado a este perfil. Adicione sons de gemidos de dor e um ambiente tenso de pronto-socorro.`;
     },
   },
   {
@@ -229,7 +229,7 @@ const TEMPLATES: CaseTemplate[] = [
         : p.severity === "moderada"
         ? "tosse produtiva há 5 dias, febre de 38.5°C, dispneia aos esforços moderados"
         : "tosse com expectoração amarelada há 7 dias, febre baixa intermitente, sem dispneia em repouso";
-      return `Paciente ${p.sex === "M" ? "masculino" : "feminino"}, ${p.age} anos, chega à emergência com ${onset}. Antecedentes: ${formatComorbidities(p.comorbidities)}. Gravidade do quadro: ${p.severity}. Gere um caso de Pneumonia Adquirida na Comunidade adequado a este perfil. Descreva o som da tosse produtiva e a respiração ofegante.`;
+      return `Paciente ${p.sex === "M" ? "masculino" : "feminino"}, ${p.age} anos, chega à emergência com ${onset}. Antecedentes: ${formatComorbidities(p.comorbidities)}. Gravidade do quadro: ${p.severity}. Gere um caso de Pneumonia Adquirida na Comunidade (CAP) adequado a este perfil. Descreva o som da tosse produtiva e a respiração ofegante.`;
     },
   },
   {
@@ -247,7 +247,7 @@ const TEMPLATES: CaseTemplate[] = [
         : p.severity === "moderada"
         ? `sepse com taquicardia, febre alta, hipotensão leve, foco provável ${focus}`
         : `sinais de SIRS com foco infeccioso ${focus}, sem disfunção orgânica evidente`;
-      return `Paciente ${p.sex === "M" ? "masculino" : "feminino"}, ${p.age} anos, trazido à emergência com ${desc}. Antecedentes: ${formatComorbidities(p.comorbidities)}. Gravidade do quadro: ${p.severity}. Gere um caso de Sepse adequado a este perfil. Descreva a voz fraca do paciente e o som dos alarmes do monitor.`;
+      return `Paciente ${p.sex === "M" ? "masculino" : "feminino"}, ${p.age} anos, trazido à emergência com ${desc}. Antecedentes: ${formatComorbidities(p.comorbidities)}. Gravidade do quadro: ${p.severity}. Gere um caso de Sepse ou Choque Séptico adequado a este perfil. Descreva a voz fraca do paciente e o som dos alarmes do monitor.`;
     },
   },
 ];

@@ -481,11 +481,12 @@ export function evaluateProtocol(
     // BUT we must find the actual timeline entry that triggered it to get the correct time
     if (!matchedEntry) {
       for (const kw of item.matchKeywords) {
+        const normKw = normalize(kw);
         if (appliedInterventions.has(kw)) {
           // Find the earliest timeline entry that contains this keyword or a close variation
           const found = timeline.find(entry => {
              const normText = normalize(entry.actionText);
-             return normText.includes(normalize(kw)) || normalize(kw).includes(normText);
+             return normText.includes(normKw) || normKw.includes(normText);
           });
           matchedEntry = found || (timeline.length > 0 ? timeline[0] : null);
           break;

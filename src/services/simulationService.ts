@@ -84,7 +84,7 @@ export const startSimulation = async (params: StartParams): Promise<SimulationSt
 
   // Detect conditions from initial narrative
   const state = data as SimulationState;
-  const narrative = `${state.interface_usuario.manchete} ${state.interface_usuario.narrativa_principal}`;
+  const narrative = `${state.interface_usuario.manchete} ${state.interface_usuario.narrativa_principal} ${state.interface_usuario.exame_fisico_detalhado ?? ""}`;
   engine.setConditionsFromNarrative(narrative);
 
   conversationHistory.push({ role: "assistant", content: JSON.stringify(data) });
@@ -109,6 +109,7 @@ export const sendAction = async (
   // 1. Apply deterministic intervention effects
   const actionText = customText || actionId;
   engine.applyIntervention(actionText);
+  engine.logAction(actionText); // Log before tick to get current state time
 
   // 2. Calculate time cost for this action
   const timeCost = actionId === "SYSTEM_TIMEOUT" ? 3 : engine.getTimeCostForAction(actionText);
@@ -122,14 +123,13 @@ export const sendAction = async (
       currentPatientState = parsed.status_simulacao?.estado_paciente ?? "ESTAVEL";
 
       // Update conditions from latest narrative
-      const narr = `${parsed.interface_usuario?.manchete ?? ""} ${parsed.interface_usuario?.narrativa_principal ?? ""}`;
+      const narr = `${parsed.interface_usuario?.manchete ?? ""} ${parsed.interface_usuario?.narrativa_principal ?? ""} ${parsed.interface_usuario?.exame_fisico_detalhado ?? ""}`;
       engine.setConditionsFromNarrative(narr);
     } catch { /* keep default */ }
   }
   engine.tick(timeCost, currentPatientState);
 
-  // 4. Log action to timeline
-  engine.logAction(actionText);
+  // 4. Action was already logged to timeline in step 1
 
   // 5. Inject calculated vitals + time into the user message
   const vitalsBlock = engine.toPromptBlock();
@@ -139,7 +139,7 @@ export const sendAction = async (
   const fullNarrative = conversationHistory
     .filter(m => m.role === "assistant")
     .map(m => {
-      try { const p = JSON.parse(m.content); return `${p.interface_usuario?.manchete ?? ""} ${p.interface_usuario?.narrativa_principal ?? ""}`; }
+      try { const p = JSON.parse(m.content); return `${p.interface_usuario?.manchete ?? ""} ${p.interface_usuario?.narrativa_principal ?? ""} ${p.interface_usuario?.exame_fisico_detalhado ?? ""}`; }
       catch { return ""; }
     }).join(" ");
   const protocol = detectProtocol(fullNarrative);
