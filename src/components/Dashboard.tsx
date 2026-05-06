@@ -200,37 +200,47 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartGame, isLoading, userEmail
               <StartGame onStart={onStartGame} isLoading={isLoading} />
 
               {/* Leaderboard */}
-              <div className="mt-8 space-y-4">
+              <div className="mt-12 space-y-6">
                 <div className="flex justify-between items-center">
-                  <h3 className="font-bold text-foreground text-sm uppercase tracking-wide flex items-center gap-2">
-                    <Trophy className="h-4 w-4 text-yellow-500" /> Líderes do Plantão
+                  <h3 className="font-bold text-foreground text-xs uppercase tracking-widest flex items-center gap-2">
+                    <Trophy className="h-4 w-4 text-accent" /> Ranking Acadêmico
                   </h3>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {isRankingLoading ? (
-                    <div className="col-span-full py-8 text-center text-muted-foreground text-xs font-bold uppercase animate-pulse">
-                      Atualizando Ranking...
+                    <div className="col-span-full py-12 text-center text-muted-foreground text-xs font-bold uppercase tracking-widest animate-pulse">
+                      Sincronizando Dados...
                     </div>
                   ) : leaderboard.length > 0 ? (
                     leaderboard.map((entry, idx) => (
-                      <div key={idx} className="bg-card p-4 rounded-sm border border-border shadow-sm flex items-center gap-3">
-                        <div className={cn("w-8 h-8 rounded-sm flex items-center justify-center font-mono-vital font-bold text-sm shrink-0",
-                          idx === 0 ? "bg-primary/10 text-primary hud-border" :
-                          idx === 1 ? "bg-secondary text-foreground" :
-                          idx === 2 ? "bg-warning/10 text-warning" : "bg-muted text-muted-foreground"
+                      <div key={idx} className="bg-card p-4 rounded-2xl border border-border shadow-sm flex items-center gap-4 transition-all hover:shadow-md group cursor-default">
+                        <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shrink-0 shadow-inner",
+                          idx === 0 ? "bg-accent/10 text-accent border border-accent/20" :
+                          idx === 1 ? "bg-primary/10 text-primary border border-primary/20" :
+                          idx === 2 ? "bg-secondary/10 text-secondary border border-secondary/20" : 
+                          "bg-muted text-muted-foreground"
                         )}>
-                          {idx + 1}
+                          #{idx + 1}
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="font-bold text-foreground text-sm truncate">
+                          <p className="font-bold text-foreground text-sm truncate group-hover:text-primary transition-colors">
                             {entry.display_name || (entry.username || "").split("@")[0]}
                           </p>
-                          <div className="flex justify-between items-center mt-0.5">
-                            <p className="text-xs text-muted-foreground truncate">{entry.specialty || "Geral"}</p>
-                            <p className="text-xs font-bold text-primary">{entry.score} pts</p>
+                          <div className="flex justify-between items-center mt-1">
+                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-tight truncate">{entry.specialty || "Geral"}</p>
+                            <p className="text-[11px] font-bold text-primary tabular-nums">{entry.score} pts</p>
                           </div>
                         </div>
                       </div>
+                    ))
+                  ) : (
+                    <div className="col-span-full py-12 text-center bg-muted/20 rounded-2xl border border-dashed border-border">
+                      <p className="text-muted-foreground text-sm font-medium italic">Ranking em atualização.</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
                     ))
                   ) : (
                     <div className="col-span-full py-8 text-center">
