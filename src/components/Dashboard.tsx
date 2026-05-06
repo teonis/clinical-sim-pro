@@ -240,17 +240,9 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartGame, isLoading, userEmail
                   )}
                 </div>
               </div>
-
-                    ))
-                  ) : (
-                    <div className="col-span-full py-8 text-center">
-                      <p className="text-muted-foreground text-sm">Nenhum ranking disponível ainda.</p>
-                    </div>
-                  )}
-                </div>
-              </div>
             </>
           )}
+
 
           {activeTab === "performance" && userStats && (
             <ProfilePerformance
