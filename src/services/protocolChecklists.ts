@@ -147,6 +147,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 15,
         weight: 0.12,
         reference: "Surviving Sepsis Campaign 2021 — Measure lactate within 1 hour",
+        rationale: "O lactato elevado é um marcador de hipoperfusão tecidual e disfunção celular, sendo fundamental para identificar o choque séptico oculto.",
       },
       {
         id: "sepse_hemocultura",
@@ -155,6 +156,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 30,
         weight: 0.12,
         reference: "SSC 2021 — Obtain blood cultures before antimicrobials when possible",
+        rationale: "A identificação do agente etiológico permite o ajuste da antibioticoterapia para um espectro mais estreito e eficaz.",
       },
       {
         id: "sepse_atb",
@@ -163,6 +165,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 60,
         weight: 0.25,
         reference: "SSC 2021 — Administer antimicrobials within 1 hour of sepsis recognition",
+        rationale: "Cada hora de atraso na administração de antibióticos na sepse está associada a um aumento mensurável na mortalidade.",
       },
       {
         id: "sepse_volume",
@@ -171,6 +174,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 180,
         weight: 0.20,
         reference: "SSC 2021 — 30 mL/kg IV crystalloid for hypotension or lactate ≥4",
+        rationale: "A ressuscitação volêmica precoce é essencial para restaurar o volume intravascular e a perfusão orgânica.",
       },
       {
         id: "sepse_vasopressor",
@@ -179,6 +183,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: null,
         weight: 0.12,
         reference: "SSC 2021 — Norepinephrine first-line vasopressor, target MAP ≥65 mmHg",
+        rationale: "Se a reposição volêmica não for suficiente, o vasopressor é necessário para manter a pressão de perfusão crítica dos órgãos.",
       },
       {
         id: "sepse_acesso",
@@ -187,6 +192,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 10,
         weight: 0.07,
         reference: "SSC 2021 — IV access for fluid resuscitation",
+        rationale: "Acesso rápido é crucial para iniciar a expansão volêmica e a antibioticoterapia sem atrasos.",
       },
       {
         id: "sepse_monitor",
@@ -195,6 +201,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: null,
         weight: 0.06,
         reference: "SSC 2021 — Reassess volume status and tissue perfusion",
+        rationale: "A resposta ao tratamento deve ser guiada por reavaliações clínicas frequentes para evitar sobrecarga ou sub-ressuscitação.",
       },
       {
         id: "sepse_gasometria",
@@ -203,6 +210,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 30,
         weight: 0.06,
         reference: "SSC 2021 — Assess acid-base status early",
+        rationale: "Avalia o equilíbrio ácido-base e a ventilação, indicadores da gravidade metabólica do choque.",
       },
     ],
   },
