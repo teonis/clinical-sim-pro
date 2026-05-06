@@ -365,53 +365,58 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
           />
         ) : (
           <ScrollArea className="h-full">
-            <div className="px-3 py-2 space-y-2 pb-4">
-              {eventLog.map((entry) => (
-                <div
-                  key={entry.id}
-                  className={cn(
-                    "flex gap-2 text-sm",
-                    entry.type === "action" && "flex-row-reverse"
-                  )}
-                >
-                  {entry.type !== "action" ? (
-                    /* AI / System messages: left-aligned bubble */
-                    <div className="flex gap-2 max-w-[90%]">
-                      <div className={cn(
-                        "shrink-0 w-6 h-6 rounded-full flex items-center justify-center mt-0.5",
-                        entry.type === "narrative" ? "bg-primary/10 text-primary" :
-                        entry.type === "mentor" ? "bg-warning/10 text-warning" :
-                        "bg-destructive/10 text-destructive"
-                      )}>
-                        {getEventIcon(entry.type)}
-                      </div>
-                      <div>
+            <div className="px-3 py-2 space-y-3 pb-4">
+              <AnimatePresence initial={false}>
+                {eventLog.map((entry) => (
+                  <motion.div
+                    key={entry.id}
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    transition={{ duration: 0.3, ease: "easeOut" }}
+                    className={cn(
+                      "flex gap-2 text-sm",
+                      entry.type === "action" && "flex-row-reverse"
+                    )}
+                  >
+                    {entry.type !== "action" ? (
+                      /* AI / System messages: left-aligned bubble */
+                      <div className="flex gap-2 max-w-[90%]">
                         <div className={cn(
-                          "rounded-lg rounded-tl-none px-3 py-2 text-sm leading-relaxed",
-                          entry.type === "narrative" ? "bg-card border border-border text-foreground" :
-                          entry.type === "mentor" ? "bg-warning/5 border border-warning/20 text-foreground italic" :
-                          "bg-destructive/5 border border-destructive/20 text-destructive"
+                          "shrink-0 w-6 h-6 rounded-full flex items-center justify-center mt-1",
+                          entry.type === "narrative" ? "bg-primary/10 text-primary border border-primary/20" :
+                          entry.type === "mentor" ? "bg-warning/10 text-warning border border-warning/20" :
+                          "bg-destructive/10 text-destructive border border-destructive/20"
                         )}>
-                          <p className="whitespace-pre-line">{renderWithTooltips(entry.text)}</p>
+                          {getEventIcon(entry.type)}
                         </div>
-                        <span className="text-[10px] text-muted-foreground font-mono-vital mt-0.5 block">
-                          {entry.timestamp} ({entry.gameMinutes}min)
+                        <div>
+                          <div className={cn(
+                            "rounded-2xl rounded-tl-none px-4 py-2.5 text-sm leading-relaxed backdrop-blur-sm shadow-sm",
+                            entry.type === "narrative" ? "bg-card/80 border border-border/50 text-foreground" :
+                            entry.type === "mentor" ? "bg-warning/5 border border-warning/20 text-foreground italic" :
+                            "bg-destructive/5 border border-destructive/20 text-destructive"
+                          )}>
+                            <div className="whitespace-pre-line">{renderWithTooltips(entry.text)}</div>
+                          </div>
+                          <span className="text-[10px] text-muted-foreground font-mono-vital mt-1 ml-1 block opacity-70">
+                            {entry.timestamp} ({entry.gameMinutes}min)
+                          </span>
+                        </div>
+                      </div>
+                    ) : (
+                      /* User actions: right-aligned bubble */
+                      <div className="flex flex-col items-end max-w-[80%] ml-auto">
+                        <div className="rounded-2xl rounded-tr-none px-4 py-2 bg-primary/20 border border-primary/30 text-primary text-sm font-semibold shadow-sm backdrop-blur-sm">
+                          {entry.text}
+                        </div>
+                        <span className="text-[10px] text-muted-foreground font-mono-vital mt-1 mr-1 block opacity-70">
+                          {entry.timestamp}
                         </span>
                       </div>
-                    </div>
-                  ) : (
-                    /* User actions: right-aligned bubble */
-                    <div className="flex flex-col items-end max-w-[80%] ml-auto">
-                      <div className="rounded-lg rounded-tr-none px-3 py-2 bg-primary/10 border border-primary/20 text-primary text-sm font-medium">
-                        {entry.text}
-                      </div>
-                      <span className="text-[10px] text-muted-foreground font-mono-vital mt-0.5">
-                        {entry.timestamp}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              ))}
+                    )}
+                  </motion.div>
+                ))}
+              </AnimatePresence>
 
               {isLoading && (
                 <div className="flex gap-2">
