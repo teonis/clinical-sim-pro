@@ -1,0 +1,103 @@
+import React from "react";
+import LandingHero from "@/components/LandingHero";
+import LandingFeatures from "@/components/LandingFeatures";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { motion } from "framer-motion";
+import { ShieldAlert } from "lucide-react";
+
+interface LandingPageProps {
+  onStart: () => void;
+}
+
+const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
+  return (
+    <div className="min-h-screen bg-background selection:bg-primary/20">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50">
+        <div className="container mx-auto px-6 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+              <span className="text-primary-foreground font-black text-xs">B</span>
+            </div>
+            <span className="font-black tracking-tighter text-xl">BOLUS</span>
+          </div>
+          <div className="flex items-center gap-4">
+            <ThemeToggle />
+            <button 
+              onClick={onStart}
+              className="hidden sm:block text-sm font-bold px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:opacity-90 transition-opacity"
+            >
+              ENTRAR
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <main>
+        <LandingHero onStart={onStart} />
+        <LandingFeatures />
+        
+        {/* Call to Action Section */}
+        <section className="py-24 border-t border-border/50">
+          <div className="container mx-auto px-6 text-center">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              className="max-w-3xl mx-auto p-12 rounded-[2rem] bg-primary text-primary-foreground shadow-2xl relative overflow-hidden"
+            >
+              {/* Decorative elements */}
+              <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32 blur-3xl" />
+              <div className="absolute bottom-0 left-0 w-64 h-64 bg-black/10 rounded-full -ml-32 -mb-32 blur-3xl" />
+              
+              <h2 className="text-3xl md:text-5xl font-black mb-6 tracking-tight">Pronto para o plantão?</h2>
+              <p className="text-primary-foreground/80 text-lg mb-10 leading-relaxed">
+                Não espere a emergência real para testar seus conhecimentos. 
+                Comece agora sua simulação no BOLUS e refine sua conduta.
+              </p>
+              <button 
+                onClick={onStart}
+                className="px-10 py-5 bg-white text-primary font-black rounded-xl hover:scale-105 transition-all shadow-xl text-lg"
+              >
+                CRIAR MINHA CONTA GRÁTIS
+              </button>
+            </motion.div>
+          </div>
+        </section>
+      </main>
+
+      <footer className="py-12 border-t border-border/50 bg-muted/20">
+        <div className="container mx-auto px-6">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-8">
+            <div className="flex flex-col items-center md:items-start gap-4">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+                  <span className="text-primary-foreground font-black text-xs">B</span>
+                </div>
+                <span className="font-black tracking-tighter text-xl">BOLUS</span>
+              </div>
+              <p className="text-sm text-muted-foreground text-center md:text-left">
+                © 2026 BOLUS Simulator. Todos os direitos reservados.
+              </p>
+            </div>
+            
+            <div className="flex flex-col items-center md:items-end gap-4">
+              <div className="flex items-center gap-6">
+                <a href="#" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Privacidade</a>
+                <a href="#" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Termos</a>
+                <a href="#" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Suporte</a>
+              </div>
+              <div className="flex items-start gap-2 max-w-xs text-center md:text-right opacity-50">
+                <ShieldAlert className="h-3 w-3 text-accent shrink-0 mt-0.5" />
+                <p className="text-[10px] text-muted-foreground leading-normal">
+                  EXCLUSIVAMENTE EDUCACIONAL. NÃO SUBSTITUI O JULGAMENTO CLÍNICO PROFISSIONAL.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+};
+
+export default LandingPage;
