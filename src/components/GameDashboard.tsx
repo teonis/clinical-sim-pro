@@ -121,10 +121,17 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
   useEffect(() => {
     const currentScore = gameState.status_simulacao.current_score;
     if (currentScore !== prevScore) {
+      if (scoreTimeoutRef.current) clearTimeout(scoreTimeoutRef.current);
+      
       setScoreDiff(currentScore - prevScore);
-      setTimeout(() => setScoreDiff(null), 3000);
+      scoreTimeoutRef.current = setTimeout(() => {
+        setScoreDiff(null);
+        scoreTimeoutRef.current = null;
+      }, 3000);
+      
       setPrevScore(currentScore);
     }
+
 
     const status = gameState.status_simulacao.estado_paciente;
     if ((status === "OBITO" || status === "CURADO") && !hasSaved) {
