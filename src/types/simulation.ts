@@ -35,6 +35,9 @@ export interface UserInterfaceData {
   narrativa_principal: string;
   feedback_mentor: string;
   score_feedback: string;
+  dicas_preceptor?: string;
+  exame_fisico_detalhado?: string;
+  achados_exames_detalhados?: string;
 }
 
 export interface MedicalData {
