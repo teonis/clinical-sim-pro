@@ -7,15 +7,15 @@ export default {
   theme: {
     container: {
       center: true,
-      padding: "1rem",
+      padding: "2rem",
       screens: {
-        "2xl": "1400px",
+        "2xl": "1200px",
       },
     },
     extend: {
       fontFamily: {
         sans: ["Inter", "system-ui", "sans-serif"],
-        display: ["Space Grotesk", "Inter", "system-ui", "sans-serif"],
+        display: ["Inter", "system-ui", "sans-serif"],
         mono: ["JetBrains Mono", "monospace"],
       },
       colors: {
@@ -68,11 +68,6 @@ export default {
           DEFAULT: "hsl(var(--stable))",
           foreground: "hsl(var(--stable-foreground))",
         },
-        vital: {
-          bg: "hsl(var(--vital-bg))",
-          foreground: "hsl(var(--vital-foreground))",
-          label: "hsl(var(--vital-label))",
-        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -85,9 +80,9 @@ export default {
         },
       },
       borderRadius: {
-        lg: "0.25rem",
-        md: "0.175rem",
-        sm: "0.125rem",
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
       },
       keyframes: {
         "accordion-down": {
