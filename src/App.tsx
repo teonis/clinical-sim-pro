@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { SimulationState, StartParams } from "@/types/simulation";
 import { startSimulation, resetConversation } from "@/services/simulationService";
-import WelcomeScreen from "@/components/WelcomeScreen";
+import LandingPage from "@/pages/LandingPage";
 import AuthScreen from "@/components/AuthScreen";
 import ResetPasswordScreen from "@/components/ResetPasswordScreen";
 import OnboardingTutorial from "@/components/OnboardingTutorial";
@@ -107,12 +107,12 @@ const App: React.FC = () => {
     }
   };
 
-  // Welcome screen
+  // Landing Page
   if (showWelcome) {
     return (
       <>
-        <WelcomeScreen
-          onContinue={() => {
+        <LandingPage
+          onStart={() => {
             localStorage.setItem("rma_welcome_seen", "true");
             setShowWelcome(false);
           }}
@@ -130,7 +130,7 @@ const App: React.FC = () => {
           <div className="w-12 h-12 rounded-xl bg-primary/5 border border-primary/10 flex items-center justify-center animate-pulse">
             <Activity className="h-6 w-6 text-primary" />
           </div>
-          <p className="font-bold text-sm text-foreground tracking-widest uppercase opacity-40">BOLUS</p>
+          <p className="font-bold text-sm text-foreground tracking-[0.3em] uppercase opacity-40">BOLUS</p>
         </div>
       </div>
 
