@@ -136,38 +136,43 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartGame, isLoading, userEmail
   ];
 
   return (
-    <div className="min-h-screen flex bg-background transition-colors duration-500">
-      {/* Sidebar */}
-      <aside className="w-16 lg:w-64 bg-card border-r border-border flex flex-col shrink-0 z-20">
-        <div className="p-4 flex items-center justify-center lg:justify-start gap-3 border-b border-border h-16">
-          <div className="w-9 h-9 rounded-xl bg-primary/5 border border-primary/10 flex items-center justify-center">
-            <Stethoscope className="h-5 w-5 text-primary" />
+    <div className="min-h-screen flex bg-[#0a0a0a] transition-colors duration-500 overflow-hidden">
+      {/* Sidebar - Glassmorphism */}
+      <aside className="w-16 lg:w-72 bg-black/40 backdrop-blur-xl border-r border-white/5 flex flex-col shrink-0 z-30 transition-all duration-300">
+        <div className="p-6 flex items-center justify-center lg:justify-start gap-4 border-b border-white/5 h-20">
+          <div className="w-10 h-10 rounded-2xl bg-primary shadow-[0_0_20px_rgba(var(--primary),0.3)] flex items-center justify-center shrink-0">
+            <Stethoscope className="h-6 w-6 text-primary-foreground" />
           </div>
-          <div className="hidden lg:block">
-            <span className="font-bold text-base text-foreground block leading-tight tracking-tight uppercase">BOLUS</span>
-            <span className="text-[10px] font-bold text-muted-foreground tracking-widest uppercase opacity-60">Clinical</span>
+          <div className="hidden lg:block overflow-hidden">
+            <span className="font-black text-xl text-white block leading-none tracking-tighter">BOLUS</span>
+            <span className="text-[10px] font-black text-primary tracking-[0.3em] uppercase opacity-70 mt-1">SIMULADOR CLÍNICO</span>
           </div>
         </div>
 
-        <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
+        <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
           {navItems.map(({ id, icon: Icon, label }) => (
             <button
               key={id}
               onClick={() => setActiveTab(id)}
               className={cn(
-                "w-full flex items-center gap-3 p-3 rounded-xl text-sm font-semibold transition-all",
-                activeTab === id ? "bg-primary text-primary-foreground shadow-sm shadow-primary/20" : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                "w-full flex items-center gap-4 p-4 rounded-2xl text-sm font-bold transition-all group relative",
+                activeTab === id 
+                  ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" 
+                  : "text-muted-foreground hover:bg-white/5 hover:text-white"
               )}
             >
-              <Icon className="h-5 w-5 shrink-0" />
-              <span className="hidden lg:block">{label}</span>
+              <Icon className={cn("h-5 w-5 shrink-0 transition-transform group-hover:scale-110", activeTab === id ? "text-primary-foreground" : "text-primary")} />
+              <span className="hidden lg:block tracking-tight">{label}</span>
+              {activeTab === id && (
+                <motion.div layoutId="nav-active" className="absolute left-0 w-1 h-6 bg-white rounded-r-full lg:hidden" />
+              )}
             </button>
           ))}
         </nav>
 
-        <div className="p-4 border-t border-border space-y-4">
-          <div className="flex items-center gap-3 p-1">
-            <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center text-xs font-bold text-foreground border border-border overflow-hidden shadow-inner">
+        <div className="p-6 border-t border-white/5 space-y-6 bg-black/20">
+          <div className="flex items-center gap-4 p-1">
+            <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-sm font-black text-white border border-white/10 overflow-hidden shadow-2xl">
               {sidebarAvatar ? (
                 <img src={sidebarAvatar} alt="" className="w-full h-full object-cover" />
               ) : (
@@ -175,17 +180,20 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartGame, isLoading, userEmail
               )}
             </div>
             <div className="hidden lg:block overflow-hidden flex-1">
-              <p className="text-xs font-bold text-foreground truncate">{displayName || userEmail}</p>
-              <p className="text-[10px] font-medium text-muted-foreground truncate uppercase tracking-tight">
-                {userStats ? userStats.currentLevel : "Nível..."}
-              </p>
+              <p className="text-sm font-bold text-white truncate">{displayName || userEmail}</p>
+              <div className="flex items-center gap-2 mt-1">
+                <div className="w-2 h-2 rounded-full bg-success animate-pulse" />
+                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest truncate">
+                  {userStats ? userStats.currentLevel : "Nível..."}
+                </p>
+              </div>
             </div>
           </div>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-3">
             <ThemeToggle />
-            <Button variant="outline" size="sm" onClick={onLogout} className="w-full h-10 rounded-xl font-bold border-border text-muted-foreground hover:text-foreground">
-              <LogOut className="h-4 w-4 lg:mr-2" />
-              <span className="hidden lg:inline">Sair</span>
+            <Button variant="outline" size="lg" onClick={onLogout} className="w-full h-12 rounded-2xl font-black border-white/10 bg-transparent text-muted-foreground hover:bg-destructive hover:text-destructive-foreground hover:border-destructive transition-all">
+              <LogOut className="h-5 w-5 lg:mr-3" />
+              <span className="hidden lg:inline uppercase tracking-widest text-xs">Encerrar Sessão</span>
             </Button>
           </div>
         </div>
