@@ -85,183 +85,151 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-background">
-      <div className="w-full max-w-md bg-card rounded-sm shadow-xl border border-border overflow-hidden max-h-[95vh] overflow-y-auto">
+    <div className="min-h-screen flex items-center justify-center p-6 bg-[#0a0a0a] relative overflow-hidden">
+      {/* Background Ambience */}
+      <div className="absolute inset-0 z-0">
+        <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-accent/10 rounded-full blur-[120px] animate-pulse delay-700" />
+      </div>
+
+      <div className="w-full max-w-md bg-black/40 backdrop-blur-2xl rounded-3xl shadow-2xl border border-white/10 overflow-hidden relative z-10">
         {/* Header */}
-        <div className="lcd-screen p-8 text-center relative overflow-hidden border-b border-primary/20">
-          <div className="relative z-10">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-sm bg-primary/10 hud-border mb-4">
-              <Activity className="h-8 w-8 text-primary lcd-glow" />
-            </div>
-            <h1 className="text-2xl font-display font-black text-primary lcd-glow tracking-tighter">BOLUS</h1>
-            <p className="text-muted-foreground text-[10px] font-mono-vital tracking-widest uppercase mt-1">Sua dose de realidade clínica</p>
+        <div className="p-10 text-center border-b border-white/5 bg-gradient-to-b from-white/5 to-transparent">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-primary shadow-[0_0_30px_rgba(var(--primary),0.3)] mb-6">
+            <Activity className="h-10 w-10 text-primary-foreground animate-pulse" />
           </div>
+          <h1 className="text-4xl font-black text-white tracking-tighter leading-none">BOLUS</h1>
+          <p className="text-primary text-[10px] font-black tracking-[0.4em] uppercase mt-3 opacity-80">Medical Simulation Suite</p>
         </div>
 
-        <div className="p-8">
-          <h2 className="text-xl font-bold text-foreground mb-6 text-center">
-            {mode === "login" ? "Acesse sua conta" : mode === "signup" ? "Criar conta" : "Redefinir senha"}
+        <div className="p-10">
+          <h2 className="text-2xl font-bold text-white mb-8">
+            {mode === "login" ? "Bem-vindo ao Plantão" : mode === "signup" ? "Criar Credenciais" : "Recuperar Acesso"}
           </h2>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-6">
             {mode === "signup" && (
-              <div>
-                <Label className="text-xs font-bold text-muted-foreground uppercase">Nome Completo</Label>
-                <div className="relative mt-1">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <div className="space-y-2">
+                <Label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Nome Completo</Label>
+                <div className="relative">
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary" />
                   <Input
                     type="text"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    className="pl-10"
-                    placeholder="Seu nome completo"
+                    className="pl-12 h-14 rounded-2xl bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:ring-primary/20 transition-all"
+                    placeholder="Nome completo do clínico"
                     required
-                    maxLength={100}
                   />
                 </div>
               </div>
             )}
 
-            <div>
-              <Label className="text-xs font-bold text-muted-foreground uppercase">Email</Label>
-              <div className="relative mt-1">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <div className="space-y-2">
+              <Label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">E-mail Institucional</Label>
+              <div className="relative">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary" />
                 <Input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10"
-                  placeholder="seu@email.com"
+                  className="pl-12 h-14 rounded-2xl bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:ring-primary/20 transition-all"
+                  placeholder="seu@hospital.com"
                   required
                 />
               </div>
             </div>
 
             {mode === "signup" && (
-              <>
-                <div>
-                  <Label className="text-xs font-bold text-muted-foreground uppercase">Universidade / Instituição</Label>
-                  <div className="relative mt-1">
-                    <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      type="text"
-                      value={university}
-                      onChange={(e) => setUniversity(e.target.value)}
-                      className="pl-10"
-                      placeholder="Ex: USP, UNIFESP..."
-                      maxLength={100}
-                    />
-                  </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Instituição</Label>
+                  <Input
+                    type="text"
+                    value={university}
+                    onChange={(e) => setUniversity(e.target.value)}
+                    className="h-14 rounded-2xl bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:ring-primary/20"
+                    placeholder="Ex: USP"
+                  />
                 </div>
-
-                <div>
-                  <Label className="text-xs font-bold text-muted-foreground uppercase">Ano de Formação / Período</Label>
-                  <div className="relative mt-1">
-                    <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      type="text"
-                      value={graduationYear}
-                      onChange={(e) => setGraduationYear(e.target.value)}
-                      className="pl-10"
-                      placeholder="Ex: 6º período, 2025..."
-                      maxLength={50}
-                    />
-                  </div>
+                <div className="space-y-2">
+                  <Label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Ano/Período</Label>
+                  <Input
+                    type="text"
+                    value={graduationYear}
+                    onChange={(e) => setGraduationYear(e.target.value)}
+                    className="h-14 rounded-2xl bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:ring-primary/20"
+                    placeholder="Ex: 2026"
+                  />
                 </div>
-              </>
+              </div>
             )}
 
             {mode !== "forgot" && (
-              <div>
-                <Label className="text-xs font-bold text-muted-foreground uppercase">Senha</Label>
-                <div className="relative mt-1">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <div className="space-y-2">
+                <div className="flex justify-between items-end px-1">
+                  <Label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Senha de Acesso</Label>
+                  {mode === "login" && (
+                    <button
+                      type="button"
+                      onClick={() => setMode("forgot")}
+                      className="text-[10px] text-primary hover:text-white font-black uppercase tracking-widest transition-colors"
+                    >
+                      Esqueceu?
+                    </button>
+                  )}
+                </div>
+                <div className="relative">
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary" />
                   <Input
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="pl-10"
+                    className="pl-12 h-14 rounded-2xl bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:ring-primary/20 transition-all"
                     placeholder="••••••••"
                     required
-                    minLength={6}
                   />
                 </div>
               </div>
             )}
 
             {mode === "signup" && (
-              <div>
-                <Label className="text-xs font-bold text-muted-foreground uppercase">Confirmar Senha</Label>
-                <div className="relative mt-1">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <div className="space-y-2">
+                <Label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Confirmar Senha</Label>
+                <div className="relative">
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary" />
                   <Input
                     type="password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="pl-10"
+                    className="pl-12 h-14 rounded-2xl bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:ring-primary/20 transition-all"
                     placeholder="••••••••"
                     required
-                    minLength={6}
                   />
                 </div>
               </div>
             )}
 
-            {mode === "login" && (
-              <div className="text-right">
-                <button
-                  type="button"
-                  onClick={() => setMode("forgot")}
-                  className="text-xs text-primary hover:text-primary/80 font-medium transition-colors"
-                >
-                  Esqueci minha senha
-                </button>
-              </div>
-            )}
-
-            {mode === "signup" && (
-              <p className="text-xs text-muted-foreground text-center leading-relaxed">
-                Ao criar sua conta, você concorda com os{" "}
-                <a href="/termos" target="_blank" className="text-primary hover:text-primary/80 underline underline-offset-2 font-medium">
-                  Termos de Uso
-                </a>{" "}
-                e a{" "}
-                <a href="/privacidade" target="_blank" className="text-primary hover:text-primary/80 underline underline-offset-2 font-medium">
-                  Política de Privacidade
-                </a>
-                .
-              </p>
-            )}
-
-            <Button type="submit" disabled={isLoading} className="w-full py-6 font-bold">
+            <Button type="submit" disabled={isLoading} className="w-full h-16 rounded-2xl font-black text-lg shadow-xl shadow-primary/20 hover:-translate-y-1 transition-all active:scale-95">
               {isLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <Loader2 className="h-6 w-6 animate-spin" />
               ) : mode === "login" ? (
-                "Entrar"
+                "AUTENTICAR"
               ) : mode === "signup" ? (
-                "Criar Conta"
+                "CRIAR CREDENCIAIS"
               ) : (
-                "Enviar link de redefinição"
+                "RECUPERAR"
               )}
             </Button>
           </form>
 
-          <div className="mt-6 text-center space-y-2">
-            {mode === "forgot" ? (
-              <button
-                onClick={() => setMode("login")}
-                className="text-sm text-primary hover:text-primary/80 font-medium transition-colors"
-              >
-                Voltar ao login
-              </button>
-            ) : (
-              <button
-                onClick={() => setMode(mode === "login" ? "signup" : "login")}
-                className="text-sm text-primary hover:text-primary/80 font-medium transition-colors"
-              >
-                {mode === "login" ? "Não tem conta? Cadastre-se" : "Já tem conta? Faça login"}
-              </button>
-            )}
+          <div className="mt-8 text-center">
+            <button
+              onClick={() => setMode(mode === "login" ? "signup" : "login")}
+              className="text-sm text-muted-foreground hover:text-white font-bold transition-colors"
+            >
+              {mode === "login" ? "Ainda não possui acesso? Solicitar" : "Já possui credenciais? Entrar"}
+            </button>
           </div>
         </div>
       </div>
