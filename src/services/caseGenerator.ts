@@ -229,7 +229,7 @@ const TEMPLATES: CaseTemplate[] = [
         : p.severity === "moderada"
         ? "tosse produtiva há 5 dias, febre de 38.5°C, dispneia aos esforços moderados"
         : "tosse com expectoração amarelada há 7 dias, febre baixa intermitente, sem dispneia em repouso";
-      return `Paciente ${p.sex === "M" ? "masculino" : "feminino"}, ${p.age} anos, chega à emergência com ${onset}. Antecedentes: ${formatComorbidities(p.comorbidities)}. Gravidade do quadro: ${p.severity}. Gere um caso de Pneumonia Adquirida na Comunidade adequado a este perfil. Descreva o som da tosse produtiva e a respiração ofegante.`;
+      return `Paciente ${p.sex === "M" ? "masculino" : "feminino"}, ${p.age} anos, chega à emergência com ${onset}. Antecedentes: ${formatComorbidities(p.comorbidities)}. Gravidade do quadro: ${p.severity}. Gere um caso de Pneumonia Adquirida na Comunidade (CAP) adequado a este perfil. Descreva o som da tosse produtiva e a respiração ofegante.`;
     },
   },
   {
