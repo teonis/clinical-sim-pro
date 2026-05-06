@@ -735,14 +735,18 @@ const GameOverScreen: React.FC<GameOverScreenProps> = ({
                           )}
                         </div>
                       </div>
-                      {r.status !== "done" && (
-                        <div className="bg-muted/30 rounded-xl p-3 border border-border/50">
-                          <div className="flex items-start gap-2">
-                            <BookOpen className="h-3.5 w-3.5 text-muted-foreground shrink-0 mt-0.5" />
-                            <p className="text-xs text-muted-foreground italic leading-relaxed">{r.reference}</p>
-                          </div>
+                      <div className="bg-muted/30 rounded-xl p-3 border border-border/50 space-y-2">
+                        <div className="flex items-start gap-2">
+                          <Zap className="h-3.5 w-3.5 text-warning shrink-0 mt-0.5" />
+                          <p className="text-xs text-foreground/80 leading-relaxed font-medium">
+                            <span className="font-bold">Racional:</span> {r.rationale}
+                          </p>
                         </div>
-                      )}
+                        <div className="flex items-start gap-2 pt-1 border-t border-border/30">
+                          <BookOpen className="h-3 w-3 text-muted-foreground shrink-0 mt-0.5" />
+                          <p className="text-[10px] text-muted-foreground italic leading-relaxed">{r.reference}</p>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
