@@ -15,6 +15,12 @@ import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
+import {
   Send,
   RotateCcw,
   LogOut,
@@ -35,7 +41,15 @@ import {
   MessageSquare,
   ChevronRight,
   Loader2,
+  FileText,
+  Activity,
+  Heart,
+  Thermometer,
+  Zap,
 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 
 
