@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Send,
   RotateCcw,
@@ -52,6 +53,7 @@ interface EventLogEntry {
 }
 
 // ── Component ────────────────────────────────────────────────────────────
+
 
 const GameDashboard: React.FC<GameDashboardProps> = ({
   initialState,
@@ -308,21 +310,28 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
             </div>
 
             {/* Score */}
-            <div className="lcd-screen rounded-sm px-2.5 py-1 hud-border text-center relative">
+            <div className="lcd-screen rounded-sm px-2.5 py-1 hud-border text-center relative overflow-visible">
               <span className={cn("font-mono-vital text-sm font-bold", 
                 gameState.status_simulacao.current_score >= 7 ? "text-primary" :
                 gameState.status_simulacao.current_score >= 5 ? "text-warning" : "text-destructive"
               )}>
                 {gameState.status_simulacao.current_score.toFixed(1)}
               </span>
-              {scoreDiff !== null && (
-                <span className={cn(
-                  "absolute -bottom-3.5 right-0 text-[10px] font-bold animate-bounce",
-                  scoreDiff > 0 ? "text-primary" : "text-destructive"
-                )}>
-                  {scoreDiff > 0 ? "+" : ""}{scoreDiff.toFixed(1)}
-                </span>
-              )}
+              <AnimatePresence>
+                {scoreDiff !== null && (
+                  <motion.span 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 20 }}
+                    exit={{ opacity: 0 }}
+                    className={cn(
+                      "absolute top-0 right-0 text-[10px] font-bold whitespace-nowrap",
+                      scoreDiff > 0 ? "text-primary" : "text-destructive"
+                    )}
+                  >
+                    {scoreDiff > 0 ? "+" : ""}{scoreDiff.toFixed(1)}
+                  </motion.span>
+                )}
+              </AnimatePresence>
             </div>
 
             {/* Header buttons */}
@@ -363,53 +372,58 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
           />
         ) : (
           <ScrollArea className="h-full">
-            <div className="px-3 py-2 space-y-2 pb-4">
-              {eventLog.map((entry) => (
-                <div
-                  key={entry.id}
-                  className={cn(
-                    "flex gap-2 text-sm",
-                    entry.type === "action" && "flex-row-reverse"
-                  )}
-                >
-                  {entry.type !== "action" ? (
-                    /* AI / System messages: left-aligned bubble */
-                    <div className="flex gap-2 max-w-[90%]">
-                      <div className={cn(
-                        "shrink-0 w-6 h-6 rounded-full flex items-center justify-center mt-0.5",
-                        entry.type === "narrative" ? "bg-primary/10 text-primary" :
-                        entry.type === "mentor" ? "bg-warning/10 text-warning" :
-                        "bg-destructive/10 text-destructive"
-                      )}>
-                        {getEventIcon(entry.type)}
-                      </div>
-                      <div>
+            <div className="px-3 py-2 space-y-3 pb-4">
+              <AnimatePresence initial={false}>
+                {eventLog.map((entry) => (
+                  <motion.div
+                    key={entry.id}
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    transition={{ duration: 0.3, ease: "easeOut" }}
+                    className={cn(
+                      "flex gap-2 text-sm",
+                      entry.type === "action" && "flex-row-reverse"
+                    )}
+                  >
+                    {entry.type !== "action" ? (
+                      /* AI / System messages: left-aligned bubble */
+                      <div className="flex gap-2 max-w-[90%]">
                         <div className={cn(
-                          "rounded-lg rounded-tl-none px-3 py-2 text-sm leading-relaxed",
-                          entry.type === "narrative" ? "bg-card border border-border text-foreground" :
-                          entry.type === "mentor" ? "bg-warning/5 border border-warning/20 text-foreground italic" :
-                          "bg-destructive/5 border border-destructive/20 text-destructive"
+                          "shrink-0 w-6 h-6 rounded-full flex items-center justify-center mt-1",
+                          entry.type === "narrative" ? "bg-primary/10 text-primary border border-primary/20" :
+                          entry.type === "mentor" ? "bg-warning/10 text-warning border border-warning/20" :
+                          "bg-destructive/10 text-destructive border border-destructive/20"
                         )}>
-                          <p className="whitespace-pre-line">{renderWithTooltips(entry.text)}</p>
+                          {getEventIcon(entry.type)}
                         </div>
-                        <span className="text-[10px] text-muted-foreground font-mono-vital mt-0.5 block">
-                          {entry.timestamp} ({entry.gameMinutes}min)
+                        <div>
+                          <div className={cn(
+                            "rounded-2xl rounded-tl-none px-4 py-2.5 text-sm leading-relaxed backdrop-blur-sm shadow-sm",
+                            entry.type === "narrative" ? "bg-card/80 border border-border/50 text-foreground" :
+                            entry.type === "mentor" ? "bg-warning/5 border border-warning/20 text-foreground italic" :
+                            "bg-destructive/5 border border-destructive/20 text-destructive"
+                          )}>
+                            <div className="whitespace-pre-line">{renderWithTooltips(entry.text)}</div>
+                          </div>
+                          <span className="text-[10px] text-muted-foreground font-mono-vital mt-1 ml-1 block opacity-70">
+                            {entry.timestamp} ({entry.gameMinutes}min)
+                          </span>
+                        </div>
+                      </div>
+                    ) : (
+                      /* User actions: right-aligned bubble */
+                      <div className="flex flex-col items-end max-w-[80%] ml-auto">
+                        <div className="rounded-2xl rounded-tr-none px-4 py-2 bg-primary/20 border border-primary/30 text-primary text-sm font-semibold shadow-sm backdrop-blur-sm">
+                          {entry.text}
+                        </div>
+                        <span className="text-[10px] text-muted-foreground font-mono-vital mt-1 mr-1 block opacity-70">
+                          {entry.timestamp}
                         </span>
                       </div>
-                    </div>
-                  ) : (
-                    /* User actions: right-aligned bubble */
-                    <div className="flex flex-col items-end max-w-[80%] ml-auto">
-                      <div className="rounded-lg rounded-tr-none px-3 py-2 bg-primary/10 border border-primary/20 text-primary text-sm font-medium">
-                        {entry.text}
-                      </div>
-                      <span className="text-[10px] text-muted-foreground font-mono-vital mt-0.5">
-                        {entry.timestamp}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              ))}
+                    )}
+                  </motion.div>
+                ))}
+              </AnimatePresence>
 
               {isLoading && (
                 <div className="flex gap-2">
@@ -434,40 +448,50 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
 
       {/* ── Fixed Bottom Input ────────────────────────────────────────── */}
       {!isGameOver && (
-        <div className="shrink-0 border-t border-border bg-card p-3 z-30 safe-area-pb">
+        <div className="shrink-0 border-t border-border bg-card/50 backdrop-blur-md p-3 z-30 safe-area-pb">
           {/* Expandable actions panel */}
-          {showActions && predefinedActions.length > 0 && (
-            <div className="mb-3 space-y-1.5 max-h-48 overflow-y-auto">
-              {predefinedActions.map((opt) => (
-                <button
-                  key={opt.id}
-                  disabled={isLoading}
-                  onClick={() => handleAction(opt.id, opt.tipo)}
-                  className={cn(
-                    "w-full p-3 rounded-sm text-left transition-all border group",
-                    isLoading
-                      ? "opacity-50 cursor-not-allowed bg-muted"
-                      : "hover:border-primary/30 active:scale-[0.99] bg-secondary border-border"
-                  )}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className={cn(
-                      "w-7 h-7 rounded-sm flex items-center justify-center shrink-0",
-                      opt.tipo === "EXAME" ? "bg-accent text-accent-foreground" :
-                      opt.tipo === "MEDICAMENTO" ? "bg-primary/10 text-primary" :
-                      "bg-warning/10 text-warning"
-                    )}>
-                      {getActionIcon(opt.tipo)}
+          <AnimatePresence>
+            {showActions && predefinedActions.length > 0 && (
+              <motion.div 
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                className="mb-3 space-y-1.5 max-h-48 overflow-y-auto overflow-x-hidden scrollbar-none"
+              >
+                {predefinedActions.map((opt) => (
+                  <motion.button
+                    key={opt.id}
+                    initial={{ x: -20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    disabled={isLoading}
+                    onClick={() => handleAction(opt.id, opt.tipo)}
+                    className={cn(
+                      "w-full p-3 rounded-xl text-left transition-all border group",
+                      isLoading
+                        ? "opacity-50 cursor-not-allowed bg-muted"
+                        : "hover:border-primary/50 hover:bg-primary/5 active:scale-[0.98] bg-secondary border-border/50"
+                    )}
+                    aria-label={`Ação: ${opt.texto}`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={cn(
+                        "w-8 h-8 rounded-lg flex items-center justify-center shrink-0 shadow-inner",
+                        opt.tipo === "EXAME" ? "bg-accent/20 text-accent-foreground" :
+                        opt.tipo === "MEDICAMENTO" ? "bg-primary/10 text-primary" :
+                        "bg-warning/10 text-warning"
+                      )}>
+                        {getActionIcon(opt.tipo)}
+                      </div>
+                      <div className="min-w-0">
+                        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-tight block">{opt.tipo}</span>
+                        <span className="font-semibold text-sm text-foreground leading-tight block truncate">{opt.texto}</span>
+                      </div>
                     </div>
-                    <div className="min-w-0">
-                      <span className="text-[10px] font-bold text-muted-foreground uppercase block">{opt.tipo}</span>
-                      <span className="font-medium text-sm text-foreground leading-tight block truncate">{opt.texto}</span>
-                    </div>
-                  </div>
-                </button>
-              ))}
-            </div>
-          )}
+                  </motion.button>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <div className="flex items-center gap-2">
             {/* Toggle actions button */}
@@ -475,32 +499,43 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
               <Button
                 variant="outline"
                 size="icon"
-                className={cn("h-10 w-10 shrink-0", showActions && "border-primary text-primary")}
+                className={cn(
+                  "h-11 w-11 shrink-0 rounded-xl transition-all border-border/50", 
+                  showActions && "border-primary bg-primary/10 text-primary shadow-[0_0_10px_rgba(0,255,148,0.2)]"
+                )}
                 onClick={() => setShowActions(!showActions)}
+                aria-expanded={showActions}
+                aria-label="Ver ações recomendadas"
               >
-                <ClipboardList className="h-4 w-4" />
+                <ClipboardList className="h-5 w-5" />
               </Button>
             )}
 
-            <Input
-              value={customActionText}
-              onChange={(e) => setCustomActionText(e.target.value)}
-              placeholder="Digite sua conduta..."
-              disabled={isLoading}
-              className="flex-1 bg-secondary"
-              onKeyDown={(e) => e.key === "Enter" && handleAction("LIVRE", ActionType.LIVRE)}
-            />
-            <Button
-              size="icon"
-              className="h-10 w-10 shrink-0"
-              onClick={() => handleAction("LIVRE", ActionType.LIVRE)}
-              disabled={isLoading || !customActionText.trim()}
-            >
-              <Send className="h-4 w-4" />
-            </Button>
+            <div className="relative flex-1">
+              <Input
+                value={customActionText}
+                onChange={(e) => setCustomActionText(e.target.value)}
+                placeholder="O que você quer fazer agora?..."
+                disabled={isLoading}
+                className="h-11 rounded-xl bg-secondary border-border/50 pr-10 focus-visible:ring-primary/30"
+                onKeyDown={(e) => e.key === "Enter" && handleAction("LIVRE", ActionType.LIVRE)}
+                aria-label="Entrada de conduta livre"
+              />
+              <Button
+                size="icon"
+                variant="ghost"
+                className="absolute right-1 top-1 h-9 w-9 text-primary hover:bg-primary/10 hover:text-primary rounded-lg"
+                onClick={() => handleAction("LIVRE", ActionType.LIVRE)}
+                disabled={isLoading || !customActionText.trim()}
+                aria-label="Enviar conduta"
+              >
+                <Send className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </div>
       )}
+
     </div>
   );
 };
@@ -523,157 +558,231 @@ const GameOverScreen: React.FC<GameOverScreenProps> = ({
 
   return (
     <ScrollArea className="h-full">
-      <div className="px-4 py-6 space-y-4 max-w-lg mx-auto">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="px-4 py-8 space-y-6 max-w-lg mx-auto"
+      >
         {/* Outcome header */}
         <div className="text-center">
-          <div className={cn(
-            "w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-3",
-            isCured ? "bg-primary/10 text-primary" : "bg-destructive/10 text-destructive"
-          )}>
-            {isCured ? <CheckCircle className="h-7 w-7" /> : <Skull className="h-7 w-7" />}
-          </div>
-          <h2 className="text-lg font-display font-bold text-foreground">
-            {isCured ? "Alta Médica" : "Óbito Confirmado"}
-          </h2>
-          <p className="text-xs text-muted-foreground font-mono-vital mt-1">
-            Tempo total: {engine.getFormattedTime()} ({engine.getGameTimeMinutes()} min)
-          </p>
-          <div className="inline-flex items-center gap-3 px-5 py-1.5 bg-card border border-border rounded-sm mt-3">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Nota</span>
-            <span className="font-mono-vital text-xl font-bold text-primary lcd-glow">
-              {gameState.status_simulacao.current_score.toFixed(1)}
-            </span>
-          </div>
+          <motion.div 
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: "spring", damping: 12 }}
+            className={cn(
+              "w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-lg",
+              isCured ? "bg-primary/20 text-primary border border-primary/30" : "bg-destructive/20 text-destructive border border-destructive/30"
+            )}
+          >
+            {isCured ? <CheckCircle className="h-10 w-10" /> : <Skull className="h-10 w-10" />}
+          </motion.div>
+          
+          <motion.h2 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="text-2xl font-display font-black text-foreground tracking-tight"
+          >
+            {isCured ? "ALTA MÉDICA" : "ÓBITO CONFIRMADO"}
+          </motion.h2>
+          
+          <motion.p 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="text-xs text-muted-foreground font-mono-vital mt-1 uppercase tracking-widest"
+          >
+            Simulação Finalizada em {engine.getFormattedTime()}
+          </motion.p>
+          
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="inline-flex items-center gap-4 px-6 py-2.5 bg-card border border-border/50 rounded-2xl mt-5 shadow-sm"
+          >
+            <div className="text-left">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground block">Desempenho</span>
+              <span className="font-mono-vital text-3xl font-black text-primary lcd-glow leading-none">
+                {gameState.status_simulacao.current_score.toFixed(1)}
+              </span>
+            </div>
+            <div className="w-px h-8 bg-border/50" />
+            <div className="text-left">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground block">Tempo Total</span>
+              <span className="font-mono-vital text-lg font-bold text-foreground leading-none">
+                {engine.getGameTimeMinutes()} min
+              </span>
+            </div>
+          </motion.div>
         </div>
 
         {/* Action Timeline */}
         {engine.getActionTimeline().length > 0 && (
-          <div className="bg-secondary p-3 rounded-sm border border-border">
-            <h4 className="text-[10px] font-bold text-muted-foreground uppercase mb-2 flex items-center gap-2">
-              <Clock className="h-3 w-3" /> Timeline
+          <motion.div 
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.5 }}
+            className="bg-secondary/50 backdrop-blur-sm p-4 rounded-2xl border border-border/50"
+          >
+            <h4 className="text-[10px] font-black text-muted-foreground uppercase mb-3 flex items-center gap-2 tracking-widest">
+              <Clock className="h-3 w-3" /> Cronologia de Eventos
             </h4>
-            <div className="space-y-1 max-h-36 overflow-y-auto">
+            <div className="space-y-2 max-h-40 overflow-y-auto pr-2 scrollbar-thin">
               {engine.getActionTimeline().map((entry, i) => {
                 const h = Math.floor(entry.gameTimeMinutes / 60);
                 const m = entry.gameTimeMinutes % 60;
                 const ts = `${String(h).padStart(2, "0")}:${String(Math.round(m)).padStart(2, "0")}`;
                 return (
                   <div key={i} className={cn(
-                    "flex items-center gap-2 text-xs font-mono-vital",
+                    "flex items-center gap-3 text-xs font-mono-vital group",
                     entry.isCritical ? "text-destructive" : "text-muted-foreground"
                   )}>
-                    <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", entry.isCritical ? "bg-destructive" : "bg-muted-foreground/40")} />
-                    <span className="font-bold w-11 shrink-0">{ts}</span>
-                    <span className="truncate">{entry.actionText}</span>
+                    <span className={cn(
+                      "w-2 h-2 rounded-full shrink-0 shadow-sm", 
+                      entry.isCritical ? "bg-destructive animate-pulse" : "bg-muted-foreground/30 group-hover:bg-muted-foreground/50 transition-colors"
+                    )} />
+                    <span className="font-bold w-12 shrink-0 opacity-80">{ts}</span>
+                    <span className="truncate group-hover:text-foreground transition-colors">{entry.actionText}</span>
                   </div>
                 );
               })}
             </div>
-          </div>
+          </motion.div>
         )}
 
         {/* Protocol Checklist */}
         {protocolEval && (
-          <div className="bg-card p-3 rounded-sm border border-border">
-            <div className="flex items-center justify-between mb-2">
-              <h4 className="text-[10px] font-bold text-muted-foreground uppercase flex items-center gap-2">
+          <motion.div 
+            initial={{ opacity: 0, x: 10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.6 }}
+            className="bg-card p-4 rounded-2xl border border-border shadow-sm"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h4 className="text-[10px] font-black text-muted-foreground uppercase flex items-center gap-2 tracking-widest">
                 <ClipboardList className="h-3 w-3 text-primary" /> {protocolEval.protocolName}
               </h4>
-              <span className={cn(
-                "text-xs font-mono-vital font-bold px-2 py-0.5 rounded-sm",
+              <div className={cn(
+                "text-xs font-mono-vital font-black px-3 py-1 rounded-lg shadow-inner",
                 protocolEval.adherenceScore >= 8 ? "bg-primary/10 text-primary" :
                 protocolEval.adherenceScore >= 5 ? "bg-warning/10 text-warning" :
                 "bg-destructive/10 text-destructive"
               )}>
                 {protocolEval.adherenceScore.toFixed(1)}/10
-              </span>
+              </div>
             </div>
-            <div className="space-y-1.5">
+            <div className="space-y-3">
               {protocolEval.results.map((r) => (
-                <div key={r.itemId} className="text-xs">
-                  <div className="flex items-start gap-2">
-                    <span className="shrink-0 mt-0.5">
+                <div key={r.itemId} className="text-xs group">
+                  <div className="flex items-start gap-3">
+                    <span className="shrink-0 text-base leading-none">
                       {r.status === "done" ? "✅" : r.status === "late" ? "⏱️" : "❌"}
                     </span>
                     <div className="flex-1 min-w-0">
-                      <span className={cn(
-                        "font-semibold",
-                        r.status === "done" ? "text-primary" :
-                        r.status === "late" ? "text-warning" : "text-destructive"
-                      )}>
-                        {r.label}
-                      </span>
-                      {r.performedAt !== null && (
-                        <span className="text-muted-foreground ml-1">
-                          — {r.performedAt}min
-                          {r.targetMinutes !== null && (
-                            <span className={r.performedAt > r.targetMinutes ? "text-destructive" : "text-primary"}>
-                              {" "}(meta: &lt;{r.targetMinutes}min)
-                            </span>
-                          )}
+                      <div className="flex justify-between items-start">
+                        <span className={cn(
+                          "font-bold text-sm",
+                          r.status === "done" ? "text-primary" :
+                          r.status === "late" ? "text-warning" : "text-destructive"
+                        )}>
+                          {r.label}
                         </span>
-                      )}
-                      {r.status === "missed" && r.targetMinutes !== null && (
-                        <span className="text-destructive ml-1">— meta: &lt;{r.targetMinutes}min</span>
+                      </div>
+                      <div className="flex items-center gap-2 mt-0.5 font-mono-vital text-[10px] text-muted-foreground">
+                        {r.performedAt !== null && (
+                          <span>Realizado: {r.performedAt}min</span>
+                        )}
+                        {r.targetMinutes !== null && (
+                          <span className={cn(
+                            "px-1.5 py-0.5 rounded-md",
+                            r.status === "late" || r.status === "missed" ? "bg-destructive/10 text-destructive" : "bg-primary/10 text-primary"
+                          )}>
+                            Meta: &lt;{r.targetMinutes}min
+                          </span>
+                        )}
+                      </div>
+                      {r.status !== "done" && (
+                        <div className="mt-1.5 text-[11px] text-muted-foreground leading-relaxed italic border-l-2 border-border/50 pl-2 py-0.5">
+                          <div className="flex items-start gap-1.5">
+                            <BookOpen className="h-3 w-3 shrink-0 mt-0.5 opacity-50" />
+                            <span>{r.reference}</span>
+                          </div>
+                        </div>
                       )}
                     </div>
                   </div>
-                  {r.status !== "done" && (
-                    <div className="ml-6 mt-0.5 text-muted-foreground italic flex items-start gap-1">
-                      <BookOpen className="h-3 w-3 shrink-0 mt-0.5" />
-                      <span>{r.reference}</span>
-                    </div>
-                  )}
                 </div>
               ))}
             </div>
-          </div>
+          </motion.div>
         )}
 
         {/* Debriefing sections */}
         {debriefing && (
-          <div className="space-y-3">
-            <div className="bg-secondary p-3 rounded-sm border border-border">
-              <h4 className="text-[10px] font-bold text-muted-foreground uppercase mb-1.5 flex items-center gap-2">
-                <ClipboardList className="h-3 w-3" /> Resumo
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.7 }}
+            className="space-y-4"
+          >
+            <div className="bg-secondary/40 p-4 rounded-2xl border border-border/50">
+              <h4 className="text-[10px] font-black text-muted-foreground uppercase mb-2 flex items-center gap-2 tracking-widest">
+                <MessageSquare className="h-3 w-3" /> Feedback do Mentor
               </h4>
-              <p className="text-sm text-foreground leading-relaxed">{debriefing.resumo}</p>
+              <p className="text-sm text-foreground leading-relaxed font-medium">{debriefing.resumo}</p>
             </div>
-            {debriefing.fortes && (
-              <div className="bg-primary/5 p-3 rounded-sm border border-primary/10">
-                <h4 className="text-[10px] font-bold text-primary uppercase mb-1.5 flex items-center gap-2">
-                  <ThumbsUp className="h-3 w-3" /> Pontos Fortes
-                </h4>
-                <p className="text-sm text-foreground leading-relaxed">{debriefing.fortes}</p>
+            
+            {(debriefing.fortes || debriefing.melhoria) && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {debriefing.fortes && (
+                  <div className="bg-primary/5 p-4 rounded-2xl border border-primary/20 shadow-sm">
+                    <h4 className="text-[10px] font-black text-primary uppercase mb-2 flex items-center gap-2 tracking-widest">
+                      <ThumbsUp className="h-3 w-3" /> Pontos Fortes
+                    </h4>
+                    <p className="text-xs text-foreground/90 leading-relaxed">{debriefing.fortes}</p>
+                  </div>
+                )}
+                {debriefing.melhoria && (
+                  <div className="bg-warning/5 p-4 rounded-2xl border border-warning/20 shadow-sm">
+                    <h4 className="text-[10px] font-black text-warning uppercase mb-2 flex items-center gap-2 tracking-widest">
+                      <AlertTriangle className="h-3 w-3" /> Para Melhorar
+                    </h4>
+                    <p className="text-xs text-foreground/90 leading-relaxed">{debriefing.melhoria}</p>
+                  </div>
+                )}
               </div>
             )}
-            {debriefing.melhoria && (
-              <div className="bg-warning/5 p-3 rounded-sm border border-warning/10">
-                <h4 className="text-[10px] font-bold text-warning uppercase mb-1.5 flex items-center gap-2">
-                  <AlertTriangle className="h-3 w-3" /> Atenção
-                </h4>
-                <p className="text-sm text-foreground leading-relaxed">{debriefing.melhoria}</p>
-              </div>
-            )}
+
             {debriefing.gold && (
-              <div className="bg-accent p-3 rounded-sm border border-border">
-                <h4 className="text-[10px] font-bold text-accent-foreground uppercase mb-1.5 flex items-center gap-2">
-                  <BookOpen className="h-3 w-3" /> Gold Standard
+              <div className="bg-accent/10 p-4 rounded-2xl border border-border shadow-sm">
+                <h4 className="text-[10px] font-black text-accent-foreground uppercase mb-2 flex items-center gap-2 tracking-widest">
+                  <BookOpen className="h-3 w-3" /> Conduta Padrão-Ouro
                 </h4>
-                <p className="text-sm text-foreground leading-relaxed">{debriefing.gold}</p>
+                <p className="text-xs text-foreground/80 leading-relaxed italic">{debriefing.gold}</p>
               </div>
             )}
-          </div>
+          </motion.div>
         )}
 
         {/* CTA */}
-        <div className="flex gap-3 pt-2 pb-4">
-          <Button onClick={onRestart} className="flex-1">Novo Caso</Button>
-          <Button variant="outline" onClick={onExit} className="flex-1">Menu</Button>
-        </div>
-      </div>
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8 }}
+          className="flex gap-4 pt-4 pb-8"
+        >
+          <Button onClick={onRestart} className="flex-1 h-12 rounded-xl font-bold shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98]">
+            <RotateCcw className="mr-2 h-4 w-4" /> Novo Caso
+          </Button>
+          <Button variant="outline" onClick={onExit} className="flex-1 h-12 rounded-xl font-bold border-border/50 hover:bg-secondary transition-all hover:scale-[1.02] active:scale-[0.98]">
+            <LogOut className="mr-2 h-4 w-4" /> Finalizar
+          </Button>
+        </motion.div>
+      </motion.div>
     </ScrollArea>
   );
+
 };
 
 export default GameDashboard;
