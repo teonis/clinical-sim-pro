@@ -44,33 +44,33 @@
   }
 
   .dark {
-    --background: 240 5% 3%;
-    --foreground: 210 40% 98%;
+    --background: 210 20% 98%;
+    --foreground: 222 47% 11%;
 
-    --card: 240 5% 5%;
-    --card-foreground: 210 40% 98%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
 
-    --popover: 240 5% 5%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
 
-    --primary: 188 78% 41%; 
-    --primary-foreground: 0 0% 0%;
+    --primary: 221 83% 53%; 
+    --primary-foreground: 210 40% 98%;
 
-    --secondary: 240 4% 10%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 11%;
 
-    --muted: 240 4% 10%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
 
     --accent: 142 71% 45%;
     --accent-foreground: 210 40% 98%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive-foreground: 210 40% 98%;
 
-    --border: 240 4% 15%;
-    --input: 240 4% 15%;
-    --ring: 188 78% 41%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 221 83% 53%;
   }
 }
 
@@ -110,7 +110,7 @@
   }
 
   .glass-panel {
-    @apply bg-black/20 backdrop-blur-md border border-white/5;
+    @apply bg-white/50 backdrop-blur-md border border-black/5;
   }
 }
 
@@ -121,7 +121,7 @@
 
 @keyframes clinical-pulse {
   0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.8; transform: scale(0.98); }
+  50% { opacity: 0.8; transform: scale(0.99); }
 }
 
 @keyframes pulseVital {
