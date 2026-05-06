@@ -77,7 +77,10 @@ export const startSimulation = async (params: StartParams): Promise<SimulationSt
   const finalVitals = engineSeedVitals
     ? { ...llmVitals, ...engineSeedVitals } // generated vitals override LLM
     : llmVitals;
-  const engine = resetEngine(finalVitals);
+  
+  // Update existing engine with final merged vitals
+  engine.reset(finalVitals);
+
 
   // Detect conditions from initial narrative
   const state = data as SimulationState;
