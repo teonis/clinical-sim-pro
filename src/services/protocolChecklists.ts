@@ -69,6 +69,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 10,
         weight: 0.15,
         reference: "AHA/ACC 2023 STEMI Guidelines — ECG within 10 min of first medical contact",
+        rationale: "O ECG é a ferramenta diagnóstica definitiva para identificar o supradesnivelamento do segmento ST e iniciar a terapia de reperfusão precocemente.",
       },
       {
         id: "iam_aas",
@@ -77,6 +78,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 15,
         weight: 0.15,
         reference: "ESC 2023 ACS Guidelines — Aspirin loading dose as soon as possible",
+        rationale: "A aspirina inibe a agregação plaquetária e reduz a mortalidade e o reinfarto em pacientes com síndromes coronarianas agudas.",
       },
       {
         id: "iam_clopidogrel",
@@ -85,6 +87,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 30,
         weight: 0.12,
         reference: "ESC 2023 — Dual antiplatelet therapy (DAPT) recommended",
+        rationale: "A dupla antiagregação plaquetária é superior à aspirina isolada na redução de eventos isquêmicos recorrentes.",
       },
       {
         id: "iam_heparina",
@@ -93,6 +96,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 30,
         weight: 0.12,
         reference: "AHA/ACC 2023 — Anticoagulation during PCI or fibrinolysis",
+        rationale: "A anticoagulação ajuda a prevenir a propagação do trombo e a reoclusão da artéria coronária.",
       },
       {
         id: "iam_morfina",
@@ -101,6 +105,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: null,
         weight: 0.06,
         reference: "AHA 2023 — Morphine for refractory chest pain (use with caution)",
+        rationale: "A dor intensa causa ativação simpática, o que aumenta o consumo de oxigênio pelo miocárdio.",
       },
       {
         id: "iam_reperfusao",
@@ -109,6 +114,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 90,
         weight: 0.25,
         reference: "AHA/ACC 2023 — Door-to-Balloon <90 min, Door-to-Needle <30 min",
+        rationale: "No IAM com supra, 'tempo é músculo'. A abertura da artéria deve ser o objetivo primordial para salvar tecido miocárdico.",
       },
       {
         id: "iam_monitor",
@@ -117,6 +123,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 5,
         weight: 0.08,
         reference: "AHA ACLS 2020 — Continuous cardiac monitoring in ACS",
+        rationale: "Pacientes com IAM têm alto risco de arritmias fatais (como FV) nas primeiras horas e devem ser monitorados para desfibrilação imediata.",
       },
       {
         id: "iam_acesso",
@@ -125,6 +132,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 10,
         weight: 0.07,
         reference: "ACLS 2020 — IV access for medication administration",
+        rationale: "Necessário para administração rápida de medicamentos de emergência e fluidos.",
       },
     ],
   },
