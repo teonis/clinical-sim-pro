@@ -225,6 +225,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 1,
         weight: 0.30,
         reference: "AHA ACLS 2020 — Begin high-quality CPR immediately",
+        rationale: "Compressões torácicas eficazes mantêm a perfusão coronária e cerebral até que o ritmo possa ser revertido.",
       },
       {
         id: "pcr_defib",
@@ -233,6 +234,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 3,
         weight: 0.25,
         reference: "AHA ACLS 2020 — Defibrillation within 3 min for VF/pVT",
+        rationale: "A desfibrilação precoce é o tratamento definitivo para FV e TV sem pulso, com as maiores taxas de sucesso nas fases iniciais.",
       },
       {
         id: "pcr_epinefrina",
@@ -241,6 +243,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 5,
         weight: 0.15,
         reference: "AHA ACLS 2020 — Epinephrine q3-5 min during cardiac arrest",
+        rationale: "A epinefrina aumenta a pressão de perfusão coronária através de seus efeitos alfa-adrenérgicos, facilitando o retorno da circulação espontânea.",
       },
       {
         id: "pcr_via_aerea",
@@ -249,6 +252,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 10,
         weight: 0.15,
         reference: "AHA ACLS 2020 — Advanced airway when feasible without interrupting CPR",
+        rationale: "Uma via aérea avançada permite ventilação contínua e proteção contra aspiração, sem necessidade de pausas para compressão.",
       },
       {
         id: "pcr_acesso",
@@ -257,6 +261,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 5,
         weight: 0.08,
         reference: "AHA ACLS 2020 — IV/IO access for drug delivery",
+        rationale: "Essencial para a administração rápida de vasopressores e antiarrítmicos durante a ressuscitação.",
       },
       {
         id: "pcr_amiodarona",
@@ -265,6 +270,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: null,
         weight: 0.07,
         reference: "AHA ACLS 2020 — Amiodarone 300mg for refractory VF/pVT",
+        rationale: "A amiodarona estabiliza o potencial de membrana cardíaco em ritmos de colapso refratários ao choque.",
       },
     ],
   },
