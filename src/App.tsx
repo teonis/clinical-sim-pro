@@ -20,9 +20,7 @@ const App: React.FC = () => {
   const [isAuthChecking, setIsAuthChecking] = useState(true);
   const [isResettingPassword, setIsResettingPassword] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
-  const [showWelcome, setShowWelcome] = useState(() => {
-    return !localStorage.getItem("rma_welcome_seen");
-  });
+  const [showWelcome, setShowWelcome] = useState(true);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -113,7 +111,6 @@ const App: React.FC = () => {
       <>
         <LandingPage
           onStart={() => {
-            localStorage.setItem("rma_welcome_seen", "true");
             setShowWelcome(false);
           }}
         />
