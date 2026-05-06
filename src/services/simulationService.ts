@@ -58,11 +58,12 @@ export const startSimulation = async (params: StartParams): Promise<SimulationSt
   }
 
   // Seed engine with generated vitals (will be overwritten by LLM response if available)
-  resetEngine(engineSeedVitals);
+  const engine = resetEngine(engineSeedVitals);
 
-  const startCommand = `START_GAME { "especialidade": "${params.especialidade}", "dificuldade": "${params.dificuldade}", "caso_especifico": "${generatedScenario}" }`;
+  const startCommand = `START_GAME { "especialidade": "${params.especialidade}", "dificuldade": "${params.dificuldade}", "caso_especifico": "${generatedScenario}" }\n\n[DADOS VITAIS INICIAIS DESEJADOS]: ${engine.toPromptBlock()}`;
 
   conversationHistory.push({ role: "user", content: startCommand });
+
 
   const { data, error } = await supabase.functions.invoke("simulate", {
     body: { messages: conversationHistory },
