@@ -114,7 +114,7 @@ const App: React.FC = () => {
             setShowWelcome(false);
           }}
         />
-        <Toaster />
+        <Toaster theme="dark" position="top-right" closeButton />
       </>
     );
   }
@@ -141,7 +141,7 @@ const App: React.FC = () => {
         <ResetPasswordScreen onComplete={() => {
           setIsResettingPassword(false);
         }} />
-        <Toaster />
+        <Toaster theme="dark" position="top-right" closeButton />
       </>
     );
   }
@@ -151,7 +151,7 @@ const App: React.FC = () => {
     return (
       <>
         <AuthScreen onAuthSuccess={() => {}} />
-        <Toaster />
+        <Toaster theme="dark" position="top-right" closeButton />
       </>
     );
   }
@@ -161,7 +161,7 @@ const App: React.FC = () => {
     return (
       <>
         <OnboardingTutorial onComplete={() => setShowOnboarding(false)} />
-        <Toaster />
+        <Toaster theme="dark" position="top-right" closeButton />
       </>
     );
   }
@@ -176,7 +176,7 @@ const App: React.FC = () => {
           onExit={handleExitGame}
           gameParams={lastParams!}
         />
-        <Toaster />
+        <Toaster theme="dark" position="top-right" closeButton />
       </>
     );
   }
@@ -190,7 +190,7 @@ const App: React.FC = () => {
         userEmail={currentUser}
         onLogout={handleLogout}
       />
-      <Toaster />
+      <Toaster theme="dark" position="top-right" closeButton />
     </>
   );
 };
