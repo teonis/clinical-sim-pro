@@ -13,6 +13,7 @@ import SessionReview from "@/components/SessionReview";
 import ProfilePerformance from "@/components/ProfilePerformance";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { cn } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Home, BarChart3, Clock, MessageSquare, LogOut, Stethoscope,
   Trophy, Medal, BookOpen, Star, StarOff, Heart, Brain,
