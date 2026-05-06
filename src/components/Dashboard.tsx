@@ -139,7 +139,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartGame, isLoading, userEmail
   return (
     <div className="min-h-screen flex bg-[#0a0a0a] transition-colors duration-500 overflow-hidden">
       {/* Sidebar - Glassmorphism */}
-      <aside className="w-16 lg:w-72 bg-black/40 backdrop-blur-xl border-r border-white/5 flex flex-col shrink-0 z-30 transition-all duration-300">
+      <aside className="w-16 lg:w-72 bg-black/40 backdrop-blur-xl border-r border-white/5 flex flex-col shrink-0 z-30 transition-all duration-300 relative">
         <div className="p-6 flex items-center justify-center lg:justify-start gap-4 border-b border-white/5 h-20">
           <div className="w-10 h-10 rounded-2xl bg-primary shadow-[0_0_20px_rgba(var(--primary),0.3)] flex items-center justify-center shrink-0">
             <Stethoscope className="h-6 w-6 text-primary-foreground" />

@@ -47,7 +47,7 @@ const StartGame: React.FC<StartGameProps> = ({ onStart, isLoading }) => {
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="space-y-10 max-w-5xl mx-auto py-6"
+      className="space-y-6 sm:space-y-10 max-w-5xl mx-auto py-4 sm:py-6"
     >
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
@@ -62,7 +62,7 @@ const StartGame: React.FC<StartGameProps> = ({ onStart, isLoading }) => {
         </div>
       </div>
 
-      <div className="bg-white/[0.02] backdrop-blur-xl rounded-[2.5rem] shadow-2xl border border-white/5 p-8 md:p-12 relative overflow-hidden group">
+      <div className="bg-white/[0.02] backdrop-blur-xl rounded-[1.5rem] sm:rounded-[2.5rem] shadow-2xl border border-white/5 p-6 sm:p-12 relative overflow-hidden group">
         {/* Decorative background */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-[100px] -mr-32 -mt-32" />
         

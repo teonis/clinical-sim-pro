@@ -41,7 +41,7 @@ const VitalMonitor = ({ fc, pas, pad, satO2, fr, status }: VitalMonitorProps) =>
 
   return (
     <div 
-      className="bg-[#050505] border-2 border-[#1a1a1a] rounded-2xl p-5 shadow-2xl transition-all relative overflow-hidden group"
+      className="bg-[#050505] border-2 border-[#1a1a1a] rounded-2xl p-4 sm:p-5 shadow-2xl transition-all relative overflow-hidden group"
       role="region" 
       aria-label="Monitor de Sinais Vitais"
     >
@@ -71,7 +71,7 @@ const VitalMonitor = ({ fc, pas, pad, satO2, fr, status }: VitalMonitorProps) =>
         </div>
       </div>
       
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 relative z-10">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 relative z-10">
         <VitalItem
           icon={<motion.div animate={{ scale: heartRate > 100 ? [1, 1.2, 1] : [1, 1.1, 1] }} transition={{ repeat: Infinity, duration: pulseDuration }}><Heart className="h-5 w-5" /></motion.div>}
           label="Frequência Cardíaca"
@@ -129,13 +129,13 @@ const VitalItem = ({ icon, label, shortLabel, value, unit, color }: {
   unit: string;
   color: string;
 }) => (
-  <div className="bg-[#0a0a0a] rounded-xl p-4 border border-white/5 flex flex-col items-center text-center gap-1.5 group/item hover:border-primary/40 transition-all hover:bg-primary/5 cursor-default">
+  <div className="bg-[#0a0a0a] rounded-xl p-3 sm:p-4 border border-white/5 flex flex-col items-center text-center gap-1.5 group/item hover:border-primary/40 transition-all hover:bg-primary/5 cursor-default">
     <div className={cn('flex items-center gap-2 mb-1', color)}>
       {icon}
       <span className="text-[11px] font-black uppercase tracking-wider opacity-60">{shortLabel}</span>
     </div>
     <div className="flex flex-col items-center">
-      <span className={cn('text-3xl font-black leading-none tabular-nums tracking-tighter', color)}>
+      <span className={cn('text-2xl sm:text-3xl font-black leading-none tabular-nums tracking-tighter', color)}>
         {value}
       </span>
       <span className="text-[10px] font-bold text-muted-foreground uppercase mt-1 tracking-widest">{unit}</span>
