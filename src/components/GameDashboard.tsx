@@ -571,61 +571,54 @@ const GameOverScreen: React.FC<GameOverScreenProps> = ({
   const isCured = gameState.status_simulacao.estado_paciente === "CURADO";
 
   return (
-    <ScrollArea className="h-full">
+    <ScrollArea className="h-full bg-muted/20">
       <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="px-4 py-8 space-y-6 max-w-lg mx-auto"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="px-6 py-12 space-y-8 max-w-2xl mx-auto"
       >
         {/* Outcome header */}
-        <div className="text-center">
+        <div className="text-center space-y-4">
           <motion.div 
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: "spring", damping: 12 }}
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
             className={cn(
-              "w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-lg",
-              isCured ? "bg-primary/20 text-primary border border-primary/30" : "bg-destructive/20 text-destructive border border-destructive/30"
+              "w-20 h-20 rounded-3xl flex items-center justify-center mx-auto shadow-sm border",
+              isCured ? "bg-success/10 text-success border-success/20" : "bg-destructive/10 text-destructive border-destructive/20"
             )}
           >
             {isCured ? <CheckCircle className="h-10 w-10" /> : <Skull className="h-10 w-10" />}
           </motion.div>
           
-          <motion.h2 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="text-2xl font-display font-black text-foreground tracking-tight"
-          >
-            {isCured ? "ALTA MÉDICA" : "ÓBITO CONFIRMADO"}
-          </motion.h2>
-          
-          <motion.p 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="text-xs text-muted-foreground font-mono-vital mt-1 uppercase tracking-widest"
-          >
-            Simulação Finalizada em {engine.getFormattedTime()}
-          </motion.p>
+          <div className="space-y-1">
+            <h2 className="text-3xl font-bold text-foreground tracking-tight">
+              {isCured ? "Alta Médica" : "Óbito Confirmado"}
+            </h2>
+            <p className="text-sm font-medium text-muted-foreground uppercase tracking-widest">
+              Simulação Finalizada em {engine.getFormattedTime()}
+            </p>
+          </div>
           
           <motion.div 
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="inline-flex items-center gap-4 px-6 py-2.5 bg-card border border-border/50 rounded-2xl mt-5 shadow-sm"
+            initial={{ y: 10, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="flex items-center justify-center gap-8 py-6 px-8 bg-card border border-border rounded-2xl shadow-sm w-fit mx-auto"
           >
-            <div className="text-left">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground block">Desempenho</span>
-              <span className="font-mono-vital text-3xl font-black text-primary lcd-glow leading-none">
+            <div className="text-center">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground block mb-1">Score Final</span>
+              <span className={cn("text-3xl font-bold tabular-nums",
+                gameState.status_simulacao.current_score >= 7 ? "text-primary" :
+                gameState.status_simulacao.current_score >= 5 ? "text-warning" : "text-destructive"
+              )}>
                 {gameState.status_simulacao.current_score.toFixed(1)}
               </span>
             </div>
-            <div className="w-px h-8 bg-border/50" />
-            <div className="text-left">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground block">Tempo Total</span>
-              <span className="font-mono-vital text-lg font-bold text-foreground leading-none">
-                {engine.getGameTimeMinutes()} min
+            <div className="w-px h-10 bg-border" />
+            <div className="text-center">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground block mb-1">Tempo Total</span>
+              <span className="text-2xl font-bold text-foreground tabular-nums">
+                {engine.getGameTimeMinutes()} <span className="text-xs font-medium text-muted-foreground">min</span>
               </span>
             </div>
           </motion.div>
@@ -633,94 +626,88 @@ const GameOverScreen: React.FC<GameOverScreenProps> = ({
 
         {/* Action Timeline */}
         {engine.getActionTimeline().length > 0 && (
-          <motion.div 
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.5 }}
-            className="bg-secondary/50 backdrop-blur-sm p-4 rounded-2xl border border-border/50"
-          >
-            <h4 className="text-[10px] font-black text-muted-foreground uppercase mb-3 flex items-center gap-2 tracking-widest">
-              <Clock className="h-3 w-3" /> Cronologia de Eventos
+          <div className="bg-card p-6 rounded-2xl border border-border shadow-sm">
+            <h4 className="text-xs font-bold text-muted-foreground uppercase mb-6 flex items-center gap-2 tracking-widest">
+              <Clock className="h-4 w-4" /> Cronologia do Caso
             </h4>
-            <div className="space-y-2 max-h-40 overflow-y-auto pr-2 scrollbar-thin">
+            <div className="space-y-4 relative before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-px before:bg-border">
               {engine.getActionTimeline().map((entry, i) => {
                 const h = Math.floor(entry.gameTimeMinutes / 60);
                 const m = entry.gameTimeMinutes % 60;
                 const ts = `${String(h).padStart(2, "0")}:${String(Math.round(m)).padStart(2, "0")}`;
                 return (
-                  <div key={i} className={cn(
-                    "flex items-center gap-3 text-xs font-mono-vital group",
-                    entry.isCritical ? "text-destructive" : "text-muted-foreground"
-                  )}>
+                  <div key={i} className="flex items-start gap-4 relative">
                     <span className={cn(
-                      "w-2 h-2 rounded-full shrink-0 shadow-sm", 
-                      entry.isCritical ? "bg-destructive animate-pulse" : "bg-muted-foreground/30 group-hover:bg-muted-foreground/50 transition-colors"
-                    )} />
-                    <span className="font-bold w-12 shrink-0 opacity-80">{ts}</span>
-                    <span className="truncate group-hover:text-foreground transition-colors">{entry.actionText}</span>
+                      "w-6 h-6 rounded-full shrink-0 flex items-center justify-center z-10 border-4 border-card", 
+                      entry.isCritical ? "bg-destructive shadow-[0_0_8px_rgba(239,68,68,0.3)]" : "bg-border"
+                    )}>
+                      <span className="w-1.5 h-1.5 rounded-full bg-card" />
+                    </span>
+                    <div className="flex-1 min-w-0 pt-0.5">
+                      <div className="flex items-center gap-2 mb-0.5">
+                        <span className="text-[10px] font-bold text-muted-foreground tabular-nums opacity-70">{ts}</span>
+                        {entry.isCritical && <span className="text-[9px] font-bold bg-destructive/10 text-destructive px-1.5 py-0.5 rounded uppercase">Crítico</span>}
+                      </div>
+                      <p className={cn("text-sm font-medium", entry.isCritical ? "text-destructive" : "text-foreground/80")}>
+                        {entry.actionText}
+                      </p>
+                    </div>
                   </div>
                 );
               })}
             </div>
-          </motion.div>
+          </div>
         )}
 
         {/* Protocol Checklist */}
         {protocolEval && (
-          <motion.div 
-            initial={{ opacity: 0, x: 10 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.6 }}
-            className="bg-card p-4 rounded-2xl border border-border shadow-sm"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <h4 className="text-[10px] font-black text-muted-foreground uppercase flex items-center gap-2 tracking-widest">
-                <ClipboardList className="h-3 w-3 text-primary" /> {protocolEval.protocolName}
+          <div className="bg-card p-6 rounded-2xl border border-border shadow-sm">
+            <div className="flex items-center justify-between mb-8">
+              <h4 className="text-xs font-bold text-muted-foreground uppercase flex items-center gap-2 tracking-widest">
+                <ClipboardList className="h-4 w-4 text-primary" /> {protocolEval.protocolName}
               </h4>
               <div className={cn(
-                "text-xs font-mono-vital font-black px-3 py-1 rounded-lg shadow-inner",
-                protocolEval.adherenceScore >= 8 ? "bg-primary/10 text-primary" :
-                protocolEval.adherenceScore >= 5 ? "bg-warning/10 text-warning" :
-                "bg-destructive/10 text-destructive"
+                "text-xs font-bold px-3 py-1.5 rounded-lg border",
+                protocolEval.adherenceScore >= 8 ? "bg-success/5 text-success border-success/20" :
+                protocolEval.adherenceScore >= 5 ? "bg-warning/5 text-warning border-warning/20" :
+                "bg-destructive/5 text-destructive border-destructive/20"
               )}>
-                {protocolEval.adherenceScore.toFixed(1)}/10
+                Aderência: {protocolEval.adherenceScore.toFixed(1)}/10
               </div>
             </div>
-            <div className="space-y-3">
+            <div className="space-y-6">
               {protocolEval.results.map((r) => (
-                <div key={r.itemId} className="text-xs group">
-                  <div className="flex items-start gap-3">
-                    <span className="shrink-0 text-base leading-none">
+                <div key={r.itemId} className="group">
+                  <div className="flex items-start gap-4">
+                    <span className="shrink-0 text-xl leading-none pt-0.5">
                       {r.status === "done" ? "✅" : r.status === "late" ? "⏱️" : "❌"}
                     </span>
                     <div className="flex-1 min-w-0">
-                      <div className="flex justify-between items-start">
+                      <div className="flex flex-wrap items-center gap-2 mb-1.5">
                         <span className={cn(
                           "font-bold text-sm",
-                          r.status === "done" ? "text-primary" :
+                          r.status === "done" ? "text-foreground" :
                           r.status === "late" ? "text-warning" : "text-destructive"
                         )}>
                           {r.label}
                         </span>
-                      </div>
-                      <div className="flex items-center gap-2 mt-0.5 font-mono-vital text-[10px] text-muted-foreground">
-                        {r.performedAt !== null && (
-                          <span>Realizado: {r.performedAt}min</span>
-                        )}
-                        {r.targetMinutes !== null && (
-                          <span className={cn(
-                            "px-1.5 py-0.5 rounded-md",
-                            r.status === "late" || r.status === "missed" ? "bg-destructive/10 text-destructive" : "bg-primary/10 text-primary"
-                          )}>
-                            Meta: &lt;{r.targetMinutes}min
-                          </span>
-                        )}
+                        <div className="flex items-center gap-1.5 text-[10px] font-bold text-muted-foreground uppercase tracking-tight">
+                          {r.performedAt !== null && <span>Realizado: {r.performedAt}'</span>}
+                          {r.targetMinutes !== null && (
+                            <span className={cn(
+                              "px-1.5 py-0.5 rounded bg-muted",
+                              r.status === "late" || r.status === "missed" ? "text-destructive" : "text-success"
+                            )}>
+                              Meta: &lt;{r.targetMinutes}'
+                            </span>
+                          )}
+                        </div>
                       </div>
                       {r.status !== "done" && (
-                        <div className="mt-1.5 text-[11px] text-muted-foreground leading-relaxed italic border-l-2 border-border/50 pl-2 py-0.5">
-                          <div className="flex items-start gap-1.5">
-                            <BookOpen className="h-3 w-3 shrink-0 mt-0.5 opacity-50" />
-                            <span>{r.reference}</span>
+                        <div className="bg-muted/30 rounded-xl p-3 border border-border/50">
+                          <div className="flex items-start gap-2">
+                            <BookOpen className="h-3.5 w-3.5 text-muted-foreground shrink-0 mt-0.5" />
+                            <p className="text-xs text-muted-foreground italic leading-relaxed">{r.reference}</p>
                           </div>
                         </div>
                       )}
@@ -729,74 +716,61 @@ const GameOverScreen: React.FC<GameOverScreenProps> = ({
                 </div>
               ))}
             </div>
-          </motion.div>
+          </div>
         )}
 
         {/* Debriefing sections */}
         {debriefing && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.7 }}
-            className="space-y-4"
-          >
-            <div className="bg-secondary/40 p-4 rounded-2xl border border-border/50">
-              <h4 className="text-[10px] font-black text-muted-foreground uppercase mb-2 flex items-center gap-2 tracking-widest">
-                <MessageSquare className="h-3 w-3" /> Feedback do Mentor
+          <div className="space-y-4">
+            <div className="bg-primary/5 p-6 rounded-2xl border border-primary/10 shadow-sm">
+              <h4 className="text-[10px] font-bold text-primary uppercase mb-3 flex items-center gap-2 tracking-widest">
+                <MessageSquare className="h-4 w-4" /> Feedback Acadêmico
               </h4>
-              <p className="text-sm text-foreground leading-relaxed font-medium">{debriefing.resumo}</p>
+              <p className="text-sm text-foreground/80 leading-relaxed font-medium">{debriefing.resumo}</p>
             </div>
             
-            {(debriefing.fortes || debriefing.melhoria) && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {debriefing.fortes && (
-                  <div className="bg-primary/5 p-4 rounded-2xl border border-primary/20 shadow-sm">
-                    <h4 className="text-[10px] font-black text-primary uppercase mb-2 flex items-center gap-2 tracking-widest">
-                      <ThumbsUp className="h-3 w-3" /> Pontos Fortes
-                    </h4>
-                    <p className="text-xs text-foreground/90 leading-relaxed">{debriefing.fortes}</p>
-                  </div>
-                )}
-                {debriefing.melhoria && (
-                  <div className="bg-warning/5 p-4 rounded-2xl border border-warning/20 shadow-sm">
-                    <h4 className="text-[10px] font-black text-warning uppercase mb-2 flex items-center gap-2 tracking-widest">
-                      <AlertTriangle className="h-3 w-3" /> Para Melhorar
-                    </h4>
-                    <p className="text-xs text-foreground/90 leading-relaxed">{debriefing.melhoria}</p>
-                  </div>
-                )}
-              </div>
-            )}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {debriefing.fortes && (
+                <div className="bg-card p-5 rounded-2xl border border-border shadow-sm">
+                  <h4 className="text-[10px] font-bold text-success uppercase mb-3 flex items-center gap-2 tracking-widest">
+                    <ThumbsUp className="h-3.5 w-3.5" /> Pontos Fortes
+                  </h4>
+                  <p className="text-xs text-muted-foreground leading-relaxed">{debriefing.fortes}</p>
+                </div>
+              )}
+              {debriefing.melhoria && (
+                <div className="bg-card p-5 rounded-2xl border border-border shadow-sm">
+                  <h4 className="text-[10px] font-bold text-warning uppercase mb-3 flex items-center gap-2 tracking-widest">
+                    <AlertTriangle className="h-3.5 w-3.5" /> Oportunidades
+                  </h4>
+                  <p className="text-xs text-muted-foreground leading-relaxed">{debriefing.melhoria}</p>
+                </div>
+              )}
+            </div>
 
             {debriefing.gold && (
-              <div className="bg-accent/10 p-4 rounded-2xl border border-border shadow-sm">
-                <h4 className="text-[10px] font-black text-accent-foreground uppercase mb-2 flex items-center gap-2 tracking-widest">
-                  <BookOpen className="h-3 w-3" /> Conduta Padrão-Ouro
+              <div className="bg-secondary/5 p-5 rounded-2xl border border-secondary/10 shadow-sm">
+                <h4 className="text-[10px] font-bold text-secondary uppercase mb-3 flex items-center gap-2 tracking-widest">
+                  <BookOpen className="h-3.5 w-3.5" /> Conduta Padrão-Ouro
                 </h4>
-                <p className="text-xs text-foreground/80 leading-relaxed italic">{debriefing.gold}</p>
+                <p className="text-xs text-muted-foreground leading-relaxed italic">{debriefing.gold}</p>
               </div>
             )}
-          </motion.div>
+          </div>
         )}
 
         {/* CTA */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8 }}
-          className="flex gap-4 pt-4 pb-8"
-        >
-          <Button onClick={onRestart} className="flex-1 h-12 rounded-xl font-bold shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98]">
-            <RotateCcw className="mr-2 h-4 w-4" /> Novo Caso
+        <div className="flex flex-col sm:flex-row gap-4 pt-8 pb-12">
+          <Button onClick={onRestart} size="lg" className="flex-1 h-14 rounded-xl font-bold shadow-lg shadow-primary/10 transition-transform hover:translate-y-[-2px]">
+            <RotateCcw className="mr-2 h-4 w-4" /> Nova Simulação
           </Button>
-          <Button variant="outline" onClick={onExit} className="flex-1 h-12 rounded-xl font-bold border-border/50 hover:bg-secondary transition-all hover:scale-[1.02] active:scale-[0.98]">
-            <LogOut className="mr-2 h-4 w-4" /> Finalizar
+          <Button variant="outline" onClick={onExit} size="lg" className="flex-1 h-14 rounded-xl font-bold border-border hover:bg-muted transition-transform hover:translate-y-[-2px]">
+            <LogOut className="mr-2 h-4 w-4" /> Finalizar Caso
           </Button>
-        </motion.div>
+        </div>
       </motion.div>
     </ScrollArea>
   );
-
 };
 
 export default GameDashboard;
