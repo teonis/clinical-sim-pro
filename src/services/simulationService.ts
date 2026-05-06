@@ -129,8 +129,7 @@ export const sendAction = async (
   }
   engine.tick(timeCost, currentPatientState);
 
-  // 4. Log action to timeline
-  engine.logAction(actionText);
+  // 4. Action was already logged to timeline in step 1
 
   // 5. Inject calculated vitals + time into the user message
   const vitalsBlock = engine.toPromptBlock();
