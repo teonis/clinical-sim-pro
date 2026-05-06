@@ -640,6 +640,20 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
               )}
             </AnimatePresence>
 
+            {/* Diagnostic Hypothesis Input */}
+            <div className="relative group mb-3">
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center gap-2 pointer-events-none transition-opacity group-focus-within:opacity-50">
+                <FileText className="h-3.5 w-3.5 text-muted-foreground" />
+                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Impressão Clínica:</span>
+              </div>
+              <Input 
+                value={diagnosticHypothesis}
+                onChange={(e) => setDiagnosticHypothesis(e.target.value)}
+                className="bg-muted/30 border-dashed border-border/50 h-9 pl-32 text-xs font-medium focus:bg-background focus:border-primary/30 rounded-lg"
+                placeholder="Sua principal suspeita..."
+              />
+            </div>
+
             <div className="flex items-center gap-3">
               {/* Toggle actions button */}
               {predefinedActions.length > 0 && (
