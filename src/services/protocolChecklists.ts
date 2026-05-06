@@ -285,6 +285,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 2,
         weight: 0.20,
         reference: "BTS 2017 — Oxygen therapy to maintain SpO2 94-98%",
+        rationale: "A correção da hipoxemia é a prioridade imediata para prevenir danos orgânicos por falta de oxigênio.",
       },
       {
         id: "irpa_monitor",
@@ -293,6 +294,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 5,
         weight: 0.10,
         reference: "BTS 2017 — Continuous pulse oximetry monitoring",
+        rationale: "Permite a detecção precoce de fadiga respiratória ou falha no tratamento inicial.",
       },
       {
         id: "irpa_gasometria",
@@ -301,6 +303,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 15,
         weight: 0.12,
         reference: "BTS 2017 — ABG to assess ventilation and acid-base",
+        rationale: "Fornece informações cruciais sobre o pH e a pCO2, essenciais para distinguir entre insuficiência respiratória tipo 1 e tipo 2.",
       },
       {
         id: "irpa_rx",
@@ -309,6 +312,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 30,
         weight: 0.10,
         reference: "ATS/ERS 2017 — Chest X-ray for acute respiratory failure evaluation",
+        rationale: "Ajuda a identificar a causa subjacente (pneumonia, edema, pneumotórax) para direcionar o tratamento específico.",
       },
       {
         id: "irpa_broncodilatador",
@@ -317,6 +321,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 10,
         weight: 0.12,
         reference: "GINA 2023 — Short-acting beta-agonist for acute bronchospasm",
+        rationale: "Reduz a resistência das vias aéreas e o trabalho respiratório em casos de broncoespasmo agudo.",
       },
       {
         id: "irpa_corticoide",
@@ -325,6 +330,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 30,
         weight: 0.10,
         reference: "GINA 2023 — Systemic corticosteroids in severe exacerbations",
+        rationale: "Reduz a inflamação brônquica, prevenindo a recidiva e acelerando a recuperação em crises de asma ou DPOC.",
       },
       {
         id: "irpa_intubacao",
@@ -333,6 +339,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: null,
         weight: 0.15,
         reference: "ATS/ERS 2017 — Invasive ventilation for refractory respiratory failure",
+        rationale: "Garante a oxigenação e ventilação quando os mecanismos próprios do paciente não são mais suficientes.",
       },
       {
         id: "irpa_acesso",
@@ -341,6 +348,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 10,
         weight: 0.06,
         reference: "General — IV access for medication administration",
+        rationale: "Necessário para administração de corticoides, antibióticos ou sedação para intubação.",
       },
     ],
   },
@@ -355,6 +363,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 5,
         weight: 0.15,
         reference: "ATLS 10th Ed — Primary survey ABCDE approach",
+        rationale: "Um método sistemático para identificar e tratar as ameaças imediatas à vida na ordem de prioridade letal.",
       },
       {
         id: "trauma_acesso",
@@ -363,6 +372,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 5,
         weight: 0.10,
         reference: "ATLS 10th Ed — Two large-bore IV lines",
+        rationale: "Permite a infusão rápida de grandes volumes de fluidos e sangue necessários no choque hemorrágico.",
       },
       {
         id: "trauma_volume",
@@ -371,6 +381,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 15,
         weight: 0.18,
         reference: "ATLS 10th Ed — Isotonic crystalloid for hemorrhagic shock",
+        rationale: "Restaura o volume circulante para manter a perfusão orgânica até que o controle da hemorragia e a transfusão sejam possíveis.",
       },
       {
         id: "trauma_hemoderivado",
@@ -379,6 +390,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 30,
         weight: 0.15,
         reference: "ATLS 10th Ed — Blood transfusion for class III/IV hemorrhage",
+        rationale: "O sangue repõe a capacidade de transporte de oxigênio e os fatores de coagulação que os cristaloides não possuem.",
       },
       {
         id: "trauma_imagem",
@@ -387,6 +399,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 30,
         weight: 0.12,
         reference: "ATLS 10th Ed — FAST exam in trauma assessment",
+        rationale: "Identifica rapidamente fontes ocultas de sangramento interno (abdome, pelve, tórax) que requerem intervenção cirúrgica.",
       },
       {
         id: "trauma_o2",
@@ -395,6 +408,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: 5,
         weight: 0.08,
         reference: "ATLS 10th Ed — High-flow O2 for trauma patients",
+        rationale: "Maximiza o conteúdo arterial de oxigênio em um paciente com perfusão tecidual comprometida.",
       },
       {
         id: "trauma_drenagem",
@@ -403,6 +417,7 @@ const PROTOCOLS: ProtocolDefinition[] = [
         targetMinutes: null,
         weight: 0.12,
         reference: "ATLS 10th Ed — Tube thoracostomy for hemopneumothorax",
+        rationale: "Alivia a compressão pulmonar e mediastinal, melhorando a ventilação e o retorno venoso cardíaco.",
       },
     ],
   },
