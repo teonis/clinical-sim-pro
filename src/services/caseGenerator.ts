@@ -277,6 +277,8 @@ export function generateCase(specialty: string): GeneratedCase | null {
     specialty: template.specialty,
     patient,
     initialVitals,
+    physicalExamBase: template.physicalExamBase,
+    labResultsBase: template.labResultsBase,
     scenarioPrompt,
   };
 }
