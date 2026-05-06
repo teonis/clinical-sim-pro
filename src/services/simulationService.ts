@@ -84,7 +84,12 @@ export const startSimulation = async (params: StartParams): Promise<SimulationSt
 
   // Detect conditions from initial narrative
   const state = data as SimulationState;
-  const narrative = `${state.interface_usuario.manchete} ${state.interface_usuario.narrativa_principal} ${state.interface_usuario.exame_fisico_detalhado ?? ""}`;
+  const narrative = [
+    state.interface_usuario.manchete,
+    state.interface_usuario.narrativa_principal,
+    state.interface_usuario.exame_fisico_detalhado
+  ].filter(Boolean).join(" ");
+  
   engine.setConditionsFromNarrative(narrative);
 
   conversationHistory.push({ role: "assistant", content: JSON.stringify(data) });
@@ -123,7 +128,12 @@ export const sendAction = async (
       currentPatientState = parsed.status_simulacao?.estado_paciente ?? "ESTAVEL";
 
       // Update conditions from latest narrative
-      const narr = `${parsed.interface_usuario?.manchete ?? ""} ${parsed.interface_usuario?.narrativa_principal ?? ""} ${parsed.interface_usuario?.exame_fisico_detalhado ?? ""}`;
+      const narr = [
+        parsed.interface_usuario?.manchete,
+        parsed.interface_usuario?.narrativa_principal,
+        parsed.interface_usuario?.exame_fisico_detalhado
+      ].filter(Boolean).join(" ");
+      
       engine.setConditionsFromNarrative(narr);
     } catch { /* keep default */ }
   }
@@ -139,7 +149,14 @@ export const sendAction = async (
   const fullNarrative = conversationHistory
     .filter(m => m.role === "assistant")
     .map(m => {
-      try { const p = JSON.parse(m.content); return `${p.interface_usuario?.manchete ?? ""} ${p.interface_usuario?.narrativa_principal ?? ""} ${p.interface_usuario?.exame_fisico_detalhado ?? ""}`; }
+      try { 
+        const p = JSON.parse(m.content); 
+        return [
+          p.interface_usuario?.manchete,
+          p.interface_usuario?.narrativa_principal,
+          p.interface_usuario?.exame_fisico_detalhado
+        ].filter(Boolean).join(" ");
+      }
       catch { return ""; }
     }).join(" ");
   const protocol = detectProtocol(fullNarrative);

@@ -26,6 +26,9 @@ const statusLabel: Record<PatientStatus, string> = {
 };
 
 const VitalMonitor = ({ fc, pas, pad, satO2, fr, status }: VitalMonitorProps) => {
+  const heartRate = fc || 0;
+  const pulseDuration = heartRate > 0 ? 60 / heartRate : 1;
+
   const getVitalColor = (type: string) => {
     switch (type) {
       case 'fc': return fc > 100 || fc < 60 ? 'text-destructive' : 'text-primary';
@@ -62,7 +65,7 @@ const VitalMonitor = ({ fc, pas, pad, satO2, fr, status }: VitalMonitorProps) =>
       
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <VitalItem
-          icon={<motion.div animate={{ scale: fc > 100 ? [1, 1.1, 1] : 1 }} transition={{ repeat: Infinity, duration: 60/fc }}><Heart className="h-4 w-4" /></motion.div>}
+          icon={<motion.div animate={{ scale: heartRate > 100 ? [1, 1.1, 1] : 1 }} transition={{ repeat: Infinity, duration: pulseDuration }}><Heart className="h-4 w-4" /></motion.div>}
           label="Frequência Cardíaca"
           shortLabel="FC"
           value={`${fc}`}

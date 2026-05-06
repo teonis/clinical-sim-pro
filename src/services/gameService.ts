@@ -64,7 +64,8 @@ export const saveGameResult = async (
   score: number, outcome: string, difficulty: string,
   specialty: string, caseTitle: string
 ) => {
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { session } } = await supabase.auth.getSession();
+  const user = session?.user;
   if (!user) return;
 
   await supabase.from("game_history").insert({
@@ -80,7 +81,8 @@ export const saveGameResult = async (
 };
 
 export const getUserHistory = async (): Promise<GameHistoryEntry[]> => {
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { session } } = await supabase.auth.getSession();
+  const user = session?.user;
   if (!user) return [];
 
   const { data, error } = await supabase
@@ -141,7 +143,8 @@ export const getLeaderboard = async (specialtyFilter?: string): Promise<GameHist
 };
 
 export const sendFeedback = async (message: string) => {
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { session } } = await supabase.auth.getSession();
+  const user = session?.user;
   if (!user) return;
 
   await supabase.from("feedback").insert({
