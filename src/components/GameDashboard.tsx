@@ -169,15 +169,16 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
     );
   };
 
-  const handleAction = async (id: string, type: string) => {
+  const handleAction = async (id: string, type: string, text?: string) => {
     if (isLoading) return;
     if (type === ActionType.LIVRE && !customActionText.trim()) return;
     setIsLoading(true);
     setShowActions(false);
     setTimeLeft(null);
 
-    const actionLabel = type === ActionType.LIVRE ? customActionText : id;
+    const actionLabel = type === ActionType.LIVRE ? customActionText : (text || id);
     pushEvent("action", actionLabel);
+
 
     try {
       const newState = await sendAction(id, type === ActionType.LIVRE ? customActionText : undefined);
