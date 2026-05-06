@@ -19,8 +19,9 @@ NÃO use pontos de arcade (1000). Use uma escala de **NOTA 0.0 a 10.0**.
    - **Conduta Irrelevante/Desperdício:** Subtraia **0.2 a 0.5** (Ex: Pedir exame inútil, repetir pergunta).
    - **Erro Leve/Atraso:** Subtraia **0.5 a 1.0** (Ex: Demorar para medicar, ordem errada).
    - **Erro Grave/Iatrogenia:** Subtraia **1.5 a 3.0** (Ex: Medicamento contra-indicado, ignorar sinais de choque).
-3. **Regra de Ouro do Óbito:**
-   - Se \`estado_paciente\` virar "OBITO", a \`current_score\` deve ser **IMEDIATAMENTE 0.0**. Sem exceções.
+3. **Regra de Desfecho:**
+   - Se \`estado_paciente\` virar "OBITO", a \`current_score\` cai drasticamente, MAS a nota de Aderência ao Protocolo ainda deve ser contabilizada para o score final (veja regras de protocolo abaixo).
+
 4. **Feedback da Nota:**
    - Preencha SEMPRE o campo \`score_feedback\` explicando a variação.
 
