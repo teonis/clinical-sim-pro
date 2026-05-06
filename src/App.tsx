@@ -130,7 +130,7 @@ const App: React.FC = () => {
           <div className="w-12 h-12 rounded-xl bg-primary/5 border border-primary/10 flex items-center justify-center animate-pulse">
             <Activity className="h-6 w-6 text-primary" />
           </div>
-          <p className="font-bold text-sm text-foreground tracking-widest uppercase opacity-40">BOLUS</p>
+          <p className="font-bold text-sm text-foreground tracking-[0.3em] uppercase opacity-40">BOLUS</p>
         </div>
       </div>
 
