@@ -46,44 +46,42 @@ const StartGame: React.FC<StartGameProps> = ({ onStart, isLoading }) => {
     <motion.div 
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="space-y-8 max-w-4xl mx-auto"
+      className="space-y-8 max-w-4xl mx-auto py-4"
     >
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h1 className="text-4xl font-display font-black text-foreground tracking-tight uppercase">Iniciar Plantão</h1>
-          <p className="text-muted-foreground mt-1 font-medium italic">Configure seu cenário de simulação clínica.</p>
+          <h1 className="text-4xl font-bold text-foreground tracking-tight">Iniciar Plantão</h1>
+          <p className="text-muted-foreground mt-1 font-medium">Configure seu cenário de simulação clínica.</p>
         </div>
-        <div className="flex items-center gap-2 px-3 py-1.5 bg-secondary/50 rounded-full border border-border/50">
-          <ShieldCheck className="h-4 w-4 text-primary" />
-          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest font-mono-vital">
-            Modo Protegido Ativo
+        <div className="flex items-center gap-2 px-3 py-1.5 bg-secondary/10 rounded-full border border-secondary/20">
+          <ShieldCheck className="h-4 w-4 text-secondary" />
+          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+            Ambiente Seguro
           </span>
         </div>
       </div>
 
-      <div className="bg-card/50 backdrop-blur-sm rounded-3xl shadow-xl border border-border/50 p-6 md:p-10 relative overflow-hidden group">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-3xl rounded-full -mr-16 -mt-16" />
-        
+      <div className="bg-card rounded-2xl shadow-sm border border-border p-6 md:p-10 relative overflow-hidden group">
         <div className="grid md:grid-cols-2 gap-10 relative">
           <div className="space-y-8">
             <div className="space-y-3">
-              <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] ml-1">
+              <label className="block text-xs font-bold text-muted-foreground uppercase tracking-widest ml-1">
                 Especialidade Clínica
               </label>
               <Select value={specialty} onValueChange={setSpecialty}>
-                <SelectTrigger className="h-14 rounded-2xl bg-secondary/50 border-border/50 text-base font-bold focus:ring-primary/20">
+                <SelectTrigger className="h-12 rounded-xl bg-muted/30 border-border text-base font-bold focus:ring-primary/20">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="rounded-xl border-border/50 bg-secondary/95 backdrop-blur-xl">
+                <SelectContent className="rounded-xl border-border bg-card">
                   {SPECIALTIES.map((s) => (
-                    <SelectItem key={s} value={s} className="font-bold py-3 focus:bg-primary/10 focus:text-primary rounded-lg transition-colors">{s}</SelectItem>
+                    <SelectItem key={s} value={s} className="font-bold py-3 transition-colors">{s}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-3">
-              <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] ml-1">
+              <label className="block text-xs font-bold text-muted-foreground uppercase tracking-widest ml-1">
                 Nível de Proficiência
               </label>
               <div className="grid grid-cols-3 gap-3">
@@ -91,16 +89,14 @@ const StartGame: React.FC<StartGameProps> = ({ onStart, isLoading }) => {
                   <button
                     key={d}
                     onClick={() => setDifficulty(d)}
-                    className={`h-20 rounded-2xl border transition-all flex flex-col items-center justify-center gap-1 ${
+                    className={`h-20 rounded-xl border transition-all flex flex-col items-center justify-center gap-1 ${
                       difficulty === d
-                        ? d === "ESPECIALISTA"
-                          ? "bg-destructive/10 text-destructive border-destructive/30 shadow-lg shadow-destructive/5"
-                          : "bg-primary/10 text-primary border-primary/30 shadow-lg shadow-primary/5"
-                        : "bg-secondary/40 text-muted-foreground border-border/50 hover:bg-secondary hover:border-border transition-all"
+                        ? "bg-primary/10 text-primary border-primary/30 shadow-sm"
+                        : "bg-muted/30 text-muted-foreground border-border hover:bg-muted/50 hover:border-border transition-all"
                     }`}
                   >
-                    <span className="text-[10px] sm:text-xs font-black tracking-tight">{d}</span>
-                    <span className={`text-[9px] font-mono-vital uppercase tracking-widest ${difficulty === d ? "opacity-100 font-bold" : "opacity-40"}`}>
+                    <span className="text-[10px] sm:text-xs font-bold tracking-tight">{d}</span>
+                    <span className={`text-[9px] font-bold uppercase tracking-widest ${difficulty === d ? "opacity-100" : "opacity-40"}`}>
                       {getMultiplierLabel(d)}
                     </span>
                   </button>
@@ -111,11 +107,11 @@ const StartGame: React.FC<StartGameProps> = ({ onStart, isLoading }) => {
 
           <div className="space-y-8 flex flex-col">
             <div className="space-y-3 flex-1">
-              <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] ml-1">
+              <label className="block text-xs font-bold text-muted-foreground uppercase tracking-widest ml-1">
                 Contexto Adicional (Opcional)
               </label>
               <Textarea
-                className="h-full min-h-[140px] rounded-2xl bg-secondary/50 border-border/50 p-4 font-medium resize-none focus:ring-primary/20"
+                className="h-full min-h-[140px] rounded-xl bg-muted/30 border-border p-4 font-medium resize-none focus:ring-primary/20"
                 value={customCase}
                 onChange={(e) => setCustomCase(e.target.value)}
                 placeholder="Ex: Paciente 45 anos, dor precordial típica, tabagista, HAS..."
@@ -125,18 +121,18 @@ const StartGame: React.FC<StartGameProps> = ({ onStart, isLoading }) => {
             <Button
               onClick={handleStart}
               disabled={isLoading}
-              className="h-16 text-base uppercase tracking-widest font-black rounded-2xl shadow-xl shadow-primary/20 group hover:scale-[1.01] active:scale-[0.99] transition-all"
               size="lg"
+              className="h-14 text-base font-bold rounded-xl shadow-lg shadow-primary/10 group hover:translate-y-[-2px] active:translate-y-0 transition-all"
             >
               {isLoading ? (
                 <>
                   <Loader2 className="h-5 w-5 animate-spin mr-2" /> 
-                  <span className="font-mono-vital">Iniciando Protocolo...</span>
+                  <span>Preparando Sala...</span>
                 </>
               ) : (
                 <>
-                  <PlayCircle className="h-5 w-5 mr-2 group-hover:scale-110 transition-transform" /> 
-                  ENTRAR NA SALA <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                  <PlayCircle className="h-5 w-5 mr-2" /> 
+                  INICIAR SIMULAÇÃO <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
                 </>
               )}
             </Button>
@@ -144,14 +140,14 @@ const StartGame: React.FC<StartGameProps> = ({ onStart, isLoading }) => {
         </div>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {[
-          { label: "Casos Reais", val: "1.2k+" },
+          { label: "Casos Clínicos", val: "1.2k+" },
           { label: "Médicos Ativos", val: "4.5k+" },
-          { label: "Protocolos", val: "150+" }
+          { label: "Diretrizes", val: "150+" }
         ].map((stat, i) => (
-          <div key={i} className="bg-secondary/20 border border-border/30 rounded-2xl p-4 text-center">
-            <div className="text-xl font-black text-primary lcd-glow">{stat.val}</div>
+          <div key={i} className="bg-card border border-border rounded-2xl p-4 text-center">
+            <div className="text-2xl font-bold text-primary">{stat.val}</div>
             <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1">{stat.label}</div>
           </div>
         ))}
