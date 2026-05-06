@@ -335,9 +335,32 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
           </div>
 
           {/* Right: Controls & Stats */}
-          <div className="flex items-center gap-3 shrink-0">
+          <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+            {/* ABCD Status - Immersion */}
+            <div className="hidden md:flex items-center gap-1">
+              {['A', 'B', 'C', 'D'].map((letter) => (
+                <TooltipProvider key={letter}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className={cn(
+                        "w-7 h-7 rounded-lg flex items-center justify-center text-[10px] font-black border transition-all",
+                        patientState === "CRITICO" || patientState === "OBITO" ? "bg-destructive/10 text-destructive border-destructive/20 animate-pulse" :
+                        patientState === "INSTAVEL" ? "bg-warning/10 text-warning border-warning/20" :
+                        "bg-success/10 text-success border-success/20"
+                      )}>
+                        {letter}
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom" className="text-[10px] font-bold">
+                      {letter === 'A' ? 'Via Aérea' : letter === 'B' ? 'Respiração' : letter === 'C' ? 'Circulação' : 'Neurológico'}
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              ))}
+            </div>
+
             {/* Simulation Time */}
-            <div className="hidden sm:flex items-center gap-2 bg-muted/50 px-3 py-1.5 rounded-lg border border-border/50">
+            <div className="flex items-center gap-2 bg-muted/50 px-3 py-1.5 rounded-lg border border-border/50">
               <Clock className="h-3.5 w-3.5 text-muted-foreground" />
               <span className="text-sm font-bold text-foreground tabular-nums">
                 {engine.getFormattedTime()}
