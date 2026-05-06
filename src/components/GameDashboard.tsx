@@ -147,12 +147,13 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
       setTimeLeft((prev) => {
         if (prev === null || prev <= 1) {
           clearInterval(interval);
-          handleAction("SYSTEM_TIMEOUT", "TIMEOUT");
+          handleAction("SYSTEM_TIMEOUT", "TIMEOUT", "TEMPO ESGOTADO");
           return 0;
         }
         return prev - 1;
       });
     }, 1000);
+
     return () => clearInterval(interval);
   }, [timeLeft, isLoading]);
 
