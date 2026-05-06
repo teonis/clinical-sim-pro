@@ -45,6 +45,7 @@ export interface ChecklistResult {
   /** Target in minutes */
   targetMinutes: number | null;
   reference: string;
+  rationale: string;
   weight: number;
 }
 
