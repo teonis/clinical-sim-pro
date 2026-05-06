@@ -143,7 +143,8 @@ export const getLeaderboard = async (specialtyFilter?: string): Promise<GameHist
 };
 
 export const sendFeedback = async (message: string) => {
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { session } } = await supabase.auth.getSession();
+  const user = session?.user;
   if (!user) return;
 
   await supabase.from("feedback").insert({
