@@ -109,6 +109,7 @@ export const sendAction = async (
   // 1. Apply deterministic intervention effects
   const actionText = customText || actionId;
   engine.applyIntervention(actionText);
+  engine.logAction(actionText); // Log before tick to get current state time
 
   // 2. Calculate time cost for this action
   const timeCost = actionId === "SYSTEM_TIMEOUT" ? 3 : engine.getTimeCostForAction(actionText);
