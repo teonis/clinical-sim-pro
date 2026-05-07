@@ -24,8 +24,8 @@ const StartGame: React.FC<StartGameProps> = ({ onStart, isLoading }) => {
   const [customCase, setCustomCase] = useState("");
 
   const handleStart = () => {
-    localStorage.setItem("simulamed_specialty", specialty);
-    localStorage.setItem("simulamed_difficulty", difficulty);
+    localStorage.setItem("pulzu_specialty", specialty);
+    localStorage.setItem("pulzu_difficulty", difficulty);
     let finalSpecialty = specialty;
     if (specialty === "ALEATÓRIO") {
       const valid = SPECIALTIES.filter((s) => s !== "ALEATÓRIO");
