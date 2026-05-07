@@ -11,10 +11,10 @@ const LandingHeader: React.FC<LandingHeaderProps> = ({ onStart }) => {
       <div className="container mx-auto px-6 h-20 flex items-center justify-between">
         <a href="#hero" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
           <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
-            <span className="text-primary-foreground font-black text-sm">B</span>
+            <span className="text-primary-foreground font-black text-sm text-center">P</span>
           </div>
           <div className="flex flex-col">
-            <span className="font-black tracking-tighter text-2xl text-foreground leading-none">BOLUS</span>
+            <span className="font-black tracking-tighter text-2xl text-foreground leading-none">PULZU</span>
             <span className="text-[8px] font-bold tracking-[0.2em] uppercase text-muted-foreground leading-none mt-1">Simulador Clínico</span>
           </div>
         </a>
