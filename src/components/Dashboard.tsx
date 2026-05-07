@@ -143,7 +143,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartGame, isLoading, userEmail
                 userEmail={userEmail}
                 displayName={displayName}
                 onDisplayNameChange={setDisplayName}
-                onSaveDisplayName={() => {}}
+                onSaveDisplayName={loadData}
                 isProfileLoading={isProfileLoading}
                 onGoToHome={() => setActiveTab("home")}
                 history={history}
