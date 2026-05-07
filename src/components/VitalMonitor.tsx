@@ -89,7 +89,7 @@ const VitalMonitor = ({ fc, pas, pad, satO2, fr, status }: VitalMonitorProps) =>
 
       <div className="mt-8 pt-6 border-t border-border flex justify-between items-center opacity-40">
         <span className="text-[8px] font-bold text-muted-foreground tracking-widest uppercase">System: Online</span>
-        <span className="text-[8px] font-bold text-muted-foreground tracking-widest uppercase">BOLUS ENGINE</span>
+        <span className="text-[8px] font-bold text-muted-foreground tracking-widest uppercase">PULZU ENGINE</span>
       </div>
     </div>
   );
