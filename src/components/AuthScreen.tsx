@@ -259,7 +259,8 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess, onBack }) => {
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 };
 
 export default AuthScreen;
