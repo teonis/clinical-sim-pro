@@ -25,8 +25,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
           </div>
           <div className="flex items-center gap-6">
             <nav className="hidden md:flex items-center gap-8 mr-4">
-              <a href="#features" className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground hover:text-primary transition-colors">Funcionalidades</a>
-              <a href="#cases" className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground hover:text-primary transition-colors">Cenários</a>
+              <a href="#features" className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground hover:text-primary transition-colors scroll-smooth">Funcionalidades</a>
+              <a href="#cases" className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground hover:text-primary transition-colors scroll-smooth">Cenários</a>
             </nav>
             <ThemeToggle />
             <button 
