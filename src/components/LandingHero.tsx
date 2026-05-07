@@ -38,7 +38,7 @@ const LandingHero: React.FC<LandingHeroProps> = ({ onStart }) => {
             transition={{ duration: 0.8 }}
             className="text-7xl md:text-9xl font-black mb-4 tracking-tighter leading-none text-foreground"
           >
-            BOLUS
+            PULZU
           </motion.h1>
 
           <motion.h2
@@ -49,6 +49,24 @@ const LandingHero: React.FC<LandingHeroProps> = ({ onStart }) => {
           >
             Sua dose de realidade clínica
           </motion.h2>
+
+          <div className="flex justify-center mb-12">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.5, duration: 0.5 }}
+              className="relative"
+            >
+              <img 
+                src="/preceptor.png" 
+                alt="O Preceptor" 
+                className="w-48 h-48 md:w-64 md:h-64 object-contain"
+              />
+              <div className="absolute -top-4 -right-4 bg-card border border-border px-4 py-2 rounded-2xl shadow-xl">
+                <p className="text-[10px] font-bold text-primary uppercase tracking-widest">O Preceptor</p>
+              </div>
+            </motion.div>
+          </div>
 
           <motion.div
             initial={{ opacity: 0, y: 15 }}

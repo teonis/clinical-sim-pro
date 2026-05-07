@@ -10,9 +10,9 @@ interface OnboardingTutorialProps {
 const steps = [
   {
     icon: Stethoscope,
-    title: "Preceptor Virtual com IA",
+    title: "O Preceptor Virtual com IA",
     description:
-      "Cada caso clínico é conduzido por um preceptor inteligente que reage às suas decisões em tempo real. Ele avalia suas condutas, dá feedbacks detalhados e simula a evolução do paciente de forma realista.",
+      "Cada caso clínico é conduzido pelo Preceptor, uma inteligência que reage às suas decisões em tempo real. Ele avalia suas condutas, dá feedbacks detalhados e simula a evolução do paciente de forma realista.",
     color: "from-primary to-primary/70",
   },
   {
@@ -38,7 +38,7 @@ const OnboardingTutorial: React.FC<OnboardingTutorialProps> = ({ onComplete }) =
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
-      localStorage.setItem("simulamed_onboarding_done", "true");
+      localStorage.setItem("pulzu_onboarding_done", "true");
       onComplete();
     }
   };
@@ -105,7 +105,7 @@ const OnboardingTutorial: React.FC<OnboardingTutorialProps> = ({ onComplete }) =
 
               <button
                 onClick={() => {
-                  localStorage.setItem("simulamed_onboarding_done", "true");
+                  localStorage.setItem("pulzu_onboarding_done", "true");
                   onComplete();
                 }}
                 className="mt-4 text-xs text-muted-foreground hover:text-foreground transition-colors"

@@ -22,7 +22,7 @@ const LandingCTA: React.FC<LandingCTAProps> = ({ onStart }) => {
           <h2 className="text-3xl md:text-5xl font-black mb-6 tracking-tight">Pronto para o plantão?</h2>
           <p className="text-primary-foreground/80 text-lg mb-10 leading-relaxed">
             Não espere a emergência real para testar seus conhecimentos. 
-            Comece agora sua simulação no BOLUS e refine sua conduta.
+            Comece agora sua simulação no PULZU e refine sua conduta.
           </p>
           <button 
             onClick={onStart}

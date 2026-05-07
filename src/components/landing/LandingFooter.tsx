@@ -9,10 +9,10 @@ const LandingFooter: React.FC = () => {
           <div className="flex flex-col items-center md:items-start gap-6">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
-                <span className="text-primary-foreground font-black text-sm">B</span>
+                <span className="text-primary-foreground font-black text-sm text-center">P</span>
               </div>
               <div className="flex flex-col">
-                <span className="font-black tracking-tighter text-2xl text-foreground leading-none">BOLUS</span>
+                <span className="font-black tracking-tighter text-2xl text-foreground leading-none">PULZU</span>
                 <span className="text-[8px] font-bold tracking-[0.2em] uppercase text-muted-foreground leading-none mt-1">Medical Simulator</span>
               </div>
             </div>
@@ -30,14 +30,14 @@ const LandingFooter: React.FC = () => {
             <div className="flex items-start gap-3 max-w-sm p-4 bg-muted/50 rounded-2xl border border-border">
               <ShieldAlert className="h-4 w-4 text-warning shrink-0 mt-0.5" />
               <p className="text-[10px] font-bold text-muted-foreground leading-normal uppercase tracking-wider opacity-80">
-                EXCLUSIVAMENTE EDUCACIONAL. O BOLUS NÃO SUBSTITUI O JULGAMENTO CLÍNICO PROFISSIONAL E NÃO DEVE SER UTILIZADO EM AMBIENTES DE ASSISTÊNCIA REAL.
+                EXCLUSIVAMENTE EDUCACIONAL. O PULZU NÃO SUBSTITUI O JULGAMENTO CLÍNICO PROFISSIONAL E NÃO DEVE SER UTILIZADO EM AMBIENTES DE ASSISTÊNCIA REAL.
               </p>
             </div>
           </div>
         </div>
         <div className="mt-20 pt-8 border-t border-border text-center">
           <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.5em]">
-            © 2026 BOLUS Simulator
+            © 2026 PULZU Simulator
           </p>
         </div>
       </div>
