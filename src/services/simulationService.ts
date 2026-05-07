@@ -89,18 +89,24 @@ export const startSimulation = async (params: StartParams): Promise<SimulationSt
       ? { ...llmVitals, ...engineSeedVitals } // generated vitals override LLM
       : llmVitals;
     
+    // Ensure vital signs are correctly populated in the response object
+    const state = data as SimulationState;
+    if (state.dados_medicos) {
+      const v = finalVitals;
+      state.dados_medicos.sinais_vitais = `FC: ${v.hr ?? 80} bpm | PA: ${v.sbp ?? 120}/${v.dbp ?? 80} mmHg | SpO2: ${v.spo2 ?? 97}% | FR: ${v.rr ?? 16} rpm | Temp: ${v.temp ?? 36.5}°C`;
+    }
+    
     // Update existing engine with final merged vitals
     engine.reset(finalVitals);
 
     // Detect conditions from initial narrative
-    const state = data as SimulationState;
-    const narrative = [
+    const initialNarrative = [
       state.interface_usuario?.manchete,
       state.interface_usuario?.narrativa_principal,
       state.interface_usuario?.exame_fisico_detalhado
     ].filter(Boolean).join(" ");
     
-    engine.setConditionsFromNarrative(narrative);
+    engine.setConditionsFromNarrative(initialNarrative);
 
     conversationHistory.push({ role: "assistant", content: JSON.stringify(data) });
     return state;
