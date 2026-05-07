@@ -44,7 +44,7 @@ const App: React.FC = () => {
         setIsAuthChecking(false);
       } else if (event === "SIGNED_IN" && session?.user?.email) {
         setCurrentUser(session.user.email);
-        if (!localStorage.getItem("simulamed_onboarding_done")) {
+        if (!localStorage.getItem("pulzu_onboarding_done")) {
           setShowOnboarding(true);
         }
         setIsAuthChecking(false);
