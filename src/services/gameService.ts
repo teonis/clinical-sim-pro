@@ -182,13 +182,25 @@ export const getLeaderboard = async (specialtyFilter?: string): Promise<GameHist
 };
 
 export const sendFeedback = async (message: string) => {
-  const { data: { session } } = await supabase.auth.getSession();
-  const user = session?.user;
-  if (!user) return;
+  try {
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError) throw sessionError;
+    
+    const user = session?.user;
+    if (!user) return;
 
-  await supabase.from("feedback").insert({
-    user_id: user.id,
-    username: user.email || user.id,
-    message,
-  });
+    const { error: insertError } = await supabase.from("feedback").insert({
+      user_id: user.id,
+      username: user.email || user.id,
+      message,
+    });
+
+    if (insertError) {
+      console.error("Error sending feedback:", insertError);
+      throw new Error("Não foi possível enviar o seu feedback no momento.");
+    }
+  } catch (err) {
+    console.error("Unexpected error in sendFeedback:", err);
+    throw err;
+  }
 };
