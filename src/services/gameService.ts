@@ -131,40 +131,54 @@ export const getUserStats = async (): Promise<UserStats> => {
 };
 
 export const getLeaderboard = async (specialtyFilter?: string): Promise<GameHistoryEntry[]> => {
-  let query = supabase
-    .from("game_history")
-    .select("*")
-    .order("score", { ascending: false })
-    .limit(50);
+  try {
+    let query = supabase
+      .from("game_history")
+      .select("*")
+      .order("score", { ascending: false })
+      .limit(50);
 
-  if (specialtyFilter && specialtyFilter !== "TODAS") {
-    query = query.eq("specialty", specialtyFilter);
+    if (specialtyFilter && specialtyFilter !== "TODAS") {
+      query = query.eq("specialty", specialtyFilter);
+    }
+
+    const { data, error } = await query;
+    if (error) {
+      console.error("Error fetching leaderboard:", error);
+      return [];
+    }
+    if (!data) return [];
+
+    // Enrich with profile info
+    const userIds = [...new Set(data.map((g: any) => g.user_id))];
+    if (userIds.length === 0) return data as unknown as GameHistoryEntry[];
+
+    const { data: profiles, error: profileError } = await supabase
+      .from("profiles")
+      .select("user_id, display_name, avatar_url, is_public_profile")
+      .in("user_id", userIds);
+
+    if (profileError) {
+      console.error("Error fetching profiles for leaderboard:", profileError);
+      // Still return the data, just without names
+    }
+
+    return (data as any[])
+      .map((game) => {
+        const profile = profiles?.find((p: any) => p.user_id === game.user_id);
+        if (profile && !profile.is_public_profile) return null;
+        return {
+          ...game,
+          display_name: profile?.display_name,
+          avatar_url: profile?.avatar_url,
+        };
+      })
+      .filter(Boolean)
+      .slice(0, 10) as GameHistoryEntry[];
+  } catch (err) {
+    console.error("Unexpected error in getLeaderboard:", err);
+    return [];
   }
-
-  const { data, error } = await query;
-  if (error || !data) return [];
-
-  // Enrich with profile info
-  const userIds = [...new Set(data.map((g: any) => g.user_id))];
-  if (userIds.length === 0) return data as unknown as GameHistoryEntry[];
-
-  const { data: profiles } = await supabase
-    .from("profiles")
-    .select("user_id, display_name, avatar_url, is_public_profile")
-    .in("user_id", userIds);
-
-  return (data as any[])
-    .map((game) => {
-      const profile = profiles?.find((p: any) => p.user_id === game.user_id);
-      if (profile && !profile.is_public_profile) return null;
-      return {
-        ...game,
-        display_name: profile?.display_name,
-        avatar_url: profile?.avatar_url,
-      };
-    })
-    .filter(Boolean)
-    .slice(0, 10) as GameHistoryEntry[];
 };
 
 export const sendFeedback = async (message: string) => {
