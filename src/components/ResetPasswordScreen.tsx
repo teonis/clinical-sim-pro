@@ -47,8 +47,8 @@ const ResetPasswordScreen: React.FC<ResetPasswordScreenProps> = ({ onComplete })
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-white/15 backdrop-blur-md mb-4 shadow-lg">
               <Activity className="h-8 w-8 text-white" />
             </div>
-            <h1 className="text-2xl font-display font-bold text-white tracking-tight">SIMULAMED</h1>
-            <p className="text-white/70 text-xs font-medium tracking-widest uppercase mt-1">By Time Rocha</p>
+            <h1 className="text-2xl font-display font-bold text-white tracking-tight">PULZU</h1>
+            <p className="text-white/70 text-xs font-medium tracking-widest uppercase mt-1">Simulação Médica</p>
           </div>
         </div>
 
