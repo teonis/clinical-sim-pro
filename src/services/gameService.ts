@@ -64,20 +64,35 @@ export const saveGameResult = async (
   score: number, outcome: string, difficulty: string,
   specialty: string, caseTitle: string
 ) => {
-  const { data: { session } } = await supabase.auth.getSession();
-  const user = session?.user;
-  if (!user) return;
+  try {
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError) throw sessionError;
+    
+    const user = session?.user;
+    if (!user) {
+      console.warn("Attempted to save game result without an active session.");
+      return;
+    }
 
-  await supabase.from("game_history").insert({
-    user_id: user.id,
-    username: user.email || user.id,
-    score,
-    outcome,
-    difficulty,
-    specialty,
-    case_title: caseTitle || "Caso Clínico Geral",
-    is_favorite: false,
-  });
+    const { error: insertError } = await supabase.from("game_history").insert({
+      user_id: user.id,
+      username: user.email || user.id,
+      score,
+      outcome,
+      difficulty,
+      specialty,
+      case_title: caseTitle || "Caso Clínico Geral",
+      is_favorite: false,
+    });
+
+    if (insertError) {
+      console.error("Error inserting game result:", insertError);
+      throw new Error("Não foi possível salvar o resultado do jogo no banco de dados.");
+    }
+  } catch (err) {
+    console.error("Unexpected error in saveGameResult:", err);
+    // We don't necessarily want to crash the UI here, but logging is vital
+  }
 };
 
 export const getUserHistory = async (): Promise<GameHistoryEntry[]> => {
