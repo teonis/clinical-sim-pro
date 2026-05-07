@@ -109,6 +109,7 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
       console.error("Error processing action:", error);
       pushEvent("system", "Erro na transmissão de dados.");
       toast.error(error.message || "Erro ao processar ação.");
+      pushEvent("mentor", `O Preceptor diz: Tivemos um problema na transmissão dos seus comandos. Vamos tentar novamente.`);
     } finally {
       setIsLoading(false);
     }
