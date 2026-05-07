@@ -65,6 +65,6 @@ const GameEventLog: React.FC<GameEventLogProps> = React.memo(({ eventLog, eventL
       <div ref={eventLogEndRef} />
     </div>
   );
-};
+});
 
 export default GameEventLog;

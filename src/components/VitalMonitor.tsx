@@ -93,7 +93,7 @@ const VitalMonitor = React.memo(({ fc, pas, pad, satO2, fr, status }: VitalMonit
       </div>
     </div>
   );
-};
+});
 
 const VitalItem = ({ icon, label, value, unit, color }: {
   icon: React.ReactNode;
