@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Activity, ArrowRight, Shield, Zap, BookOpen } from "lucide-react";
+import { Activity, ArrowRight, Shield, Zap, BookOpen, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -45,10 +45,30 @@ const LandingHero: React.FC<LandingHeroProps> = ({ onStart }) => {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-xl md:text-3xl font-medium text-muted-foreground mb-12 tracking-tight"
+            className="text-xl md:text-3xl font-medium text-muted-foreground mb-8 tracking-tight"
           >
             Sua dose de realidade clínica
           </motion.h2>
+
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="max-w-md mx-auto mb-10 relative group"
+          >
+            <div className="absolute inset-0 bg-primary/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="relative flex items-center bg-card/50 backdrop-blur-md border border-border h-16 rounded-2xl px-5 focus-within:ring-2 focus-within:ring-primary/20 transition-all">
+              <Search className="h-5 w-5 text-muted-foreground mr-4" />
+              <input 
+                type="text" 
+                placeholder="Pesquisar por faculdade de medicina..." 
+                className="bg-transparent border-none focus:ring-0 text-sm font-medium w-full placeholder:text-muted-foreground/40"
+              />
+              <div className="ml-4 px-3 py-1 bg-muted rounded-lg text-[8px] font-black text-muted-foreground uppercase tracking-widest whitespace-nowrap">
+                Ficha Técnica
+              </div>
+            </div>
+          </motion.div>
 
           <div className="flex justify-center mb-12">
             <motion.div
