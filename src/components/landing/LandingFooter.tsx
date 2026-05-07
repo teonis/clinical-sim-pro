@@ -37,7 +37,7 @@ const LandingFooter: React.FC = () => {
         </div>
         <div className="mt-20 pt-8 border-t border-border text-center">
           <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.5em]">
-            © 2026 BOLUS Simulator
+            © 2026 PULZU Simulator
           </p>
         </div>
       </div>
