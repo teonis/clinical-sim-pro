@@ -91,10 +91,10 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess, onBack }) => {
       <header className="w-full h-20 flex items-center justify-between px-6 md:px-12 z-50 border-b border-border bg-background/50 backdrop-blur-xl">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
-            <span className="text-primary-foreground font-black text-sm">B</span>
+            <span className="text-primary-foreground font-black text-sm text-center">P</span>
           </div>
           <div className="flex flex-col">
-            <span className="font-black tracking-tighter text-2xl text-foreground leading-none uppercase">BOLUS</span>
+            <span className="font-black tracking-tighter text-2xl text-foreground leading-none uppercase">PULZU</span>
             <span className="text-[8px] font-bold tracking-[0.2em] uppercase text-muted-foreground leading-none mt-1">Simulador Clínico</span>
           </div>
         </div>
