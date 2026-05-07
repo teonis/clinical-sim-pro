@@ -39,61 +39,75 @@ function parseVitalsFromResponse(state: SimulationState): Partial<EngineVitals> 
 
 
 export const startSimulation = async (params: StartParams): Promise<SimulationState> => {
-  conversationHistory = [];
-  lastProtocolEvaluation = null;
+  try {
+    conversationHistory = [];
+    lastProtocolEvaluation = null;
 
-  // Try to generate a dynamic case if no custom case was provided
-  let generatedScenario = params.caso_especifico || "";
-  let engineSeedVitals: Partial<EngineVitals> | undefined;
+    // Try to generate a dynamic case if no custom case was provided
+    let generatedScenario = params.caso_especifico || "";
+    let engineSeedVitals: Partial<EngineVitals> | undefined;
 
-  if (!params.caso_especifico) {
-    const generated = generateCase(params.especialidade);
-    if (generated) {
-      lastGeneratedCase = generated;
-      generatedScenario = generated.scenarioPrompt;
-      engineSeedVitals = generated.initialVitals;
+    if (!params.caso_especifico) {
+      const generated = generateCase(params.especialidade);
+      if (generated) {
+        lastGeneratedCase = generated;
+        generatedScenario = generated.scenarioPrompt;
+        engineSeedVitals = generated.initialVitals;
+      }
+    } else {
+      lastGeneratedCase = null;
     }
-  } else {
-    lastGeneratedCase = null;
+
+    // Seed engine with generated vitals (will be overwritten by LLM response if available)
+    const engine = resetEngine(engineSeedVitals);
+
+    const startCommand = `START_GAME { "especialidade": "${params.especialidade}", "dificuldade": "${params.dificuldade}", "caso_especifico": "${generatedScenario}" }\n\n[DADOS VITAIS INICIAIS DESEJADOS]: ${engine.toPromptBlock()}\n\n[DADOS DE EXAME FÍSICO INICIAIS]: ${lastGeneratedCase?.physicalExamBase || ""}\n\n[DADOS DE EXAMES LABORATORIAIS INICIAIS]: ${lastGeneratedCase?.labResultsBase || ""}`;
+
+    conversationHistory.push({ role: "user", content: startCommand });
+
+    const { data, error } = await supabase.functions.invoke("simulate", {
+      body: { messages: conversationHistory },
+    });
+
+    if (error) {
+      console.error("Supabase function error (invoke):", error);
+      throw new Error(error.message || "Falha na comunicação com o servidor de simulação.");
+    }
+    
+    if (!data) {
+      throw new Error("O servidor retornou uma resposta vazia.");
+    }
+
+    if (data?.error) {
+      console.error("Logic error from function:", data.error);
+      throw new Error(data.error);
+    }
+
+    // Merge LLM-described vitals with engine-seeded vitals (engine takes priority if seeded)
+    const llmVitals = parseVitalsFromResponse(data as SimulationState);
+    const finalVitals = engineSeedVitals
+      ? { ...llmVitals, ...engineSeedVitals } // generated vitals override LLM
+      : llmVitals;
+    
+    // Update existing engine with final merged vitals
+    engine.reset(finalVitals);
+
+    // Detect conditions from initial narrative
+    const state = data as SimulationState;
+    const narrative = [
+      state.interface_usuario?.manchete,
+      state.interface_usuario?.narrativa_principal,
+      state.interface_usuario?.exame_fisico_detalhado
+    ].filter(Boolean).join(" ");
+    
+    engine.setConditionsFromNarrative(narrative);
+
+    conversationHistory.push({ role: "assistant", content: JSON.stringify(data) });
+    return state;
+  } catch (err: any) {
+    console.error("Error in startSimulation:", err);
+    throw err;
   }
-
-  // Seed engine with generated vitals (will be overwritten by LLM response if available)
-  const engine = resetEngine(engineSeedVitals);
-
-  const startCommand = `START_GAME { "especialidade": "${params.especialidade}", "dificuldade": "${params.dificuldade}", "caso_especifico": "${generatedScenario}" }\n\n[DADOS VITAIS INICIAIS DESEJADOS]: ${engine.toPromptBlock()}\n\n[DADOS DE EXAME FÍSICO INICIAIS]: ${lastGeneratedCase?.physicalExamBase || ""}\n\n[DADOS DE EXAMES LABORATORIAIS INICIAIS]: ${lastGeneratedCase?.labResultsBase || ""}`;
-
-  conversationHistory.push({ role: "user", content: startCommand });
-
-
-  const { data, error } = await supabase.functions.invoke("simulate", {
-    body: { messages: conversationHistory },
-  });
-
-  if (error) throw new Error(error.message || "Falha ao iniciar simulação");
-  if (data?.error) throw new Error(data.error);
-
-  // Merge LLM-described vitals with engine-seeded vitals (engine takes priority if seeded)
-  const llmVitals = parseVitalsFromResponse(data as SimulationState);
-  const finalVitals = engineSeedVitals
-    ? { ...llmVitals, ...engineSeedVitals } // generated vitals override LLM
-    : llmVitals;
-  
-  // Update existing engine with final merged vitals
-  engine.reset(finalVitals);
-
-
-  // Detect conditions from initial narrative
-  const state = data as SimulationState;
-  const narrative = [
-    state.interface_usuario.manchete,
-    state.interface_usuario.narrativa_principal,
-    state.interface_usuario.exame_fisico_detalhado
-  ].filter(Boolean).join(" ");
-  
-  engine.setConditionsFromNarrative(narrative);
-
-  conversationHistory.push({ role: "assistant", content: JSON.stringify(data) });
-  return state;
 };
 
 export const sendAction = async (
