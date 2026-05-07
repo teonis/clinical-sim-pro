@@ -29,7 +29,7 @@ const LandingHero: React.FC<LandingHeroProps> = ({ onStart }) => {
             className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-primary/5 border border-primary/10 mb-10"
           >
             <Activity className="h-4 w-4 text-primary" />
-            <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-primary">Plataforma Médica v4.0</span>
+            <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-primary">Simulação Médica</span>
           </motion.div>
 
           <motion.h1
