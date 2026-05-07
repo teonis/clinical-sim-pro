@@ -100,14 +100,13 @@ export const startSimulation = async (params: StartParams): Promise<SimulationSt
     engine.reset(finalVitals);
 
     // Detect conditions from initial narrative
-    const state = data as SimulationState;
-    const narrative = [
+    const initialNarrative = [
       state.interface_usuario?.manchete,
       state.interface_usuario?.narrativa_principal,
       state.interface_usuario?.exame_fisico_detalhado
     ].filter(Boolean).join(" ");
     
-    engine.setConditionsFromNarrative(narrative);
+    engine.setConditionsFromNarrative(initialNarrative);
 
     conversationHistory.push({ role: "assistant", content: JSON.stringify(data) });
     return state;
