@@ -38,7 +38,7 @@ const OnboardingTutorial: React.FC<OnboardingTutorialProps> = ({ onComplete }) =
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
-      localStorage.setItem("simulamed_onboarding_done", "true");
+      localStorage.setItem("pulzu_onboarding_done", "true");
       onComplete();
     }
   };
