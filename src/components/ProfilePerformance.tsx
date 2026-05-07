@@ -7,7 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import {
   Camera, Save, Loader2, GraduationCap, Medal, BookOpen,
   Heart, Brain, Ambulance, Wind, Bug, Baby, Bone, Stethoscope,
-  TrendingUp, Target, Award, BarChart3, User,
+  TrendingUp, Target, Award, BarChart3, User, Search, School
 } from "lucide-react";
 import { toast } from "sonner";
 import { GameHistoryEntry } from "@/types/simulation";
@@ -15,6 +15,7 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, Area, AreaChart,
 } from "recharts";
+import { UNIVERSITIES } from "@/constants/universities";
 
 interface ProfilePerformanceProps {
   userStats: UserStats;
@@ -44,22 +45,66 @@ const ProfilePerformance: React.FC<ProfilePerformanceProps> = ({
 }) => {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [university, setUniversity] = useState("");
+  const [graduationYear, setGraduationYear] = useState("");
+  const [isSavingExtra, setIsSavingExtra] = useState(false);
+  const [universitySearch, setUniversitySearch] = useState("");
+  const [showUniversityList, setShowUniversityList] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Load avatar on mount
+  // Filter universities based on search
+  const filteredUniversities = React.useMemo(() => {
+    if (!universitySearch) return [];
+    return UNIVERSITIES.filter(u => 
+      u.toLowerCase().includes(universitySearch.toLowerCase())
+    ).slice(0, 5);
+  }, [universitySearch]);
+
+  // Load profile data on mount
   React.useEffect(() => {
-    const loadAvatar = async () => {
+    const loadProfileData = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
       const { data: profile } = await supabase
         .from("profiles")
-        .select("avatar_url")
+        .select("avatar_url, university, graduation_year")
         .eq("user_id", user.id)
         .single();
-      if (profile?.avatar_url) setAvatarUrl(profile.avatar_url);
+      
+      if (profile) {
+        if (profile.avatar_url) setAvatarUrl(profile.avatar_url);
+        if (profile.university) {
+          setUniversity(profile.university);
+          setUniversitySearch(profile.university);
+        }
+        if (profile.graduation_year) setGraduationYear(profile.graduation_year);
+      }
     };
-    loadAvatar();
+    loadProfileData();
   }, []);
+
+  const handleSaveExtraData = async () => {
+    setIsSavingExtra(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Não autenticado");
+
+      const { error } = await supabase
+        .from("profiles")
+        .update({
+          university,
+          graduation_year: graduationYear
+        })
+        .eq("user_id", user.id);
+
+      if (error) throw error;
+      toast.success("Perfil atualizado com sucesso!");
+    } catch (error: any) {
+      toast.error(error.message || "Erro ao salvar dados.");
+    } finally {
+      setIsSavingExtra(false);
+    }
+  };
 
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -205,6 +250,76 @@ const ProfilePerformance: React.FC<ProfilePerformanceProps> = ({
             <div className="mt-2 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold">
               <Award className="h-3.5 w-3.5" />
               {userStats.currentLevel}
+            </div>
+          </div>
+        </div>
+
+        {/* Extra Profile Data */}
+        <div className="mt-8 pt-8 border-t border-border grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+              <School className="h-3 w-3" /> Faculdade de Medicina
+            </label>
+            <div className="relative">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  value={universitySearch}
+                  onChange={(e) => {
+                    setUniversitySearch(e.target.value);
+                    setShowUniversityList(true);
+                  }}
+                  onFocus={() => setShowUniversityList(true)}
+                  placeholder="Busque sua faculdade..."
+                  className="pl-9"
+                />
+              </div>
+              
+              {showUniversityList && filteredUniversities.length > 0 && (
+                <div className="absolute z-50 w-full mt-1 bg-card border border-border rounded-xl shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-2">
+                  {filteredUniversities.map((u, i) => (
+                    <button
+                      key={i}
+                      onClick={() => {
+                        setUniversity(u);
+                        setUniversitySearch(u);
+                        setShowUniversityList(false);
+                      }}
+                      className="w-full px-4 py-3 text-left text-sm hover:bg-secondary transition-colors border-b border-border last:border-0"
+                    >
+                      {u}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+              <GraduationCap className="h-3 w-3" /> Ano de Formação (Previsão)
+            </label>
+            <div className="flex gap-2">
+              <Input
+                type="number"
+                value={graduationYear}
+                onChange={(e) => setGraduationYear(e.target.value)}
+                placeholder="Ex: 2028"
+                className="max-w-[150px]"
+              />
+              <Button 
+                onClick={handleSaveExtraData} 
+                disabled={isSavingExtra}
+                className="flex-1 md:flex-none"
+              >
+                {isSavingExtra ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <>
+                    <Save className="h-4 w-4 mr-2" /> Salvar Perfil
+                  </>
+                )}
+              </Button>
             </div>
           </div>
         </div>

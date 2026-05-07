@@ -3,8 +3,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Activity, Mail, Lock, Loader2, User, Building2, Calendar, ArrowLeft } from "lucide-react";
+import { Activity, Mail, Lock, Loader2, User, Building2, Calendar, ArrowLeft, Search } from "lucide-react";
 import { toast } from "sonner";
+import { UNIVERSITIES } from "@/constants/universities";
 
 interface AuthScreenProps {
   onAuthSuccess: () => void;
@@ -20,6 +21,15 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess, onBack }) => {
   const [university, setUniversity] = useState("");
   const [graduationYear, setGraduationYear] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [universitySearch, setUniversitySearch] = useState("");
+  const [showUniversityList, setShowUniversityList] = useState(false);
+
+  const filteredUniversities = React.useMemo(() => {
+    if (!universitySearch) return [];
+    return UNIVERSITIES.filter(u => 
+      u.toLowerCase().includes(universitySearch.toLowerCase())
+    ).slice(0, 5);
+  }, [universitySearch]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -166,26 +176,57 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess, onBack }) => {
             </div>
 
             {mode === "signup" && (
-              <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-6">
                 <div className="space-y-2">
-                  <Label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Instituição</Label>
-                  <Input
-                    type="text"
-                    value={university}
-                    onChange={(e) => setUniversity(e.target.value)}
-                    className="h-14 rounded-2xl bg-muted/50 border-border text-foreground placeholder:text-muted-foreground/50 focus:ring-primary/20 transition-all"
-                    placeholder="Ex: USP"
-                  />
+                  <Label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Faculdade de Medicina</Label>
+                  <div className="relative">
+                    <div className="relative">
+                      <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                      <Input
+                        value={universitySearch}
+                        onChange={(e) => {
+                          setUniversitySearch(e.target.value);
+                          setShowUniversityList(true);
+                        }}
+                        onFocus={() => setShowUniversityList(true)}
+                        className="pl-12 h-14 rounded-2xl bg-muted/50 border-border text-foreground placeholder:text-muted-foreground/50 focus:ring-primary/20 transition-all"
+                        placeholder="Busque sua faculdade..."
+                      />
+                    </div>
+                    
+                    {showUniversityList && filteredUniversities.length > 0 && (
+                      <div className="absolute z-50 w-full mt-1 bg-card border border-border rounded-xl shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-2">
+                        {filteredUniversities.map((u, i) => (
+                          <button
+                            key={i}
+                            type="button"
+                            onClick={() => {
+                              setUniversity(u);
+                              setUniversitySearch(u);
+                              setShowUniversityList(false);
+                            }}
+                            className="w-full px-4 py-3 text-left text-sm hover:bg-secondary transition-colors border-b border-border last:border-0"
+                          >
+                            {u}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
+
                 <div className="space-y-2">
-                  <Label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Ano/Período</Label>
-                  <Input
-                    type="text"
-                    value={graduationYear}
-                    onChange={(e) => setGraduationYear(e.target.value)}
-                    className="h-14 rounded-2xl bg-muted/50 border-border text-foreground placeholder:text-muted-foreground/50 focus:ring-primary/20 transition-all"
-                    placeholder="Ex: 2026"
-                  />
+                  <Label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Ano de Formação (Previsão)</Label>
+                  <div className="relative">
+                    <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                    <Input
+                      type="number"
+                      value={graduationYear}
+                      onChange={(e) => setGraduationYear(e.target.value)}
+                      className="pl-12 h-14 rounded-2xl bg-muted/50 border-border text-foreground placeholder:text-muted-foreground/50 focus:ring-primary/20 transition-all"
+                      placeholder="Ex: 2028"
+                    />
+                  </div>
                 </div>
               </div>
             )}

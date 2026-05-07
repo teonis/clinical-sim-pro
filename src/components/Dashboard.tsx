@@ -4,7 +4,7 @@ import { getUserStats, getLeaderboard, getUserHistory, sendFeedback } from "@/se
 import { getUserSessions, GameSession } from "@/services/sessionService";
 import { supabase } from "@/integrations/supabase/client";
 import ProfilePerformance from "@/components/ProfilePerformance";
-import { LayoutDashboard, BarChart3, Clock, MessageSquare } from "lucide-react";
+import { LayoutDashboard, BarChart3, Clock, MessageSquare, User } from "lucide-react";
 import { toast } from "sonner";
 
 import Sidebar from "./dashboard/Sidebar";
@@ -104,7 +104,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartGame, isLoading, userEmail
 
   const navItems = [
     { id: "home" as TabType, icon: LayoutDashboard, label: "Dashboard" },
-    { id: "performance" as TabType, icon: BarChart3, label: "Estatísticas" },
+    { id: "performance" as TabType, icon: User, label: "Perfil" },
     { id: "history" as TabType, icon: Clock, label: "Histórico" },
     { id: "feedback" as TabType, icon: MessageSquare, label: "Feedback" },
   ];
@@ -143,7 +143,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartGame, isLoading, userEmail
                 userEmail={userEmail}
                 displayName={displayName}
                 onDisplayNameChange={setDisplayName}
-                onSaveDisplayName={() => {}}
+                onSaveDisplayName={loadData}
                 isProfileLoading={isProfileLoading}
                 onGoToHome={() => setActiveTab("home")}
                 history={history}

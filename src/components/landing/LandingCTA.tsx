@@ -28,7 +28,7 @@ const LandingCTA: React.FC<LandingCTAProps> = ({ onStart }) => {
             onClick={onStart}
             className="px-10 py-5 bg-white text-primary font-black rounded-xl hover:scale-105 transition-all shadow-xl text-lg"
           >
-            CRIAR MINHA CONTA GRÁTIS
+            SOLICITAR ACESSO AGORA
           </button>
         </motion.div>
       </div>

@@ -34,7 +34,7 @@ const LandingHeader: React.FC<LandingHeaderProps> = ({ onStart }) => {
             onClick={onStart}
             className="text-[10px] font-bold tracking-widest px-8 py-3 rounded-full bg-primary text-primary-foreground hover:scale-105 transition-all shadow-lg shadow-primary/20"
           >
-            ENTRAR
+            ÁREA DO CLÍNICO
           </button>
         </div>
       </div>

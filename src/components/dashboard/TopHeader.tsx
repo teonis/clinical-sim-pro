@@ -9,7 +9,7 @@ const TopHeader: React.FC = () => {
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <input 
             type="text" 
-            placeholder="Pesquisar..." 
+            placeholder="Pesquisar casos, exames ou medicações..." 
             className="w-full h-11 bg-muted border-none rounded-xl pl-12 pr-4 text-sm focus:ring-1 focus:ring-primary/20 transition-all placeholder:text-muted-foreground/50"
           />
         </div>
