@@ -105,7 +105,7 @@ const OnboardingTutorial: React.FC<OnboardingTutorialProps> = ({ onComplete }) =
 
               <button
                 onClick={() => {
-                  localStorage.setItem("simulamed_onboarding_done", "true");
+                  localStorage.setItem("pulzu_onboarding_done", "true");
                   onComplete();
                 }}
                 className="mt-4 text-xs text-muted-foreground hover:text-foreground transition-colors"
