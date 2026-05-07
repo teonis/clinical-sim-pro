@@ -30,7 +30,7 @@ const LandingFooter: React.FC = () => {
             <div className="flex items-start gap-3 max-w-sm p-4 bg-muted/50 rounded-2xl border border-border">
               <ShieldAlert className="h-4 w-4 text-warning shrink-0 mt-0.5" />
               <p className="text-[10px] font-bold text-muted-foreground leading-normal uppercase tracking-wider opacity-80">
-                EXCLUSIVAMENTE EDUCACIONAL. O BOLUS NÃO SUBSTITUI O JULGAMENTO CLÍNICO PROFISSIONAL E NÃO DEVE SER UTILIZADO EM AMBIENTES DE ASSISTÊNCIA REAL.
+                EXCLUSIVAMENTE EDUCACIONAL. O PULZU NÃO SUBSTITUI O JULGAMENTO CLÍNICO PROFISSIONAL E NÃO DEVE SER UTILIZADO EM AMBIENTES DE ASSISTÊNCIA REAL.
               </p>
             </div>
           </div>
