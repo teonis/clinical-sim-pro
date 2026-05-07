@@ -13,7 +13,7 @@ const LandingFooter: React.FC = () => {
               </div>
               <div className="flex flex-col">
                 <span className="font-black tracking-tighter text-2xl text-foreground leading-none">BOLUS</span>
-                <span className="text-[8px] font-bold tracking-[0.2em] uppercase text-muted-foreground leading-none mt-1">Medical OS v4</span>
+                <span className="text-[8px] font-bold tracking-[0.2em] uppercase text-muted-foreground leading-none mt-1">Medical Simulator</span>
               </div>
             </div>
             <p className="text-sm text-muted-foreground text-center md:text-left font-medium max-w-xs leading-relaxed">
@@ -37,7 +37,7 @@ const LandingFooter: React.FC = () => {
         </div>
         <div className="mt-20 pt-8 border-t border-border text-center">
           <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.5em]">
-            © 2026 BOLUS Simulator • Clinical Minimalist Design
+            © 2026 BOLUS Simulator
           </p>
         </div>
       </div>
