@@ -188,8 +188,19 @@ export const sendAction = async (
     body: { messages: conversationHistory },
   });
 
-  if (error) throw new Error(error.message || "Falha ao processar ação");
-  if (data?.error) throw new Error(data.error);
+  if (error) {
+    console.error("Supabase function error (invoke action):", error);
+    throw new Error(error.message || "Falha ao processar ação no servidor.");
+  }
+  
+  if (!data) {
+    throw new Error("Resposta inválida do servidor de simulação.");
+  }
+
+  if (data?.error) {
+    console.error("Logic error from function (action):", data.error);
+    throw new Error(data.error);
+  }
 
   conversationHistory.push({ role: "assistant", content: JSON.stringify(data) });
   return data as SimulationState;
