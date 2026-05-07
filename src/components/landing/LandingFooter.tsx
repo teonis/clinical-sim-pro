@@ -9,10 +9,10 @@ const LandingFooter: React.FC = () => {
           <div className="flex flex-col items-center md:items-start gap-6">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
-                <span className="text-primary-foreground font-black text-sm">B</span>
+                <span className="text-primary-foreground font-black text-sm text-center">P</span>
               </div>
               <div className="flex flex-col">
-                <span className="font-black tracking-tighter text-2xl text-foreground leading-none">BOLUS</span>
+                <span className="font-black tracking-tighter text-2xl text-foreground leading-none">PULZU</span>
                 <span className="text-[8px] font-bold tracking-[0.2em] uppercase text-muted-foreground leading-none mt-1">Medical Simulator</span>
               </div>
             </div>
