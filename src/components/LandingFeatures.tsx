@@ -37,7 +37,7 @@ const features = [
 
 const LandingFeatures: React.FC = () => {
   return (
-    <section className="py-32 bg-background relative overflow-hidden">
+    <section id="features" className="py-32 bg-background relative overflow-hidden">
       <div className="container mx-auto px-6 relative z-10">
         <div className="text-center mb-24">
           <motion.div

@@ -10,7 +10,7 @@ interface LandingHeroProps {
 
 const LandingHero: React.FC<LandingHeroProps> = ({ onStart }) => {
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-20 bg-background">
+    <section id="hero" className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-20 bg-background">
       {/* Subtle Background elements */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px]" />
