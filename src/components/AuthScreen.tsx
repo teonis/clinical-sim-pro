@@ -85,25 +85,25 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 bg-[#0a0a0a] relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center p-6 bg-background relative overflow-hidden">
       {/* Background Ambience */}
-      <div className="absolute inset-0 z-0">
-        <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-accent/10 rounded-full blur-[120px] animate-pulse delay-700" />
+      <div className="absolute inset-0 z-0 pointer-events-none opacity-30">
+        <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px]" />
+        <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px]" />
       </div>
 
-      <div className="w-full max-w-md bg-black/40 backdrop-blur-2xl rounded-3xl shadow-2xl border border-white/10 overflow-hidden relative z-10">
+      <div className="w-full max-w-md bg-card/50 backdrop-blur-2xl rounded-[2.5rem] shadow-2xl shadow-black/5 border border-border overflow-hidden relative z-10">
         {/* Header */}
-        <div className="p-10 text-center border-b border-white/5 bg-gradient-to-b from-white/5 to-transparent">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-primary shadow-[0_0_30px_rgba(var(--primary),0.3)] mb-6">
-            <Activity className="h-10 w-10 text-primary-foreground animate-pulse" />
+        <div className="p-10 text-center border-b border-border bg-muted/30">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-primary shadow-lg shadow-primary/20 mb-6">
+            <Activity className="h-10 w-10 text-primary-foreground" />
           </div>
-          <h1 className="text-4xl font-black text-white tracking-tighter leading-none">BOLUS</h1>
-          <p className="text-primary text-[10px] font-black tracking-[0.4em] uppercase mt-3 opacity-80">Medical Simulation Suite</p>
+          <h1 className="text-4xl font-black text-foreground tracking-tighter leading-none">BOLUS</h1>
+          <p className="text-primary text-[10px] font-black tracking-[0.4em] uppercase mt-3">Simulador Clínico</p>
         </div>
 
         <div className="p-10">
-          <h2 className="text-2xl font-bold text-white mb-8">
+          <h2 className="text-2xl font-black text-foreground mb-8 tracking-tight">
             {mode === "login" ? "Bem-vindo ao Plantão" : mode === "signup" ? "Criar Credenciais" : "Recuperar Acesso"}
           </h2>
 
@@ -112,12 +112,12 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
               <div className="space-y-2">
                 <Label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Nome Completo</Label>
                 <div className="relative">
-                  <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary" />
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                   <Input
                     type="text"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    className="pl-12 h-14 rounded-2xl bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:ring-primary/20 transition-all"
+                    className="pl-12 h-14 rounded-2xl bg-muted/50 border-border text-foreground placeholder:text-muted-foreground/50 focus:ring-primary/20 transition-all"
                     placeholder="Nome completo do clínico"
                     required
                   />
@@ -128,12 +128,12 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
             <div className="space-y-2">
               <Label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">E-mail Institucional</Label>
               <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary" />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <Input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="pl-12 h-14 rounded-2xl bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:ring-primary/20 transition-all"
+                  className="pl-12 h-14 rounded-2xl bg-muted/50 border-border text-foreground placeholder:text-muted-foreground/50 focus:ring-primary/20 transition-all"
                   placeholder="seu@hospital.com"
                   required
                 />
@@ -148,7 +148,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
                     type="text"
                     value={university}
                     onChange={(e) => setUniversity(e.target.value)}
-                    className="h-14 rounded-2xl bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:ring-primary/20"
+                    className="h-14 rounded-2xl bg-muted/50 border-border text-foreground placeholder:text-muted-foreground/50 focus:ring-primary/20 transition-all"
                     placeholder="Ex: USP"
                   />
                 </div>
@@ -158,7 +158,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
                     type="text"
                     value={graduationYear}
                     onChange={(e) => setGraduationYear(e.target.value)}
-                    className="h-14 rounded-2xl bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:ring-primary/20"
+                    className="h-14 rounded-2xl bg-muted/50 border-border text-foreground placeholder:text-muted-foreground/50 focus:ring-primary/20 transition-all"
                     placeholder="Ex: 2026"
                   />
                 </div>
@@ -173,19 +173,19 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
                     <button
                       type="button"
                       onClick={() => setMode("forgot")}
-                      className="text-[10px] text-primary hover:text-white font-black uppercase tracking-widest transition-colors"
+                      className="text-[10px] text-primary hover:text-primary/80 font-black uppercase tracking-widest transition-colors"
                     >
                       Esqueceu?
                     </button>
                   )}
                 </div>
                 <div className="relative">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary" />
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                   <Input
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="pl-12 h-14 rounded-2xl bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:ring-primary/20 transition-all"
+                    className="pl-12 h-14 rounded-2xl bg-muted/50 border-border text-foreground placeholder:text-muted-foreground/50 focus:ring-primary/20 transition-all"
                     placeholder="••••••••"
                     required
                   />
@@ -197,12 +197,12 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
               <div className="space-y-2">
                 <Label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Confirmar Senha</Label>
                 <div className="relative">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary" />
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                   <Input
                     type="password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="pl-12 h-14 rounded-2xl bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:ring-primary/20 transition-all"
+                    className="pl-12 h-14 rounded-2xl bg-muted/50 border-border text-foreground placeholder:text-muted-foreground/50 focus:ring-primary/20 transition-all"
                     placeholder="••••••••"
                     required
                   />
@@ -210,7 +210,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
               </div>
             )}
 
-            <Button type="submit" disabled={isLoading} className="w-full h-16 rounded-2xl font-black text-lg shadow-xl shadow-primary/20 hover:-translate-y-1 transition-all active:scale-95">
+            <Button type="submit" disabled={isLoading} className="w-full h-16 rounded-2xl font-black text-base tracking-widest shadow-xl shadow-primary/20 hover:scale-[1.02] transition-all active:scale-95">
               {isLoading ? (
                 <Loader2 className="h-6 w-6 animate-spin" />
               ) : mode === "login" ? (
@@ -226,7 +226,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
           <div className="mt-8 text-center">
             <button
               onClick={() => setMode(mode === "login" ? "signup" : "login")}
-              className="text-sm text-muted-foreground hover:text-white font-bold transition-colors"
+              className="text-[10px] text-muted-foreground hover:text-primary font-black uppercase tracking-widest transition-colors"
             >
               {mode === "login" ? "Ainda não possui acesso? Solicitar" : "Já possui credenciais? Entrar"}
             </button>
