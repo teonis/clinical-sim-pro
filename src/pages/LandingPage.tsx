@@ -1,9 +1,12 @@
 import React from "react";
 import LandingHero from "@/components/LandingHero";
 import LandingFeatures from "@/components/LandingFeatures";
+import CaseCard from "@/components/CaseCard";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { motion } from "framer-motion";
-import { ShieldAlert } from "lucide-react";
+import { ShieldAlert, Plus, ArrowRight } from "lucide-react";
+import { getAvailableTemplates } from "@/services/caseGenerator";
+import { ClinicalCase } from "@/types/medical";
 
 interface LandingPageProps {
   onStart: () => void;
