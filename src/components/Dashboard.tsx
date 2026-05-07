@@ -104,7 +104,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartGame, isLoading, userEmail
 
   const navItems = [
     { id: "home" as TabType, icon: LayoutDashboard, label: "Dashboard" },
-    { id: "performance" as TabType, icon: BarChart3, label: "Estatísticas" },
+    { id: "performance" as TabType, icon: User, label: "Perfil" },
     { id: "history" as TabType, icon: Clock, label: "Histórico" },
     { id: "feedback" as TabType, icon: MessageSquare, label: "Feedback" },
   ];
