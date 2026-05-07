@@ -13,6 +13,19 @@ interface LandingPageProps {
 }
 
 const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
+  const templates = getAvailableTemplates();
+  
+  // Convert templates to ClinicalCase format for CaseCard
+  const mockCases: ClinicalCase[] = templates.map(t => ({
+    id: t.id,
+    title: t.name,
+    description: `Simulação avançada em ${t.specialty}. Treine protocolos e condutas para casos reais.`,
+    specialty: t.specialty,
+    difficulty: t.id === "iam_stemi" ? "hard" : "medium",
+    initialScenario: "",
+    vitalSignsStart: { fc: 0, pas: 0, pad: 0, satO2: 0, fr: 0, temp: 0 }
+  }));
+
   return (
     <div className="min-h-screen bg-background selection:bg-primary/20">
       <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border">
