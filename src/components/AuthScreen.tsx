@@ -8,6 +8,7 @@ import { toast } from "sonner";
 
 interface AuthScreenProps {
   onAuthSuccess: () => void;
+  onBack?: () => void;
 }
 
 const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
