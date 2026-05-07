@@ -14,11 +14,11 @@ interface StartGameProps {
 
 const StartGame: React.FC<StartGameProps> = ({ onStart, isLoading }) => {
   const [specialty, setSpecialty] = useState(() => {
-    const saved = localStorage.getItem("simulamed_specialty");
+    const saved = localStorage.getItem("pulzu_specialty");
     return saved && SPECIALTIES.includes(saved) ? saved : SPECIALTIES[0];
   });
   const [difficulty, setDifficulty] = useState(() => {
-    const saved = localStorage.getItem("simulamed_difficulty");
+    const saved = localStorage.getItem("pulzu_difficulty");
     return saved && DIFFICULTIES.includes(saved) ? saved : DIFFICULTIES[0];
   });
   const [customCase, setCustomCase] = useState("");
