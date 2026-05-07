@@ -96,19 +96,29 @@ export const saveGameResult = async (
 };
 
 export const getUserHistory = async (): Promise<GameHistoryEntry[]> => {
-  const { data: { session } } = await supabase.auth.getSession();
-  const user = session?.user;
-  if (!user) return [];
+  try {
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError) throw sessionError;
+    
+    const user = session?.user;
+    if (!user) return [];
 
-  const { data, error } = await supabase
-    .from("game_history")
-    .select("*")
-    .eq("user_id", user.id)
-    .order("created_at", { ascending: false })
-    .limit(200);
+    const { data, error } = await supabase
+      .from("game_history")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(200);
 
-  if (error) return [];
-  return (data || []) as unknown as GameHistoryEntry[];
+    if (error) {
+      console.error("Error fetching user history:", error);
+      return [];
+    }
+    return (data || []) as unknown as GameHistoryEntry[];
+  } catch (err) {
+    console.error("Unexpected error in getUserHistory:", err);
+    return [];
+  }
 };
 
 export const toggleGameFavorite = async (gameId: number | string, isFavorite: boolean) => {
