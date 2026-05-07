@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Activity, Mail, Lock, Loader2, User, Building2, Calendar } from "lucide-react";
+import { Activity, Mail, Lock, Loader2, User, Building2, Calendar, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 
 interface AuthScreenProps {
