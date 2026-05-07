@@ -64,36 +64,61 @@ export const saveGameResult = async (
   score: number, outcome: string, difficulty: string,
   specialty: string, caseTitle: string
 ) => {
-  const { data: { session } } = await supabase.auth.getSession();
-  const user = session?.user;
-  if (!user) return;
+  try {
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError) throw sessionError;
+    
+    const user = session?.user;
+    if (!user) {
+      console.warn("Attempted to save game result without an active session.");
+      return;
+    }
 
-  await supabase.from("game_history").insert({
-    user_id: user.id,
-    username: user.email || user.id,
-    score,
-    outcome,
-    difficulty,
-    specialty,
-    case_title: caseTitle || "Caso Clínico Geral",
-    is_favorite: false,
-  });
+    const { error: insertError } = await supabase.from("game_history").insert({
+      user_id: user.id,
+      username: user.email || user.id,
+      score,
+      outcome,
+      difficulty,
+      specialty,
+      case_title: caseTitle || "Caso Clínico Geral",
+      is_favorite: false,
+    });
+
+    if (insertError) {
+      console.error("Error inserting game result:", insertError);
+      throw new Error("Não foi possível salvar o resultado do jogo no banco de dados.");
+    }
+  } catch (err) {
+    console.error("Unexpected error in saveGameResult:", err);
+    // We don't necessarily want to crash the UI here, but logging is vital
+  }
 };
 
 export const getUserHistory = async (): Promise<GameHistoryEntry[]> => {
-  const { data: { session } } = await supabase.auth.getSession();
-  const user = session?.user;
-  if (!user) return [];
+  try {
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError) throw sessionError;
+    
+    const user = session?.user;
+    if (!user) return [];
 
-  const { data, error } = await supabase
-    .from("game_history")
-    .select("*")
-    .eq("user_id", user.id)
-    .order("created_at", { ascending: false })
-    .limit(200);
+    const { data, error } = await supabase
+      .from("game_history")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(200);
 
-  if (error) return [];
-  return (data || []) as unknown as GameHistoryEntry[];
+    if (error) {
+      console.error("Error fetching user history:", error);
+      return [];
+    }
+    return (data || []) as unknown as GameHistoryEntry[];
+  } catch (err) {
+    console.error("Unexpected error in getUserHistory:", err);
+    return [];
+  }
 };
 
 export const toggleGameFavorite = async (gameId: number | string, isFavorite: boolean) => {
@@ -106,50 +131,76 @@ export const getUserStats = async (): Promise<UserStats> => {
 };
 
 export const getLeaderboard = async (specialtyFilter?: string): Promise<GameHistoryEntry[]> => {
-  let query = supabase
-    .from("game_history")
-    .select("*")
-    .order("score", { ascending: false })
-    .limit(50);
+  try {
+    let query = supabase
+      .from("game_history")
+      .select("*")
+      .order("score", { ascending: false })
+      .limit(50);
 
-  if (specialtyFilter && specialtyFilter !== "TODAS") {
-    query = query.eq("specialty", specialtyFilter);
+    if (specialtyFilter && specialtyFilter !== "TODAS") {
+      query = query.eq("specialty", specialtyFilter);
+    }
+
+    const { data, error } = await query;
+    if (error) {
+      console.error("Error fetching leaderboard:", error);
+      return [];
+    }
+    if (!data) return [];
+
+    // Enrich with profile info
+    const userIds = [...new Set(data.map((g: any) => g.user_id))];
+    if (userIds.length === 0) return data as unknown as GameHistoryEntry[];
+
+    const { data: profiles, error: profileError } = await supabase
+      .from("profiles")
+      .select("user_id, display_name, avatar_url, is_public_profile")
+      .in("user_id", userIds);
+
+    if (profileError) {
+      console.error("Error fetching profiles for leaderboard:", profileError);
+      // Still return the data, just without names
+    }
+
+    return (data as any[])
+      .map((game) => {
+        const profile = profiles?.find((p: any) => p.user_id === game.user_id);
+        if (profile && !profile.is_public_profile) return null;
+        return {
+          ...game,
+          display_name: profile?.display_name,
+          avatar_url: profile?.avatar_url,
+        };
+      })
+      .filter(Boolean)
+      .slice(0, 10) as GameHistoryEntry[];
+  } catch (err) {
+    console.error("Unexpected error in getLeaderboard:", err);
+    return [];
   }
-
-  const { data, error } = await query;
-  if (error || !data) return [];
-
-  // Enrich with profile info
-  const userIds = [...new Set(data.map((g: any) => g.user_id))];
-  if (userIds.length === 0) return data as unknown as GameHistoryEntry[];
-
-  const { data: profiles } = await supabase
-    .from("profiles")
-    .select("user_id, display_name, avatar_url, is_public_profile")
-    .in("user_id", userIds);
-
-  return (data as any[])
-    .map((game) => {
-      const profile = profiles?.find((p: any) => p.user_id === game.user_id);
-      if (profile && !profile.is_public_profile) return null;
-      return {
-        ...game,
-        display_name: profile?.display_name,
-        avatar_url: profile?.avatar_url,
-      };
-    })
-    .filter(Boolean)
-    .slice(0, 10) as GameHistoryEntry[];
 };
 
 export const sendFeedback = async (message: string) => {
-  const { data: { session } } = await supabase.auth.getSession();
-  const user = session?.user;
-  if (!user) return;
+  try {
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError) throw sessionError;
+    
+    const user = session?.user;
+    if (!user) return;
 
-  await supabase.from("feedback").insert({
-    user_id: user.id,
-    username: user.email || user.id,
-    message,
-  });
+    const { error: insertError } = await supabase.from("feedback").insert({
+      user_id: user.id,
+      username: user.email || user.id,
+      message,
+    });
+
+    if (insertError) {
+      console.error("Error sending feedback:", insertError);
+      throw new Error("Não foi possível enviar o seu feedback no momento.");
+    }
+  } catch (err) {
+    console.error("Unexpected error in sendFeedback:", err);
+    throw err;
+  }
 };
