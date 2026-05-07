@@ -20,7 +20,7 @@ const statusConfig: Record<PatientStatus, { color: string; bg: string; label: st
   critical: { color: 'text-destructive', bg: 'bg-destructive/5', label: 'Crítico' },
 };
 
-const VitalMonitor = ({ fc, pas, pad, satO2, fr, status }: VitalMonitorProps) => {
+const VitalMonitor = React.memo(({ fc, pas, pad, satO2, fr, status }: VitalMonitorProps) => {
   const config = statusConfig[status];
 
   const getVitalColor = (type: string) => {

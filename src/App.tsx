@@ -2,13 +2,14 @@ import React, { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { SimulationState, StartParams } from "@/types/simulation";
 import { startSimulation, resetConversation } from "@/services/simulationService";
-import LandingPage from "@/pages/LandingPage";
-import AuthScreen from "@/components/AuthScreen";
-import ResetPasswordScreen from "@/components/ResetPasswordScreen";
-import OnboardingTutorial from "@/components/OnboardingTutorial";
-import Dashboard from "@/components/Dashboard";
-import GameDashboard from "@/components/GameDashboard";
+const LandingPage = React.lazy(() => import("@/pages/LandingPage"));
+const AuthScreen = React.lazy(() => import("@/components/AuthScreen"));
+const ResetPasswordScreen = React.lazy(() => import("@/components/ResetPasswordScreen"));
+const OnboardingTutorial = React.lazy(() => import("@/components/OnboardingTutorial"));
+const Dashboard = React.lazy(() => import("@/components/Dashboard"));
+const GameDashboard = React.lazy(() => import("@/components/GameDashboard"));
 import { Toaster } from "@/components/ui/sonner";
+import { Suspense } from "react";
 import { toast } from "sonner";
 import { Activity, Loader2 } from "lucide-react";
 
@@ -108,68 +109,58 @@ const App: React.FC = () => {
   // Landing Page
   if (showWelcome) {
     return (
-      <>
+      <Suspense fallback={<LoadingFallback />}>
         <LandingPage
           onStart={() => {
             setShowWelcome(false);
           }}
         />
         <Toaster theme="dark" position="top-right" closeButton />
-      </>
+      </Suspense>
     );
   }
 
   // Loading
   if (isAuthChecking) {
-    return (
-      <div className="w-full h-screen bg-background flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-primary/5 border border-primary/10 flex items-center justify-center animate-pulse">
-            <Activity className="h-6 w-6 text-primary" />
-          </div>
-          <p className="font-bold text-sm text-foreground tracking-[0.3em] uppercase opacity-40">PULZU</p>
-        </div>
-      </div>
-
-    );
+    return <LoadingFallback />;
   }
 
   // Reset password
   if (isResettingPassword) {
     return (
-      <>
+      <Suspense fallback={<LoadingFallback />}>
         <ResetPasswordScreen onComplete={() => {
           setIsResettingPassword(false);
         }} />
         <Toaster theme="dark" position="top-right" closeButton />
-      </>
+      </Suspense>
     );
   }
 
   // Auth
   if (!currentUser) {
     return (
-      <>
+      <Suspense fallback={<LoadingFallback />}>
         <AuthScreen onAuthSuccess={() => {}} onBack={() => setShowWelcome(true)} />
         <Toaster theme="dark" position="top-right" closeButton />
-      </>
+      </Suspense>
     );
   }
 
   // Onboarding
   if (showOnboarding) {
     return (
-      <>
+      <Suspense fallback={<LoadingFallback />}>
         <OnboardingTutorial onComplete={() => setShowOnboarding(false)} />
         <Toaster theme="dark" position="top-right" closeButton />
-      </>
+      </Suspense>
     );
   }
 
   // Game
   if (gameState) {
     return (
-      <>
+      <Suspense fallback={<LoadingFallback />}>
         <GameDashboard
           initialState={gameState}
           onRestart={handleRestartGame}
@@ -177,13 +168,13 @@ const App: React.FC = () => {
           gameParams={lastParams!}
         />
         <Toaster theme="dark" position="top-right" closeButton />
-      </>
+      </Suspense>
     );
   }
 
   // Dashboard
   return (
-    <>
+    <Suspense fallback={<LoadingFallback />}>
       <Dashboard
         onStartGame={handleStartGame}
         isLoading={isLoading}
@@ -191,8 +182,19 @@ const App: React.FC = () => {
         onLogout={handleLogout}
       />
       <Toaster theme="dark" position="top-right" closeButton />
-    </>
+    </Suspense>
   );
 };
+
+const LoadingFallback = () => (
+  <div className="w-full h-screen bg-background flex items-center justify-center">
+    <div className="flex flex-col items-center gap-4">
+      <div className="w-12 h-12 rounded-xl bg-primary/5 border border-primary/10 flex items-center justify-center animate-pulse">
+        <Activity className="h-6 w-6 text-primary" />
+      </div>
+      <p className="font-bold text-sm text-foreground tracking-[0.3em] uppercase opacity-40">PULZU</p>
+    </div>
+  </div>
+);
 
 export default App;

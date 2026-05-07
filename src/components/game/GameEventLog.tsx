@@ -16,7 +16,7 @@ interface GameEventLogProps {
   eventLogEndRef: React.RefObject<HTMLDivElement>;
 }
 
-const GameEventLog: React.FC<GameEventLogProps> = ({ eventLog, eventLogEndRef }) => {
+const GameEventLog: React.FC<GameEventLogProps> = React.memo(({ eventLog, eventLogEndRef }) => {
   return (
     <div className="p-8 space-y-6 max-w-4xl mx-auto">
       <AnimatePresence mode="popLayout">
