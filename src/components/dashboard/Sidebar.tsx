@@ -30,10 +30,10 @@ const Sidebar: React.FC<SidebarProps> = ({
     <aside className="w-20 lg:w-72 bg-card border-r border-border flex flex-col shrink-0 z-40 transition-all duration-300">
       <div className="p-8 flex items-center gap-4 h-24 border-b border-border">
         <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shrink-0 shadow-lg shadow-primary/20">
-          <span className="text-primary-foreground font-black text-sm">B</span>
+          <span className="text-primary-foreground font-black text-sm text-center">P</span>
         </div>
         <div className="hidden lg:block">
-          <h1 className="font-black text-xl text-foreground tracking-tighter leading-none">BOLUS</h1>
+          <h1 className="font-black text-xl text-foreground tracking-tighter leading-none">PULZU</h1>
           <p className="text-[8px] font-bold text-muted-foreground tracking-widest uppercase mt-1">Simulador v4.0</p>
         </div>
       </div>
