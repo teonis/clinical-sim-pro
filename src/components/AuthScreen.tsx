@@ -3,14 +3,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Activity, Mail, Lock, Loader2, User, Building2, Calendar } from "lucide-react";
+import { Activity, Mail, Lock, Loader2, User, Building2, Calendar, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 
 interface AuthScreenProps {
   onAuthSuccess: () => void;
+  onBack?: () => void;
 }
 
-const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
+const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess, onBack }) => {
   const [mode, setMode] = useState<"login" | "signup" | "forgot">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -85,7 +86,31 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 bg-background relative overflow-hidden">
+    <div className="min-h-screen flex flex-col bg-background relative overflow-hidden">
+      {/* Navigation Header */}
+      <header className="w-full h-20 flex items-center justify-between px-6 md:px-12 z-50 border-b border-border bg-background/50 backdrop-blur-xl">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
+            <span className="text-primary-foreground font-black text-sm">B</span>
+          </div>
+          <div className="flex flex-col">
+            <span className="font-black tracking-tighter text-2xl text-foreground leading-none uppercase">BOLUS</span>
+            <span className="text-[8px] font-bold tracking-[0.2em] uppercase text-muted-foreground leading-none mt-1">Simulador Clínico</span>
+          </div>
+        </div>
+
+        {onBack && (
+          <button 
+            onClick={onBack}
+            className="flex items-center gap-2 text-[10px] font-black tracking-widest uppercase text-muted-foreground hover:text-primary transition-all group"
+          >
+            <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
+            Voltar ao Início
+          </button>
+        )}
+      </header>
+
+      <div className="flex-1 flex items-center justify-center p-6 relative">
       {/* Background Ambience */}
       <div className="absolute inset-0 z-0 pointer-events-none opacity-30">
         <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px]" />
@@ -234,7 +259,8 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 };
 
 export default AuthScreen;

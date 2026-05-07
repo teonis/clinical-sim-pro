@@ -150,7 +150,7 @@ const App: React.FC = () => {
   if (!currentUser) {
     return (
       <>
-        <AuthScreen onAuthSuccess={() => {}} />
+        <AuthScreen onAuthSuccess={() => {}} onBack={() => setShowWelcome(true)} />
         <Toaster theme="dark" position="top-right" closeButton />
       </>
     );
