@@ -123,7 +123,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess, onBack }) => {
           <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-primary shadow-lg shadow-primary/20 mb-6">
             <Activity className="h-10 w-10 text-primary-foreground" />
           </div>
-          <h1 className="text-4xl font-black text-foreground tracking-tighter leading-none">BOLUS</h1>
+          <h1 className="text-4xl font-black text-foreground tracking-tighter leading-none">PULZU</h1>
           <p className="text-primary text-[10px] font-black tracking-[0.4em] uppercase mt-3">Simulador Clínico</p>
         </div>
 
