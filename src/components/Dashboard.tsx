@@ -4,7 +4,7 @@ import { getUserStats, getLeaderboard, getUserHistory, sendFeedback } from "@/se
 import { getUserSessions, GameSession } from "@/services/sessionService";
 import { supabase } from "@/integrations/supabase/client";
 import ProfilePerformance from "@/components/ProfilePerformance";
-import { LayoutDashboard, BarChart3, Clock, MessageSquare } from "lucide-react";
+import { LayoutDashboard, BarChart3, Clock, MessageSquare, User } from "lucide-react";
 import { toast } from "sonner";
 
 import Sidebar from "./dashboard/Sidebar";
