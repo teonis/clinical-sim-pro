@@ -22,7 +22,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
               <span className="font-black tracking-tighter text-2xl text-foreground leading-none">BOLUS</span>
               <span className="text-[8px] font-bold tracking-[0.2em] uppercase text-muted-foreground leading-none mt-1">Simulador Clínico</span>
             </div>
-          </div>
+          </a>
           <div className="flex items-center gap-6">
             <nav className="hidden md:flex items-center gap-8 mr-4">
               <a href="#features" className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground hover:text-primary transition-colors scroll-smooth">Funcionalidades</a>
