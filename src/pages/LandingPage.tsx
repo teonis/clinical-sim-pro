@@ -1,10 +1,10 @@
 import React from "react";
 import LandingHero from "@/components/LandingHero";
 import LandingFeatures from "@/components/LandingFeatures";
-import CaseCard from "@/components/CaseCard";
-import { ThemeToggle } from "@/components/ThemeToggle";
-import { motion } from "framer-motion";
-import { ShieldAlert, Plus, ArrowRight } from "lucide-react";
+import LandingHeader from "@/components/landing/LandingHeader";
+import LandingScenarios from "@/components/landing/LandingScenarios";
+import LandingCTA from "@/components/landing/LandingCTA";
+import LandingFooter from "@/components/landing/LandingFooter";
 import { getAvailableTemplates } from "@/services/caseGenerator";
 import { ClinicalCase } from "@/types/medical";
 
@@ -28,172 +28,16 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
 
   return (
     <div className="min-h-screen bg-background selection:bg-primary/20">
-      <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border">
-        <div className="container mx-auto px-6 h-20 flex items-center justify-between">
-          <a href="#hero" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
-              <span className="text-primary-foreground font-black text-sm">B</span>
-            </div>
-            <div className="flex flex-col">
-              <span className="font-black tracking-tighter text-2xl text-foreground leading-none">BOLUS</span>
-              <span className="text-[8px] font-bold tracking-[0.2em] uppercase text-muted-foreground leading-none mt-1">Simulador Clínico</span>
-            </div>
-          </a>
-          <div className="flex items-center gap-6">
-            <nav className="hidden md:flex items-center gap-8 mr-4">
-              <a href="#features" className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground hover:text-primary transition-colors scroll-smooth">Funcionalidades</a>
-              <a href="#cases" className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground hover:text-primary transition-colors scroll-smooth">Cenários</a>
-            </nav>
-            <ThemeToggle />
-            <button 
-              onClick={onStart}
-              className="text-[10px] font-bold tracking-widest px-8 py-3 rounded-full bg-primary text-primary-foreground hover:scale-105 transition-all shadow-lg shadow-primary/20"
-            >
-              ENTRAR
-            </button>
-          </div>
-        </div>
-      </header>
+      <LandingHeader onStart={onStart} />
 
       <main>
         <LandingHero onStart={onStart} />
         <LandingFeatures />
-        
-        {/* Scenarios Section */}
-        <section id="cases" className="py-32 bg-muted/30 relative overflow-hidden">
-          <div className="container mx-auto px-6 relative z-10">
-            <div className="flex flex-col md:flex-row items-end justify-between mb-16 gap-6">
-              <div className="max-w-2xl text-left">
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/5 border border-primary/10 mb-6"
-                >
-                  <Plus className="h-4 w-4 text-primary" />
-                  <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-primary">Biblioteca de Casos</span>
-                </motion.div>
-                <h2 className="text-4xl md:text-6xl font-black mb-6 tracking-tighter text-foreground uppercase">Cenários Reais</h2>
-                <p className="text-muted-foreground text-lg font-medium tracking-tight">
-                  Enfrente os desafios mais complexos do plantão com casos gerados dinamicamente para cada especialidade.
-                </p>
-              </div>
-              <button 
-                onClick={onStart}
-                className="group flex items-center gap-2 text-[10px] font-black tracking-[0.2em] uppercase text-primary hover:text-primary/80 transition-all"
-              >
-                Ver todos os casos
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-              </button>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {mockCases.map((clinicalCase, index) => (
-                <motion.div
-                  key={clinicalCase.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                  className="group"
-                >
-                  <div className="relative overflow-hidden rounded-2xl bg-card border border-border p-6 hover:border-primary/40 transition-all hover:shadow-xl hover:-translate-y-1">
-                    <div className="flex items-center justify-between mb-4">
-                      <span className={`text-[10px] font-black tracking-widest uppercase px-3 py-1 rounded-full ${
-                        clinicalCase.difficulty === 'hard' ? 'bg-red-500/10 text-red-500' : 'bg-amber-500/10 text-amber-500'
-                      }`}>
-                        {clinicalCase.difficulty === 'hard' ? 'DIFFICULT' : 'INTERMEDIATE'}
-                      </span>
-                      <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-                        {clinicalCase.specialty}
-                      </span>
-                    </div>
-                    <h3 className="text-xl font-black text-foreground mb-3 uppercase tracking-tight group-hover:text-primary transition-colors">
-                      {clinicalCase.title}
-                    </h3>
-                    <p className="text-sm text-muted-foreground mb-8 line-clamp-2 font-medium leading-relaxed">
-                      {clinicalCase.description}
-                    </p>
-                    <button 
-                      onClick={onStart}
-                      className="w-full py-4 rounded-xl border-2 border-border font-black text-[10px] tracking-[0.2em] uppercase hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all active:scale-[0.98]"
-                    >
-                      INICIAR SIMULAÇÃO
-                    </button>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-        {/* Call to Action Section */}
-        <section className="py-24 border-t border-border/50">
-          <div className="container mx-auto px-6 text-center">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              className="max-w-3xl mx-auto p-12 rounded-[2rem] bg-primary text-primary-foreground shadow-2xl relative overflow-hidden"
-            >
-              {/* Decorative elements */}
-              <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32 blur-3xl" />
-              <div className="absolute bottom-0 left-0 w-64 h-64 bg-black/10 rounded-full -ml-32 -mb-32 blur-3xl" />
-              
-              <h2 className="text-3xl md:text-5xl font-black mb-6 tracking-tight">Pronto para o plantão?</h2>
-              <p className="text-primary-foreground/80 text-lg mb-10 leading-relaxed">
-                Não espere a emergência real para testar seus conhecimentos. 
-                Comece agora sua simulação no BOLUS e refine sua conduta.
-              </p>
-              <button 
-                onClick={onStart}
-                className="px-10 py-5 bg-white text-primary font-black rounded-xl hover:scale-105 transition-all shadow-xl text-lg"
-              >
-                CRIAR MINHA CONTA GRÁTIS
-              </button>
-            </motion.div>
-          </div>
-        </section>
+        <LandingScenarios mockCases={mockCases} onStart={onStart} />
+        <LandingCTA onStart={onStart} />
       </main>
 
-      <footer className="py-24 border-t border-border bg-background">
-        <div className="container mx-auto px-6">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-12">
-            <div className="flex flex-col items-center md:items-start gap-6">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
-                  <span className="text-primary-foreground font-black text-sm">B</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-black tracking-tighter text-2xl text-foreground leading-none">BOLUS</span>
-                  <span className="text-[8px] font-bold tracking-[0.2em] uppercase text-muted-foreground leading-none mt-1">Medical OS v4</span>
-                </div>
-              </div>
-              <p className="text-sm text-muted-foreground text-center md:text-left font-medium max-w-xs leading-relaxed">
-                Simulação de alto rigor para profissionais que buscam a excelência clínica através de um design minimalista.
-              </p>
-            </div>
-            
-            <div className="flex flex-col items-center md:items-end gap-6">
-              <div className="flex items-center gap-10">
-                <a href="#" className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground hover:text-primary transition-colors">Privacidade</a>
-                <a href="#" className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground hover:text-primary transition-colors">Termos</a>
-                <a href="#" className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground hover:text-primary transition-colors">Suporte</a>
-              </div>
-              <div className="flex items-start gap-3 max-w-sm p-4 bg-muted/50 rounded-2xl border border-border">
-                <ShieldAlert className="h-4 w-4 text-warning shrink-0 mt-0.5" />
-                <p className="text-[10px] font-bold text-muted-foreground leading-normal uppercase tracking-wider opacity-80">
-                  EXCLUSIVAMENTE EDUCACIONAL. O BOLUS NÃO SUBSTITUI O JULGAMENTO CLÍNICO PROFISSIONAL E NÃO DEVE SER UTILIZADO EM AMBIENTES DE ASSISTÊNCIA REAL.
-                </p>
-              </div>
-            </div>
-          </div>
-          <div className="mt-20 pt-8 border-t border-border text-center">
-            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.5em]">
-              © 2026 BOLUS Simulator • Clinical Minimalist Design
-            </p>
-          </div>
-        </div>
-      </footer>
+      <LandingFooter />
     </div>
   );
 };
