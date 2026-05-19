@@ -25,7 +25,13 @@ interface DashboardProps {
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ onStartGame, isLoading, userEmail, onLogout }) => {
-  const [activeTab, setActiveTab] = useState<TabType>("home");
+  const [activeTab, setActiveTab] = useState<TabType>(() => {
+    if (typeof window !== "undefined" && localStorage.getItem("pulzu_intent") === "library") {
+      localStorage.removeItem("pulzu_intent");
+      return "library";
+    }
+    return "home";
+  });
   const [userStats, setUserStats] = useState<UserStats | null>(null);
   const [leaderboard, setLeaderboard] = useState<GameHistoryEntry[]>([]);
   const [history, setHistory] = useState<GameHistoryEntry[]>([]);
