@@ -20,7 +20,7 @@ const Index = () => {
         >
           <div className="flex items-center gap-2 mb-1">
             <Activity className="h-5 w-5 text-primary" />
-            <span className="text-xs font-bold uppercase tracking-[0.2em] text-primary">SIMULAMED</span>
+            <span className="text-xs font-bold uppercase tracking-[0.2em] text-primary">PULZU</span>
           </div>
           <h1 className="text-2xl font-extrabold text-foreground">
             Simulação Clínica
