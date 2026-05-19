@@ -10,9 +10,9 @@ interface OnboardingTutorialProps {
 const steps = [
   {
     icon: Stethoscope,
-    title: "O Preceptor Virtual com IA",
+    title: "Simulação Clínica com IA",
     description:
-      "Cada caso clínico é conduzido pelo Preceptor, uma inteligência que reage às suas decisões em tempo real. Ele avalia suas condutas, dá feedbacks detalhados e simula a evolução do paciente de forma realista.",
+      "Cada caso clínico é conduzido por uma inteligência artificial avançada que reage às suas decisões em tempo real. Ela avalia suas condutas, dá feedbacks detalhados e simula a evolução do paciente de forma realista.",
     color: "from-primary to-primary/70",
   },
   {
