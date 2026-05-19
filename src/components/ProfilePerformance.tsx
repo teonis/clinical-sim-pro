@@ -184,11 +184,11 @@ const ProfilePerformance: React.FC<ProfilePerformanceProps> = ({
           <h1 className="text-3xl font-bold text-foreground">Meu Perfil</h1>
           <p className="text-muted-foreground mt-1">Configure seu perfil e acompanhe seu desempenho.</p>
         </div>
-        <div className="bg-card rounded-2xl border border-dashed border-border p-12 text-center">
+        <div className="bg-card rounded-2xl border border-dashed border-border p-12 text-center shadow-sm">
           <GraduationCap className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
           <h2 className="text-xl font-bold text-foreground mb-2">Comece sua Carreira!</h2>
           <p className="text-muted-foreground mb-6">Inicie seu primeiro plantão para ganhar XP e ver seu desempenho.</p>
-          <Button onClick={onGoToHome}>Ir para o Plantão</Button>
+          <Button onClick={onGoToHome} className="rounded-xl font-bold uppercase tracking-widest text-xs">Ir para o Dashboard</Button>
         </div>
       </div>
     );
@@ -240,9 +240,9 @@ const ProfilePerformance: React.FC<ProfilePerformanceProps> = ({
                 value={displayName}
                 onChange={(e) => onDisplayNameChange(e.target.value)}
                 placeholder="Seu nome"
-                className="max-w-xs text-center sm:text-left font-bold"
+                className="max-w-xs text-center sm:text-left font-bold rounded-xl"
               />
-              <Button size="sm" variant="outline" onClick={onSaveDisplayName} disabled={isProfileLoading}>
+              <Button size="sm" variant="outline" onClick={onSaveDisplayName} disabled={isProfileLoading} className="rounded-xl">
                 {isProfileLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Save className="h-3 w-3" />}
               </Button>
             </div>
@@ -305,12 +305,12 @@ const ProfilePerformance: React.FC<ProfilePerformanceProps> = ({
                 value={graduationYear}
                 onChange={(e) => setGraduationYear(e.target.value)}
                 placeholder="Ex: 2028"
-                className="max-w-[150px]"
+                className="max-w-[150px] rounded-xl"
               />
               <Button 
                 onClick={handleSaveExtraData} 
                 disabled={isSavingExtra}
-                className="flex-1 md:flex-none"
+                className="flex-1 md:flex-none rounded-xl font-bold uppercase tracking-widest text-[10px]"
               >
                 {isSavingExtra ? (
                   <Loader2 className="h-4 w-4 animate-spin" />

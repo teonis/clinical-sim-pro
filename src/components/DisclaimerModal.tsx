@@ -11,7 +11,7 @@ const DisclaimerModal = () => {
   }, []);
 
   const handleDismiss = () => {
-    sessionStorage.setItem('simulamed-disclaimer', 'true');
+    sessionStorage.setItem('pulzu-disclaimer', 'true');
     setIsOpen(false);
   };
 
