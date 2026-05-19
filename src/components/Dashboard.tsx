@@ -13,8 +13,9 @@ import HomeTab from "./dashboard/HomeTab";
 import HistoryTab from "./dashboard/HistoryTab";
 import FeedbackTab from "./dashboard/FeedbackTab";
 import TrainingTab from "./dashboard/TrainingTab";
+import CaseLibraryTab from "./dashboard/CaseLibraryTab";
 
-type TabType = "home" | "training" | "performance" | "history" | "feedback";
+type TabType = "home" | "library" | "training" | "performance" | "history" | "feedback";
 
 interface DashboardProps {
   onStartGame: (params: StartParams) => void;
