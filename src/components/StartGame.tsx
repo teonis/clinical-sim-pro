@@ -123,7 +123,7 @@ const StartGame: React.FC<StartGameProps> = ({ onStart, isLoading }) => {
               ) : (
                 <>
                   <Play className="h-5 w-5 mr-3 fill-current" /> 
-                  Confirmar Admissão
+                  Iniciar Simulação
                 </>
               )}
             </Button>

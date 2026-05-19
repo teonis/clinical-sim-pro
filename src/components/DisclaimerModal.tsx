@@ -6,7 +6,7 @@ const DisclaimerModal = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    const dismissed = sessionStorage.getItem('simulamed-disclaimer');
+    const dismissed = sessionStorage.getItem('pulzu-disclaimer');
     if (!dismissed) setIsOpen(true);
   }, []);
 
@@ -38,7 +38,7 @@ const DisclaimerModal = () => {
             </div>
 
             <p className="text-sm leading-relaxed text-muted-foreground mb-6">
-              O <strong className="text-foreground">SIMULAMED</strong> é uma ferramenta{' '}
+              O <strong className="text-foreground">PULZU</strong> é uma ferramenta{' '}
               <strong className="text-foreground">exclusivamente educacional</strong> destinada
               ao treinamento de raciocínio clínico. Os cenários são fictícios e simulados por IA.
             </p>
