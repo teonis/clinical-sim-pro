@@ -51,7 +51,7 @@ const StartGame: React.FC<StartGameProps> = ({ onStart, isLoading }) => {
         </div>
       </div>
 
-      <div className="bg-card rounded-[2.5rem] border border-border p-10 relative overflow-hidden shadow-sm">
+      <div className="bg-card/40 backdrop-blur-2xl rounded-[3rem] border border-white/20 p-12 relative overflow-hidden shadow-2xl">
         <div className="grid lg:grid-cols-2 gap-12 relative z-10">
           <div className="space-y-10">
             <div className="space-y-4">
@@ -60,7 +60,7 @@ const StartGame: React.FC<StartGameProps> = ({ onStart, isLoading }) => {
                 <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Especialidade Médica</label>
               </div>
               <Select value={specialty} onValueChange={setSpecialty}>
-                <SelectTrigger className="h-16 rounded-xl bg-muted border-none text-base font-bold tracking-tight focus:ring-1 focus:ring-primary/20 px-6">
+                <SelectTrigger className="h-20 rounded-2xl bg-white/50 border border-border/50 text-base font-bold tracking-tight focus:ring-4 focus:ring-primary/10 px-8 transition-all">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl border-border bg-card">
@@ -82,10 +82,10 @@ const StartGame: React.FC<StartGameProps> = ({ onStart, isLoading }) => {
                     key={d}
                     onClick={() => setDifficulty(d)}
                     className={cn(
-                      "h-20 rounded-xl border-2 transition-all flex flex-col items-center justify-center gap-1",
+                      "h-24 rounded-2xl border-2 transition-all flex flex-col items-center justify-center gap-1.5 shadow-sm",
                       difficulty === d
-                        ? "bg-primary text-primary-foreground border-primary"
-                        : "bg-muted text-muted-foreground border-transparent hover:border-border"
+                        ? "bg-primary text-primary-foreground border-primary shadow-xl shadow-primary/20 scale-105 z-10"
+                        : "bg-white/50 text-muted-foreground border-border/50 hover:border-primary/30 hover:bg-white"
                     )}
                   >
                     <span className="text-[10px] font-bold tracking-widest uppercase">{d}</span>
@@ -102,7 +102,7 @@ const StartGame: React.FC<StartGameProps> = ({ onStart, isLoading }) => {
                 <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Contexto (Opcional)</label>
               </div>
               <Textarea
-                className="h-full min-h-[180px] rounded-2xl bg-muted border-none p-6 font-medium resize-none focus:ring-1 focus:ring-primary/20 text-foreground placeholder:text-muted-foreground/30 text-sm tracking-tight leading-relaxed"
+                className="h-full min-h-[220px] rounded-[2rem] bg-white/50 border border-border/50 p-8 font-medium resize-none focus:ring-4 focus:ring-primary/10 text-foreground placeholder:text-muted-foreground/20 text-base tracking-tight leading-relaxed transition-all shadow-inner"
                 value={customCase}
                 onChange={(e) => setCustomCase(e.target.value)}
                 placeholder="EX: PACIENTE COM DOR PRECORDIAL..."
@@ -113,7 +113,7 @@ const StartGame: React.FC<StartGameProps> = ({ onStart, isLoading }) => {
               onClick={handleStart}
               disabled={isLoading}
               size="lg"
-              className="h-16 text-base font-bold rounded-2xl transition-all bg-primary text-primary-foreground uppercase tracking-widest shadow-xl shadow-primary/20"
+              className="h-20 text-lg font-black rounded-2xl transition-all bg-primary text-primary-foreground uppercase tracking-[0.15em] shadow-2xl shadow-primary/30 hover:shadow-primary/40 active:scale-95"
             >
               {isLoading ? (
                 <>

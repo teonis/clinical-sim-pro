@@ -48,7 +48,7 @@ const TrainingTab: React.FC<TrainingTabProps> = ({ onStartGame }) => {
           <span className="text-sm font-bold uppercase tracking-widest">Voltar para Treinamentos</span>
         </button>
 
-        <div className="bg-card rounded-[2.5rem] border border-border p-10 relative overflow-hidden shadow-sm">
+        <div className="bg-card/40 backdrop-blur-2xl rounded-[3rem] border border-white/20 p-12 relative overflow-hidden shadow-2xl">
           <div className="relative z-10 flex flex-col md:flex-row justify-between gap-8">
             <div className="max-w-2xl space-y-6">
               <div>
@@ -64,7 +64,7 @@ const TrainingTab: React.FC<TrainingTabProps> = ({ onStartGame }) => {
               </div>
             </div>
 
-            <div className="bg-muted/50 rounded-2xl p-6 h-fit min-w-[240px] border border-border">
+            <div className="bg-white/40 backdrop-blur-md rounded-3xl p-8 h-fit min-w-[280px] border border-white/40 shadow-xl">
               <div className="space-y-4">
                 <div className="flex justify-between items-center text-[10px] font-bold uppercase text-muted-foreground">
                   <span>Progresso da Trilha</span>
@@ -100,7 +100,7 @@ const TrainingTab: React.FC<TrainingTabProps> = ({ onStartGame }) => {
               return (
                 <div 
                   key={cRef.id}
-                  className="bg-card rounded-2xl border border-border p-6 flex items-center justify-between group hover:border-primary/30 transition-all"
+                  className="bg-card/60 backdrop-blur-sm rounded-[2rem] border border-border/50 p-8 flex items-center justify-between group hover:border-primary/40 hover:shadow-xl transition-all"
                 >
                   <div className="flex items-center gap-6">
                     <div className="flex items-center justify-center">
@@ -164,7 +164,7 @@ const TrainingTab: React.FC<TrainingTabProps> = ({ onStartGame }) => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.05 }}
-              className="bg-card rounded-[2rem] border border-border p-8 flex flex-col hover:shadow-xl hover:border-primary/20 transition-all group"
+              className="bg-card/40 backdrop-blur-xl rounded-[2.5rem] border border-white/20 p-10 flex flex-col hover:shadow-2xl hover:border-primary/40 transition-all group shadow-sm"
             >
               <div className="flex-1">
                 <div className="flex justify-between items-start mb-4">
@@ -222,7 +222,7 @@ const TrainingTab: React.FC<TrainingTabProps> = ({ onStartGame }) => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 + idx * 0.1 }}
-              className="bg-card rounded-[2.5rem] border border-border p-10 flex flex-col md:flex-row gap-8 hover:shadow-2xl hover:border-primary/30 transition-all group overflow-hidden relative"
+              className="bg-card/40 backdrop-blur-2xl rounded-[3rem] border border-white/20 p-12 flex flex-col md:flex-row gap-10 hover:shadow-2xl hover:border-primary/40 transition-all group overflow-hidden relative shadow-sm"
             >
               {/* Subtle background icon */}
               <BookOpen className="absolute -bottom-4 -right-4 h-32 w-32 text-primary/5 -rotate-12 group-hover:scale-110 transition-transform" />

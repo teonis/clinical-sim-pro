@@ -3,14 +3,14 @@ import { Search, Bell, Zap } from "lucide-react";
 
 const TopHeader: React.FC = () => {
   return (
-    <header className="h-20 shrink-0 bg-background/50 backdrop-blur-xl border-b border-border px-10 flex items-center justify-between z-30">
-      <div className="flex items-center gap-8 flex-1 max-w-xl">
-        <div className="relative flex-1">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+    <header className="h-24 shrink-0 bg-background/40 backdrop-blur-3xl border-b border-border/50 px-12 flex items-center justify-between z-30">
+      <div className="flex items-center gap-8 flex-1 max-w-2xl">
+        <div className="relative flex-1 group">
+          <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-primary opacity-50 group-focus-within:opacity-100 transition-opacity" />
           <input 
             type="text" 
             placeholder="Pesquisar casos, exames ou medicações..." 
-            className="w-full h-11 bg-muted border-none rounded-xl pl-12 pr-4 text-sm focus:ring-1 focus:ring-primary/20 transition-all placeholder:text-muted-foreground/50"
+            className="w-full h-12 bg-white/50 border border-border/50 rounded-2xl pl-14 pr-6 text-sm font-semibold focus:ring-4 focus:ring-primary/10 transition-all placeholder:text-muted-foreground/40 shadow-sm"
           />
         </div>
       </div>

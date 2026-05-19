@@ -12,6 +12,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { Suspense } from "react";
 import { toast } from "sonner";
 import { Activity, Loader2 } from "lucide-react";
+import { motion } from "framer-motion";
 
 const App: React.FC = () => {
   const [gameState, setGameState] = useState<SimulationState | null>(null);
@@ -187,12 +188,25 @@ const App: React.FC = () => {
 };
 
 const LoadingFallback = () => (
-  <div className="w-full h-screen bg-background flex items-center justify-center">
-    <div className="flex flex-col items-center gap-4">
-      <div className="w-12 h-12 rounded-xl bg-primary/5 border border-primary/10 flex items-center justify-center animate-pulse">
-        <Activity className="h-6 w-6 text-primary" />
+  <div className="w-full h-screen bg-background flex items-center justify-center overflow-hidden relative">
+    <div className="absolute inset-0 z-0">
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] animate-pulse" />
+    </div>
+    <div className="flex flex-col items-center gap-6 relative z-10">
+      <div className="w-20 h-20 rounded-[2rem] bg-card border border-border flex items-center justify-center shadow-2xl animate-clinical-pulse">
+        <Activity className="h-10 w-10 text-primary" />
       </div>
-      <p className="font-bold text-sm text-foreground tracking-[0.3em] uppercase opacity-40">PULZU</p>
+      <div className="flex flex-col items-center gap-2">
+        <p className="font-black text-2xl text-foreground tracking-tighter italic opacity-80">PULZU</p>
+        <div className="h-1 w-12 bg-primary/20 rounded-full overflow-hidden">
+          <motion.div 
+            initial={{ x: "-100%" }}
+            animate={{ x: "100%" }}
+            transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
+            className="h-full w-full bg-primary rounded-full"
+          />
+        </div>
+      </div>
     </div>
   </div>
 );
