@@ -118,7 +118,7 @@ const SessionReview: React.FC<SessionReviewProps> = ({ session, onBack }) => {
                   <GraduationCap className="h-4 w-4" />
                 </div>
                 <div>
-                  <h4 className="text-xs font-bold text-foreground uppercase mb-1">Feedback do Preceptor</h4>
+                  <h4 className="text-xs font-bold text-foreground uppercase mb-1">Feedback Técnico</h4>
                   <p className="text-sm text-foreground italic">"{lastState.interface_usuario.feedback_mentor}"</p>
                 </div>
               </div>

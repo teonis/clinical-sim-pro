@@ -34,7 +34,6 @@ const Sidebar: React.FC<SidebarProps> = ({
         </div>
         <div className="hidden lg:block">
           <h1 className="font-black text-2xl text-foreground tracking-tighter leading-none italic">PULZU</h1>
-          <p className="text-[9px] font-black text-primary tracking-[0.3em] uppercase mt-1.5 opacity-80">The Preceptor</p>
         </div>
       </div>
 
