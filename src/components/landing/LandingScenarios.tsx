@@ -9,6 +9,13 @@ interface LandingScenariosProps {
 }
 
 const LandingScenarios: React.FC<LandingScenariosProps> = ({ mockCases, onStart }) => {
+  const goToLibrary = () => {
+    try {
+      localStorage.setItem("pulzu_intent", "library");
+    } catch {}
+    onStart();
+  };
+
   return (
     <section id="cases" className="py-32 bg-muted/30 relative overflow-hidden">
       <div className="container mx-auto px-6 relative z-10">
@@ -29,7 +36,7 @@ const LandingScenarios: React.FC<LandingScenariosProps> = ({ mockCases, onStart 
             </p>
           </div>
           <button 
-            onClick={onStart}
+            onClick={goToLibrary}
             className="group flex items-center gap-2 text-[10px] font-black tracking-[0.2em] uppercase text-primary hover:text-primary/80 transition-all"
           >
             Ver todos os casos
@@ -65,7 +72,7 @@ const LandingScenarios: React.FC<LandingScenariosProps> = ({ mockCases, onStart 
                   {clinicalCase.description}
                 </p>
                 <button 
-                  onClick={onStart}
+                  onClick={goToLibrary}
                   className="w-full py-4 rounded-xl border-2 border-border font-black text-[10px] tracking-[0.2em] uppercase hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all active:scale-[0.98]"
                 >
                   INICIAR SIMULAÇÃO

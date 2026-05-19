@@ -4,7 +4,7 @@ import { getUserStats, getLeaderboard, getUserHistory, sendFeedback } from "@/se
 import { getUserSessions, GameSession } from "@/services/sessionService";
 import { supabase } from "@/integrations/supabase/client";
 import ProfilePerformance from "@/components/ProfilePerformance";
-import { LayoutDashboard, BarChart3, Clock, MessageSquare, User, GraduationCap } from "lucide-react";
+import { LayoutDashboard, BarChart3, Clock, MessageSquare, User, GraduationCap, BookMarked } from "lucide-react";
 import { toast } from "sonner";
 
 import Sidebar from "./dashboard/Sidebar";
@@ -13,8 +13,9 @@ import HomeTab from "./dashboard/HomeTab";
 import HistoryTab from "./dashboard/HistoryTab";
 import FeedbackTab from "./dashboard/FeedbackTab";
 import TrainingTab from "./dashboard/TrainingTab";
+import CaseLibraryTab from "./dashboard/CaseLibraryTab";
 
-type TabType = "home" | "training" | "performance" | "history" | "feedback";
+type TabType = "home" | "library" | "training" | "performance" | "history" | "feedback";
 
 interface DashboardProps {
   onStartGame: (params: StartParams) => void;
@@ -24,7 +25,13 @@ interface DashboardProps {
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ onStartGame, isLoading, userEmail, onLogout }) => {
-  const [activeTab, setActiveTab] = useState<TabType>("home");
+  const [activeTab, setActiveTab] = useState<TabType>(() => {
+    if (typeof window !== "undefined" && localStorage.getItem("pulzu_intent") === "library") {
+      localStorage.removeItem("pulzu_intent");
+      return "library";
+    }
+    return "home";
+  });
   const [userStats, setUserStats] = useState<UserStats | null>(null);
   const [leaderboard, setLeaderboard] = useState<GameHistoryEntry[]>([]);
   const [history, setHistory] = useState<GameHistoryEntry[]>([]);
@@ -105,6 +112,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartGame, isLoading, userEmail
 
   const navItems = [
     { id: "home" as TabType, icon: LayoutDashboard, label: "Dashboard" },
+    { id: "library" as TabType, icon: BookMarked, label: "Biblioteca de Casos" },
     { id: "training" as TabType, icon: GraduationCap, label: "Treinamentos" },
     { id: "performance" as TabType, icon: User, label: "Perfil" },
     { id: "history" as TabType, icon: Clock, label: "Histórico" },
@@ -137,6 +145,10 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartGame, isLoading, userEmail
                 leaderboard={leaderboard}
                 userStats={userStats}
               />
+            )}
+
+            {activeTab === "library" && (
+              <CaseLibraryTab onStartGame={onStartGame} isLoading={isLoading} />
             )}
 
             {activeTab === "training" && (
