@@ -9,6 +9,13 @@ interface LandingScenariosProps {
 }
 
 const LandingScenarios: React.FC<LandingScenariosProps> = ({ mockCases, onStart }) => {
+  const goToLibrary = () => {
+    try {
+      localStorage.setItem("pulzu_intent", "library");
+    } catch {}
+    onStart();
+  };
+
   return (
     <section id="cases" className="py-32 bg-muted/30 relative overflow-hidden">
       <div className="container mx-auto px-6 relative z-10">
