@@ -34,7 +34,7 @@ const HomeTab: React.FC<HomeTabProps> = ({ onStartGame, isLoading, leaderboard, 
           <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
             <Activity className="h-4 w-4 text-primary" /> Atividade Recente
           </h3>
-          <div className="bg-card rounded-2xl border border-border p-8 space-y-6">
+          <div className="bg-card/40 backdrop-blur-xl rounded-[2.5rem] border border-border p-10 space-y-8 shadow-sm">
             <RecentActivityStats label="Casos Concluídos" value={userStats?.totalGames || 0} max={100} />
             <RecentActivityStats label="Média Global" value={userStats?.averageScore || 0} max={10} />
           </div>

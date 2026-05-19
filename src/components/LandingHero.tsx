@@ -10,7 +10,7 @@ interface LandingHeroProps {
 
 const LandingHero: React.FC<LandingHeroProps> = ({ onStart }) => {
   return (
-    <section id="hero" className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-20 bg-background">
+    <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20 bg-background/50">
       {/* Subtle Background elements */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px]" />
@@ -54,15 +54,15 @@ const LandingHero: React.FC<LandingHeroProps> = ({ onStart }) => {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="max-w-md mx-auto mb-10 relative group"
+            className="max-w-xl mx-auto mb-16 relative group"
           >
-            <div className="absolute inset-0 bg-primary/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
-            <div className="relative flex items-center bg-card/50 backdrop-blur-md border border-border h-16 rounded-2xl px-5 focus-within:ring-2 focus-within:ring-primary/20 transition-all">
-              <Search className="h-5 w-5 text-muted-foreground mr-4" />
+            <div className="absolute inset-0 bg-primary/20 rounded-3xl blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="relative flex items-center bg-card/40 backdrop-blur-2xl border border-white/20 h-20 rounded-[2rem] px-8 shadow-2xl focus-within:ring-4 focus-within:ring-primary/10 transition-all">
+              <Search className="h-6 w-6 text-primary mr-5" />
               <input 
                 type="text" 
-                placeholder="Pesquisar por faculdade de medicina..." 
-                className="bg-transparent border-none focus:ring-0 text-sm font-medium w-full placeholder:text-muted-foreground/40"
+                placeholder="Busque por sua faculdade de medicina..." 
+                className="bg-transparent border-none focus:ring-0 text-base font-semibold w-full placeholder:text-muted-foreground/30"
               />
               <div className="ml-4 px-3 py-1 bg-muted rounded-lg text-[8px] font-black text-muted-foreground uppercase tracking-widest whitespace-nowrap">
                 Ficha Técnica

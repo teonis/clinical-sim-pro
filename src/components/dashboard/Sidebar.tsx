@@ -28,13 +28,13 @@ const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   return (
     <aside className="w-20 lg:w-72 bg-card border-r border-border flex flex-col shrink-0 z-40 transition-all duration-300">
-      <div className="p-8 flex items-center gap-4 h-24 border-b border-border">
-        <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shrink-0 shadow-lg shadow-primary/20">
-          <span className="text-primary-foreground font-black text-sm text-center">P</span>
+      <div className="p-8 flex items-center gap-4 h-24 border-b border-border/50">
+        <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center shrink-0 shadow-2xl shadow-primary/40 rotate-3 group-hover:rotate-0 transition-transform">
+          <span className="text-primary-foreground font-black text-lg text-center">P</span>
         </div>
         <div className="hidden lg:block">
-          <h1 className="font-black text-xl text-foreground tracking-tighter leading-none">PULZU</h1>
-          <p className="text-[8px] font-bold text-muted-foreground tracking-widest uppercase mt-1">Simulador Clínico</p>
+          <h1 className="font-black text-2xl text-foreground tracking-tighter leading-none italic">PULZU</h1>
+          <p className="text-[9px] font-black text-primary tracking-[0.3em] uppercase mt-1.5 opacity-80">The Preceptor</p>
         </div>
       </div>
 
@@ -44,10 +44,10 @@ const Sidebar: React.FC<SidebarProps> = ({
             key={id}
             onClick={() => setActiveTab(id)}
             className={cn(
-              "w-full flex items-center gap-4 p-3.5 rounded-xl text-sm font-bold transition-all group relative",
+              "w-full flex items-center gap-4 p-4 rounded-2xl text-sm font-bold transition-all group relative",
               activeTab === id 
-                ? "bg-primary text-primary-foreground" 
-                : "text-muted-foreground hover:bg-muted"
+                ? "bg-primary text-primary-foreground shadow-xl shadow-primary/20" 
+                : "text-muted-foreground hover:bg-secondary/80 hover:text-foreground"
             )}
           >
             <Icon className={cn("h-5 w-5 shrink-0 transition-transform", activeTab === id ? "text-primary-foreground" : "text-primary")} />
