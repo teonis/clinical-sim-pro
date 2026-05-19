@@ -147,6 +147,10 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartGame, isLoading, userEmail
               />
             )}
 
+            {activeTab === "library" && (
+              <CaseLibraryTab onStartGame={onStartGame} isLoading={isLoading} />
+            )}
+
             {activeTab === "training" && (
               <TrainingTab onStartGame={onStartGame} />
             )}
