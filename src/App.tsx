@@ -12,6 +12,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { Suspense } from "react";
 import { toast } from "sonner";
 import { Activity, Loader2 } from "lucide-react";
+import { motion } from "framer-motion";
 
 const App: React.FC = () => {
   const [gameState, setGameState] = useState<SimulationState | null>(null);
