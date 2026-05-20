@@ -109,11 +109,15 @@ export const startSimulation = async (params: StartParams): Promise<SimulationSt
     
     engine.reset(finalVitals);
 
+    // Se o caso for estruturado, o debriefing deve focar nos dados desse caso
+    const isStructuredCase = params.caso_especifico?.includes('structured_case');
+
     const initialNarrative = [
       state.interface_usuario?.manchete,
       state.interface_usuario?.narrativa_principal,
       state.interface_usuario?.exame_fisico_detalhado
     ].filter(Boolean).join(" ");
+
     
     engine.setConditionsFromNarrative(initialNarrative);
 
