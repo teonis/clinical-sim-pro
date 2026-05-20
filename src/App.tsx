@@ -198,6 +198,7 @@ const AppContent: React.FC = () => {
   );
 };
 
+
 const LoadingFallback = () => (
   <div className="w-full h-screen bg-background flex items-center justify-center overflow-hidden relative">
     <div className="absolute inset-0 z-0">
