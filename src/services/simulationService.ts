@@ -3,6 +3,8 @@ import { SimulationState, StartParams, ChatMessageAI } from "@/types/simulation"
 import { getEngine, resetEngine, EngineVitals } from "./physiologyEngine";
 import { detectProtocol, evaluateProtocol, evaluationToPromptBlock, ProtocolEvaluation } from "./protocolChecklists";
 import { generateCase, GeneratedCase } from "./caseGenerator";
+import { safeJsonParse } from "@/lib/error-handler";
+
 
 let lastProtocolEvaluation: ProtocolEvaluation | null = null;
 let lastGeneratedCase: GeneratedCase | null = null;
@@ -150,11 +152,10 @@ export const sendAction = async (
   const lastAssistant = [...conversationHistory].reverse().find(m => m.role === "assistant");
   let currentPatientState = "ESTAVEL";
   if (lastAssistant) {
-    try {
-      const parsed = JSON.parse(lastAssistant.content);
+    const parsed = safeJsonParse<any>(lastAssistant.content, null);
+    if (parsed) {
       currentPatientState = parsed.status_simulacao?.estado_paciente ?? "ESTAVEL";
 
-      // Update conditions from latest narrative
       const narr = [
         parsed.interface_usuario?.manchete,
         parsed.interface_usuario?.narrativa_principal,
@@ -162,9 +163,10 @@ export const sendAction = async (
       ].filter(Boolean).join(" ");
       
       engine.setConditionsFromNarrative(narr);
-    } catch { /* keep default */ }
+    }
   }
   engine.tick(timeCost, currentPatientState);
+
 
   // 4. Action was already logged to timeline in step 1
 
