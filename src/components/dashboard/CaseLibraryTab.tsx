@@ -6,9 +6,11 @@ import {
   caseLibrary,
   LIBRARY_SPECIALTIES,
   LIBRARY_LEVELS,
-  LibraryCase,
 } from "@/data/caseLibrary";
+import { LibraryCase } from "@/types/caseLibrary";
 import { StartParams } from "@/types/simulation";
+import { buildStructuredCasePrompt } from "@/lib/buildStructuredCasePrompt";
+
 
 interface CaseLibraryTabProps {
   onStartGame: (params: StartParams) => void;
