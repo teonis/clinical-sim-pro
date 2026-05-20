@@ -1,4 +1,6 @@
 import { LibraryCase } from "@/types/caseLibrary";
+export type { LibraryCase };
+
 
 export const LIBRARY_SPECIALTIES = [
   "Todos",
