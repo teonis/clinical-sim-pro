@@ -109,11 +109,15 @@ export const startSimulation = async (params: StartParams): Promise<SimulationSt
     
     engine.reset(finalVitals);
 
+    // Se o caso for estruturado, o debriefing deve focar nos dados desse caso
+    const isStructuredCase = params.caso_especifico?.includes('structured_case');
+
     const initialNarrative = [
       state.interface_usuario?.manchete,
       state.interface_usuario?.narrativa_principal,
       state.interface_usuario?.exame_fisico_detalhado
     ].filter(Boolean).join(" ");
+
     
     engine.setConditionsFromNarrative(initialNarrative);
 
@@ -188,12 +192,34 @@ export const sendAction = async (
       }
       catch { return ""; }
     }).join(" ");
+
+  const startMsg = conversationHistory.find(m => m.role === "user" && m.content.includes("START_GAME"));
+  const isStructuredCase = startMsg?.content.includes('structured_case');
+
   const protocol = detectProtocol(fullNarrative);
   if (protocol) {
     const evaluation = evaluateProtocol(protocol, engine.getActionTimeline(), engine.getAppliedInterventions());
     lastProtocolEvaluation = evaluation;
-    checklistBlock = `\n\n${evaluationToPromptBlock(evaluation)}`;
+    
+    // Se for um caso estruturado, podemos injetar orientações específicas de debriefing
+    let extraDebriefingContext = "";
+    if (isStructuredCase && startMsg) {
+      const focusMatch = startMsg.content.match(/\[FOCO DO DEBRIEFING\]:\s*([\s\S]+?)(?=\n\n|$)/);
+      const keyActionsMatch = startMsg.content.match(/\[AÇÕES CHAVE ESPERADAS\]:\s*([\s\S]+?)(?=\n\n|$)/);
+      const criticalMistakesMatch = startMsg.content.match(/\[ERROS CRÍTICOS A MONITORAR\]:\s*([\s\S]+?)(?=\n\n|$)/);
+      
+      if (focusMatch || keyActionsMatch || criticalMistakesMatch) {
+        extraDebriefingContext = `\n\n[CONTEXTO ADICIONAL PARA DEBRIEFING ESPECÍFICO DO CASO]:
+${focusMatch ? `- FOCO: ${focusMatch[1]}` : ""}
+${keyActionsMatch ? `- AÇÕES ESPERADAS: ${keyActionsMatch[1]}` : ""}
+${criticalMistakesMatch ? `- ERROS CRÍTICOS: ${criticalMistakesMatch[1]}` : ""}
+Combine estas informações com o protocolo padrão para gerar um feedback altamente personalizado.`;
+      }
+    }
+
+    checklistBlock = `\n\n${evaluationToPromptBlock(evaluation)}${extraDebriefingContext}`;
   }
+
 
   const enrichedMessage = `${message}\n\n${vitalsBlock}\n\nTempo gasto nesta ação: ${timeCost} min${checklistBlock}`;
 

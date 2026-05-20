@@ -6,9 +6,11 @@ import {
   caseLibrary,
   LIBRARY_SPECIALTIES,
   LIBRARY_LEVELS,
-  LibraryCase,
 } from "@/data/caseLibrary";
+import { LibraryCase } from "@/types/caseLibrary";
 import { StartParams } from "@/types/simulation";
+import { buildStructuredCasePrompt } from "@/lib/buildStructuredCasePrompt";
+
 
 interface CaseLibraryTabProps {
   onStartGame: (params: StartParams) => void;
@@ -48,9 +50,10 @@ const CaseLibraryTab: React.FC<CaseLibraryTabProps> = ({ onStartGame, isLoading 
     onStartGame({
       especialidade: c.engineSpecialty,
       dificuldade: c.engineDifficulty,
-      caso_especifico: `${c.title} — ${c.simulationBriefing}`,
+      caso_especifico: buildStructuredCasePrompt(c),
     });
   };
+
 
   return (
     <motion.div
