@@ -50,9 +50,10 @@ const CaseLibraryTab: React.FC<CaseLibraryTabProps> = ({ onStartGame, isLoading 
     onStartGame({
       especialidade: c.engineSpecialty,
       dificuldade: c.engineDifficulty,
-      caso_especifico: `${c.title} — ${c.simulationBriefing}`,
+      caso_especifico: buildStructuredCasePrompt(c),
     });
   };
+
 
   return (
     <motion.div
