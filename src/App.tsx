@@ -13,8 +13,19 @@ import { Suspense } from "react";
 import { toast } from "sonner";
 import { Activity, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
+import ErrorBoundary from "@/components/ErrorBoundary";
+
 
 const App: React.FC = () => {
+  return (
+    <ErrorBoundary>
+      <AppContent />
+    </ErrorBoundary>
+  );
+};
+
+const AppContent: React.FC = () => {
+
   const [gameState, setGameState] = useState<SimulationState | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [lastParams, setLastParams] = useState<StartParams | null>(null);
