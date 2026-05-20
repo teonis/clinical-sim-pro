@@ -43,7 +43,6 @@ export const startSimulation = async (params: StartParams): Promise<SimulationSt
     conversationHistory = [];
     lastProtocolEvaluation = null;
 
-    // Try to generate a dynamic case if no custom case was provided
     let generatedScenario = params.caso_especifico || "";
     let engineSeedVitals: Partial<EngineVitals> | undefined;
 
@@ -58,48 +57,56 @@ export const startSimulation = async (params: StartParams): Promise<SimulationSt
       lastGeneratedCase = null;
     }
 
-    // Seed engine with generated vitals (will be overwritten by LLM response if available)
     const engine = resetEngine(engineSeedVitals);
 
-    const startCommand = `START_GAME { "especialidade": "${params.especialidade}", "dificuldade": "${params.dificuldade}", "caso_especifico": "${generatedScenario}" }\n\n[DADOS VITAIS INICIAIS DESEJADOS]: ${engine.toPromptBlock()}\n\n[DADOS DE EXAME FÍSICO INICIAIS]: ${lastGeneratedCase?.physicalExamBase || ""}\n\n[DADOS DE EXAMES LABORATORIAIS INICIAIS]: ${lastGeneratedCase?.labResultsBase || ""}`;
+    // Securely construct the start command using JSON.stringify to avoid injection
+    const startPayload = {
+      especialidade: params.especialidade,
+      dificuldade: params.dificuldade,
+      caso_especifico: generatedScenario
+    };
+
+    const startCommand = `START_GAME ${JSON.stringify(startPayload)}\n\n[DADOS VITAIS INICIAIS DESEJADOS]: ${engine.toPromptBlock()}\n\n[DADOS DE EXAME FÍSICO INICIAIS]: ${lastGeneratedCase?.physicalExamBase || ""}\n\n[DADOS DE EXAMES LABORATORIAIS INICIAIS]: ${lastGeneratedCase?.labResultsBase || ""}`;
 
     conversationHistory.push({ role: "user", content: startCommand });
 
-    const { data, error } = await supabase.functions.invoke("simulate", {
-      body: { messages: conversationHistory },
-    });
+    // Improved invocation with retry logic
+    const invokeWithRetry = async (retries = 2): Promise<any> => {
+      try {
+        const { data, error } = await supabase.functions.invoke("simulate", {
+          body: { messages: conversationHistory },
+        });
 
-    if (error) {
-      console.error("Supabase function error (invoke):", error);
-      throw new Error(error.message || "Falha na comunicação com o servidor de simulação.");
-    }
+        if (error) throw error;
+        if (!data) throw new Error("O servidor retornou uma resposta vazia.");
+        if (data.error) throw new Error(data.error);
+        
+        return data;
+      } catch (err: any) {
+        if (retries > 0) {
+          console.warn(`Retrying simulation start... (${retries} left)`);
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          return invokeWithRetry(retries - 1);
+        }
+        throw err;
+      }
+    };
+
+    const data = await invokeWithRetry();
     
-    if (!data) {
-      throw new Error("O servidor retornou uma resposta vazia.");
-    }
-
-    if (data?.error) {
-      console.error("Logic error from function:", data.error);
-      throw new Error(data.error);
-    }
-
-    // Merge LLM-described vitals with engine-seeded vitals (engine takes priority if seeded)
-    const llmVitals = parseVitalsFromResponse(data as SimulationState);
+    const state = data as SimulationState;
+    const llmVitals = parseVitalsFromResponse(state);
     const finalVitals = engineSeedVitals
-      ? { ...llmVitals, ...engineSeedVitals } // generated vitals override LLM
+      ? { ...llmVitals, ...engineSeedVitals }
       : llmVitals;
     
-    // Ensure vital signs are correctly populated in the response object
-    const state = data as SimulationState;
     if (state.dados_medicos) {
       const v = finalVitals;
       state.dados_medicos.sinais_vitais = `FC: ${v.hr ?? 80} bpm | PA: ${v.sbp ?? 120}/${v.dbp ?? 80} mmHg | SpO2: ${v.spo2 ?? 97}% | FR: ${v.rr ?? 16} rpm | Temp: ${v.temp ?? 36.5}°C`;
     }
     
-    // Update existing engine with final merged vitals
     engine.reset(finalVitals);
 
-    // Detect conditions from initial narrative
     const initialNarrative = [
       state.interface_usuario?.manchete,
       state.interface_usuario?.narrativa_principal,
@@ -112,7 +119,7 @@ export const startSimulation = async (params: StartParams): Promise<SimulationSt
     return state;
   } catch (err: any) {
     console.error("Error in startSimulation:", err);
-    throw err;
+    throw new Error(err.message || "Não foi possível iniciar a simulação. Verifique sua conexão.");
   }
 };
 
@@ -190,24 +197,28 @@ export const sendAction = async (
 
   conversationHistory.push({ role: "user", content: enrichedMessage });
 
-  const { data, error } = await supabase.functions.invoke("simulate", {
-    body: { messages: conversationHistory },
-  });
+  const invokeWithRetry = async (retries = 2): Promise<any> => {
+    try {
+      const { data, error } = await supabase.functions.invoke("simulate", {
+        body: { messages: conversationHistory },
+      });
 
-  if (error) {
-    console.error("Supabase function error (invoke action):", error);
-    throw new Error(error.message || "Falha ao processar ação no servidor.");
-  }
-  
-  if (!data) {
-    throw new Error("Resposta inválida do servidor de simulação.");
-  }
+      if (error) throw error;
+      if (!data) throw new Error("Resposta inválida do servidor de simulação.");
+      if (data.error) throw new Error(data.error);
+      
+      return data;
+    } catch (err: any) {
+      if (retries > 0) {
+        console.warn(`Retrying action... (${retries} left)`);
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        return invokeWithRetry(retries - 1);
+      }
+      throw err;
+    }
+  };
 
-  if (data?.error) {
-    console.error("Logic error from function (action):", data.error);
-    throw new Error(data.error);
-  }
-
+  const data = await invokeWithRetry();
   conversationHistory.push({ role: "assistant", content: JSON.stringify(data) });
   return data as SimulationState;
 };
