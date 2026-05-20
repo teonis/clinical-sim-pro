@@ -1,5 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { SimulationState, ChatMessageAI } from "@/types/simulation";
+import { handleSupabaseError } from "@/lib/error-handler";
+
 
 export interface GameSession {
   id: string;
@@ -44,9 +46,10 @@ export const createGameSession = async (
     .single();
 
   if (error) {
-    console.error("Error creating session:", error);
+    handleSupabaseError(error, "Erro ao criar sessão de jogo");
     return null;
   }
+
   return data?.id || null;
 };
 
@@ -75,7 +78,7 @@ export const updateGameSession = async (
     .update(updateData)
     .eq("id", sessionId);
 
-  if (error) console.error("Error updating session:", error);
+  if (error) handleSupabaseError(error, "Erro ao atualizar sessão");
 };
 
 export const getUserSessions = async (): Promise<GameSession[]> => {
